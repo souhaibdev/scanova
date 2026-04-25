@@ -1,0 +1,26 @@
+{
+  "1452822175": {
+    "uid": "1452822175",
+    "full_name": "souhaib el mizzari",
+    "hourly_rate": 20.0,
+    "expected_start_time": "08:00"
+  },
+  "4188540927": {
+    "uid": "4188540927",
+    "full_name": "imran begdouri",
+    "hourly_rate": 25.0,
+    "expected_start_time": "08:00"
+  },
+  "4188606463": {
+    "uid": "4188606463",
+    "full_name": "ibrahim el hicho",
+    "hourly_rate": 25.0,
+    "expected_start_time": "08:00"
+  },
+  "2893913171": {
+    "uid": "2893913171",
+    "full_name": "reda affelad",
+    "hourly_rate": 25.0,
+    "expected_start_time": "19:00"
+  }
+}
