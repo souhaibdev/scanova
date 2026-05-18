@@ -13,14 +13,49 @@
   },
   "4188606463": {
     "uid": "4188606463",
+    "cin": "KB203040",
     "full_name": "ibrahim el hicho",
     "hourly_rate": 25.0,
     "expected_start_time": "08:00"
   },
   "2893913171": {
     "uid": "2893913171",
+    "cin": "KB200212",
     "full_name": "reda affelad",
     "hourly_rate": 25.0,
     "expected_start_time": "19:00"
+  },
+  "1801818826": {
+    "uid": "1801818826",
+    "full_name": "omar ellon",
+    "hourly_rate": 20.0,
+    "expected_start_time": "16:55"
+  },
+  "1802112026": {
+    "uid": "1802112026",
+    "full_name": "hicham jaidi",
+    "hourly_rate": 17.0,
+    "expected_start_time": "07:00"
+  },
+  "3076125203": {
+    "uid": "3076125203",
+    "cin": "KB256303",
+    "full_name": "mouad classe",
+    "hourly_rate": 18.5,
+    "expected_start_time": "08:00"
+  },
+  "3076075299": {
+    "uid": "3076075299",
+    "cin": "KB121212",
+    "full_name": "adil maimouni",
+    "hourly_rate": 15.5,
+    "expected_start_time": "08:00"
+  },
+  "3077813539": {
+    "uid": "3077813539",
+    "cin": "KB303030",
+    "full_name": "mohamed affelad",
+    "hourly_rate": 17.75,
+    "expected_start_time": "08:00"
   }
 }

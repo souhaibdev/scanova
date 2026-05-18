@@ -36,8 +36,21 @@ def calc_worked_hours(entry_str: str, exit_str: str) -> int:
     return int(math.floor(delta.total_seconds() / 3600))
 
 
-def is_late(entry_str: str, expected_start: str) -> bool:
-    """Return True if entry is after expected start."""
+def is_late(entry_str: str, expected_start: str, grace_minutes: int = 15) -> bool:
+    """Return True if entry is more than grace_minutes after expected start.
+    
+    Example: expected_start=08:00, grace=15 → late only if entry > 08:15
+    """
     entry = parse_time(entry_str)
     expected = parse_time(expected_start)
-    return entry > expected
+    return (entry - expected).total_seconds() > grace_minutes * 60
+
+
+def minutes_between(start_str: str, end_str: str) -> int:
+    """Return number of full minutes between two time strings."""
+    start = parse_time(start_str)
+    end = parse_time(end_str)
+    delta = end - start
+    if delta.total_seconds() < 0:
+        delta += timedelta(days=1)
+    return int(delta.total_seconds() // 60)

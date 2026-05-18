@@ -11,11 +11,13 @@ from utils.time_utils import (
     now_time_str,
     calc_worked_hours,
     is_late,
+    minutes_between,
 )
 
 logger = logging.getLogger(__name__)
 
 ATTENDANCE_FILE = "attendance.xlsx"
+MIN_STAY_MINUTES = 15  # minimum minutes between entry and exit
 
 
 def _load_df() -> pd.DataFrame:
@@ -30,7 +32,6 @@ def process_scan(uid: str) -> dict:
     """Process a UID scan. Returns a result dict for UI feedback."""
     logger.info("Processing scan for UID: %s", uid)
 
-    # Additional validation (though NFC reader should already validate)
     if not uid or not uid.strip():
         logger.warning("Empty or whitespace-only UID received: %r", uid)
         return {
@@ -42,7 +43,7 @@ def process_scan(uid: str) -> dict:
 
     employee = get_employee_by_uid(uid)
     if employee is None:
-        logger.warning("Unregistered UID scanned: %s (employee lookup returned None)", uid)
+        logger.warning("Unregistered UID scanned: %s", uid)
         return {
             "success": False,
             "message": f"UID '{uid}' is not registered. Please register this employee first.",
@@ -62,7 +63,7 @@ def process_scan(uid: str) -> dict:
     today_records = df[mask]
 
     if today_records.empty:
-        # ENTRY
+        # ── ENTRY ──────────────────────────────────────────────
         late = is_late(current_time, employee.expected_start_time)
         new_row = pd.DataFrame(
             [[uid, employee.full_name, today, current_time, "", "", employee.hourly_rate, "", "YES" if late else "NO"]],
@@ -70,7 +71,7 @@ def process_scan(uid: str) -> dict:
         )
         df = pd.concat([df, new_row], ignore_index=True)
         _save_df(df)
-        logger.info("ENTRY recorded and saved for %s (%s)", employee.full_name, uid)
+        logger.info("ENTRY recorded for %s (%s)", employee.full_name, uid)
         return {
             "success": True,
             "action": "entry",
@@ -80,10 +81,12 @@ def process_scan(uid: str) -> dict:
             "late": late,
             "message": f"Entry recorded for {employee.full_name}",
         }
+
     else:
-        # Check if exit already recorded
         last_idx = today_records.index[-1]
         exit_val = str(df.at[last_idx, "Exit Time"]).strip()
+
+        # Already checked out
         if exit_val and exit_val not in ("", "nan", "None"):
             logger.info("Already checked out today: %s (%s)", employee.full_name, uid)
             return {
@@ -94,8 +97,26 @@ def process_scan(uid: str) -> dict:
                 "message": f"{employee.full_name} already checked in & out today.",
             }
 
-        # EXIT
+        # ── EXIT — enforce 15-minute minimum ───────────────────
         entry_time_str = str(df.at[last_idx, "Entry Time"])
+        mins_stayed = minutes_between(entry_time_str, current_time)
+
+        if mins_stayed < MIN_STAY_MINUTES:
+            remaining = MIN_STAY_MINUTES - mins_stayed
+            logger.info(
+                "Exit too soon for %s: only %d min elapsed", employee.full_name, mins_stayed
+            )
+            return {
+                "success": False,
+                "action": "too_soon",
+                "employee": employee.full_name,
+                "uid": uid,
+                "message": (
+                    f"{employee.full_name} checked in only {mins_stayed} min ago. "
+                    f"Please wait {remaining} more minute(s) before checking out."
+                ),
+            }
+
         worked = calc_worked_hours(entry_time_str, current_time)
         salary = worked * employee.hourly_rate
 
@@ -103,7 +124,7 @@ def process_scan(uid: str) -> dict:
         df.at[last_idx, "Worked Hours"] = str(worked)
         df.at[last_idx, "Total Salary"] = str(salary)
         _save_df(df)
-        logger.info("EXIT recorded and saved for %s (%s)", employee.full_name, uid)
+        logger.info("EXIT recorded for %s (%s)", employee.full_name, uid)
         return {
             "success": True,
             "action": "exit",
@@ -124,6 +145,12 @@ def get_today_attendance() -> pd.DataFrame:
     df = _load_df()
     today = now_date_str()
     return df[df["Date"].astype(str) == today]
+
+
+def get_attendance_by_date(date_str: str) -> pd.DataFrame:
+    """Filter attendance by a specific date (YYYY-MM-DD)."""
+    df = _load_df()
+    return df[df["Date"].astype(str) == date_str]
 
 
 def get_dashboard_stats() -> dict:
@@ -161,9 +188,13 @@ def get_dashboard_stats() -> dict:
             "entry": str(row["Entry Time"]),
         })
 
+    total_employees = employee_count()
+    absent_today = max(total_employees - present, 0)
+
     return {
-        "total_employees": employee_count(),
+        "total_employees": total_employees,
         "present_today": present,
+        "absent_today": absent_today,
         "late_today": late_count,
         "total_worked_hours": worked_total,
         "total_salary": salary_total,

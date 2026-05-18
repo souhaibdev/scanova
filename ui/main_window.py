@@ -19,6 +19,8 @@ from ui.attendance_page import AttendancePage
 from ui.employees_page import EmployeesPage
 from ui.notes_page import NotesPage
 from ui.monthly_report_page import MonthlyReportPage
+from ui.employee_report_page import EmployeeReportPage
+from ui.primes_page import PrimesPage                        # ← زيد
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +87,6 @@ QLabel#statusRed    {{ color: {FG_DANGER};    font-size: 11px; background: trans
 """
 
 
-
 # ── NFC Signal Bridge ─────────────────────────────────────────────────────────
 # Runs process_scan in the NFC thread, then emits a signal to the main thread.
 # This is the ONLY safe way to update Qt UI from a background thread.
@@ -147,7 +148,7 @@ class ChangePasswordDialog(QDialog):
 class MainWindow(QWidget):
     """Main application shell: header, sidebar, content area, status bar."""
 
-    _NAV_PAGES = ("Dashboard", "Attendance", "Employees", "Monthly Report", "Notes")
+    _NAV_PAGES = ("Dashboard", "Attendance", "Employees", "Monthly Report", "Advances", "Employee Reports", "Primes")
 
     def __init__(self, parent, username: str, on_logout=None):
         super().__init__(parent)
@@ -304,7 +305,18 @@ class MainWindow(QWidget):
             self._last_action_lbl.setText(result.get("message", ""))
             self._last_action_lbl.setObjectName("statusRed")
             if action == "unknown":
-                QMessageBox.warning(self, "Unknown Card", result["message"])
+                # If user is on the Employees page, populate the UID input
+                # so they can register the card without an interrupting popup.
+                if self._current_page_name == "Employees" and "Employees" in self._pages:
+                    try:
+                        page = self._pages["Employees"]
+                        if hasattr(page, "_inputs") and "uid" in page._inputs:
+                            page._inputs["uid"].setText(uid)
+                            page._inputs["uid"].setFocus()
+                    except Exception:
+                        QMessageBox.warning(self, "Unknown Card", result["message"])
+                else:
+                    QMessageBox.warning(self, "Unknown Card", result["message"])
 
         for lbl in (self._scan_status_lbl, self._last_action_lbl):
             lbl.setStyle(lbl.style())
@@ -354,11 +366,14 @@ class MainWindow(QWidget):
         # Create page if not yet cached
         if name not in self._pages:
             page_cls = {
-                "Dashboard":      DashboardPage,
-                "Attendance":     AttendancePage,
-                "Employees":      EmployeesPage,
-                "Notes":          NotesPage,
-                "Monthly Report": MonthlyReportPage,
+                "Dashboard":        DashboardPage,
+                "Attendance":       AttendancePage,
+                "Employees":        EmployeesPage,
+                "Advances":         NotesPage,
+                "Notes":            NotesPage,
+                "Monthly Report":   MonthlyReportPage,
+                "Employee Reports": EmployeeReportPage,
+                "Primes":           PrimesPage,
             }[name]
             page = page_cls(self._stack)
             self._stack.addWidget(page)

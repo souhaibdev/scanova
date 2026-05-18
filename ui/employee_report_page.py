@@ -1,11 +1,8 @@
 """
-ui/monthly_report_page.py
-──────────────────────────
-Monthly attendance report:
-  • Filters: Month, Year, UID, Name, Late
-  • Stats cards: Jours travaillés / Absents / Late / Total Salary
-  • Detail table: UID, Employee Name, Date, Entry, Exit,
-                  Worked Hours, Hourly Rate, Total Salary, Late
+ui/employee_report_page.py
+────────────────────────────────────────────────────────────────
+Employee reports page with employee selector, monthly filters,
+summary stats, and detailed attendance rows.
 """
 
 from __future__ import annotations
@@ -15,17 +12,16 @@ from datetime import date
 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QLineEdit, QComboBox, QPushButton,
-    QTableWidget, QTableWidgetItem, QHeaderView,
-    QFrame, QSizePolicy
+    QComboBox, QPushButton, QTableWidget, QTableWidgetItem,
+    QHeaderView, QFrame, QSizePolicy, QMessageBox
 )
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 
 from services.monthly_report_service import get_monthly_report_filtered
-from models.attendance_record import AttendanceRecord
+from services.employee_service import get_all_employees
+from services.bulletin_service import generate_bulletins
 
-# ── Palette (same as the rest of the app) ─────────────────────────────────────
 ACCENT      = "#2B79FF"
 BG_PAGE     = "#F0F2F5"
 BG_CARD     = "#FFFFFF"
@@ -35,7 +31,6 @@ BORDER      = "#E4EAFF"
 GREEN       = "#1AAA6E"
 AMBER       = "#D97A00"
 RED         = "#E53935"
-PURPLE      = "#7C4DFF"
 
 STYLESHEET = f"""
 QWidget {{
@@ -43,7 +38,7 @@ QWidget {{
     color: {TEXT_MAIN};
     font-family: 'Segoe UI';
 }}
-QLineEdit, QComboBox {{
+QComboBox {{
     background: {BG_CARD};
     border: 1.5px solid {BORDER};
     border-radius: 8px;
@@ -51,8 +46,7 @@ QLineEdit, QComboBox {{
     font-size: 13px;
     color: {TEXT_MAIN};
 }}
-QLineEdit:focus, QComboBox:focus {{ border-color: {ACCENT}; }}
-QComboBox::drop-down {{ border: none; padding-right: 8px; }}
+QComboBox:focus, QPushButton:focus {{ border-color: {ACCENT}; }}
 
 QPushButton {{
     background: {BG_CARD};
@@ -106,8 +100,6 @@ QScrollBar::handle:vertical {{ background: {BORDER}; border-radius: 3px; }}
 """
 
 
-# ── Stat Card ─────────────────────────────────────────────────────────────────
-
 class StatCard(QFrame):
     def __init__(self, label: str, accent: str, parent=None):
         super().__init__(parent)
@@ -130,10 +122,8 @@ class StatCard(QFrame):
         self._val.setText(text)
 
 
-# ── Monthly Report Page ───────────────────────────────────────────────────────
-
-class MonthlyReportPage(QWidget):
-    """Monthly attendance report with filters and stats."""
+class EmployeeReportPage(QWidget):
+    """Employee-specific attendance report with month/year filtering."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -141,26 +131,21 @@ class MonthlyReportPage(QWidget):
         self._build_ui()
         self.refresh()
 
-    # ── Build ─────────────────────────────────────────────────────────
-
     def _build_ui(self):
         root = QVBoxLayout(self)
         root.setContentsMargins(20, 20, 20, 20)
         root.setSpacing(14)
 
-        # ── Title ──
-        title = QLabel("Monthly Report")
+        title = QLabel("Employee Reports")
         title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
         title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         root.addWidget(title)
 
-        # ── Filter row ──
         frow = QHBoxLayout()
         frow.setSpacing(10)
 
         today = date.today()
 
-        # Month
         frow.addWidget(self._muted("Month:"))
         self._month_combo = QComboBox()
         for i in range(1, 13):
@@ -169,7 +154,6 @@ class MonthlyReportPage(QWidget):
         self._month_combo.setFixedWidth(120)
         frow.addWidget(self._month_combo)
 
-        # Year
         frow.addWidget(self._muted("Year:"))
         self._year_combo = QComboBox()
         for y in range(today.year - 3, today.year + 2):
@@ -178,28 +162,14 @@ class MonthlyReportPage(QWidget):
         self._year_combo.setFixedWidth(80)
         frow.addWidget(self._year_combo)
 
-        # UID
-        frow.addWidget(self._muted("UID:"))
-        self._uid_input = QLineEdit()
-        self._uid_input.setPlaceholderText("Filter UID...")
-        self._uid_input.setFixedWidth(120)
-        frow.addWidget(self._uid_input)
+        frow.addWidget(self._muted("Employee:"))
+        self._employee_combo = QComboBox()
+        self._employee_combo.addItem("All employees", "")
+        for emp in get_all_employees():
+            self._employee_combo.addItem(f"{emp.full_name} ({emp.uid})", emp.uid)
+        self._employee_combo.setFixedWidth(240)
+        frow.addWidget(self._employee_combo)
 
-        # Name
-        frow.addWidget(self._muted("Name:"))
-        self._name_input = QLineEdit()
-        self._name_input.setPlaceholderText("Filter name...")
-        self._name_input.setFixedWidth(150)
-        frow.addWidget(self._name_input)
-
-        # Late
-        frow.addWidget(self._muted("Late:"))
-        self._late_combo = QComboBox()
-        self._late_combo.addItems(["All", "YES", "NO"])
-        self._late_combo.setFixedWidth(80)
-        frow.addWidget(self._late_combo)
-
-        # Buttons
         btn_apply = QPushButton("Apply")
         btn_apply.setObjectName("applyBtn")
         btn_apply.clicked.connect(self.refresh)
@@ -209,28 +179,43 @@ class MonthlyReportPage(QWidget):
         btn_clear.clicked.connect(self._clear_filters)
         frow.addWidget(btn_clear)
 
+        btn_generate = QPushButton("Generate Bulletin")
+        btn_generate.clicked.connect(self._generate_bulletin)
+        frow.addWidget(btn_generate)
+
         frow.addStretch()
         root.addLayout(frow)
 
-        # ── Stat cards ──
-        cards_row = QHBoxLayout()
-        cards_row.setSpacing(12)
+        # ── Stat cards — row 1: attendance ────────────────────────────
+        cards_row1 = QHBoxLayout()
+        cards_row1.setSpacing(12)
 
-        self._card_travailles = StatCard("Jours travaillés", GREEN)
-        self._card_absents    = StatCard("Jours absents",    RED)
-        self._card_late       = StatCard("Jours late",       AMBER)
-        self._card_salary     = StatCard("Total Salary",     ACCENT)
-        self._card_advances   = StatCard("Total Advances",   RED)
-        self._card_primes     = StatCard("Total Primes",     GREEN)
-        self._card_net        = StatCard("Net Salary",       ACCENT)
+        self._card_travailles = StatCard("Days Worked",   GREEN)
+        self._card_absents    = StatCard("Days Absent",   RED)
+        self._card_late       = StatCard("Late Days",     AMBER)
+        self._card_salary     = StatCard("Total Salary",  ACCENT)
 
-        for card in (self._card_travailles, self._card_absents, self._card_late,
-                     self._card_salary, self._card_advances, self._card_primes, self._card_net):
-            cards_row.addWidget(card)
+        for card in (self._card_travailles, self._card_absents,
+                     self._card_late, self._card_salary):
+            cards_row1.addWidget(card)
 
-        root.addLayout(cards_row)
+        root.addLayout(cards_row1)
 
-        # ── Table ──
+        # ── Stat cards — row 2: advances / primes / net ───────────────  ← زيد
+        cards_row2 = QHBoxLayout()
+        cards_row2.setSpacing(12)
+
+        self._card_advances = StatCard("Total Advances", RED)
+        self._card_primes   = StatCard("Total Primes",   GREEN)
+        self._card_net      = StatCard("Net Salary",      ACCENT)
+
+        for card in (self._card_advances, self._card_primes, self._card_net):
+            cards_row2.addWidget(card)
+
+        cards_row2.addStretch()   # تبقى 3 cards بلا ما تتمدد على كل العرض
+        root.addLayout(cards_row2)
+
+        # ── Table ─────────────────────────────────────────────────────
         cols = ["UID", "Employee Name", "Date", "Entry Time",
                 "Exit Time", "Worked Hours", "Hourly Rate", "Total Salary", "Late"]
         self._table = QTableWidget(0, len(cols))
@@ -246,56 +231,81 @@ class MonthlyReportPage(QWidget):
         lbl.setStyleSheet(f"color: {TEXT_MUTED}; font-size: 13px; background: transparent;")
         return lbl
 
-    # ── Data ──────────────────────────────────────────────────────────
-
     def refresh(self):
-        month = self._month_combo.currentData()
-        year  = self._year_combo.currentData()
+        month      = self._month_combo.currentData()
+        year       = self._year_combo.currentData()
+        uid_filter = self._employee_combo.currentData() or ""
 
         result = get_monthly_report_filtered(
-            month       = month,
-            year        = year,
-            uid_filter  = self._uid_input.text().strip(),
-            name_filter = self._name_input.text().strip(),
-            late_filter = self._late_combo.currentText(),
+            month=month,
+            year=year,
+            uid_filter=uid_filter,
+            name_filter="",
+            late_filter="All",
         )
 
         stats = result["stats"]
         df    = result["detail_rows"]
 
-        # Update stat cards
+        # Row 1 cards
         self._card_travailles.set_value(str(stats["jours_travailles"]))
         self._card_absents.set_value(str(stats["jours_absents"]))
         self._card_late.set_value(str(stats["jours_late"]))
         self._card_salary.set_value(f"DH {stats['total_salary']:.2f}")
+
+        # Row 2 cards ← زيد
         self._card_advances.set_value(f"-DH {stats.get('total_advances', 0.0):.2f}")
         self._card_primes.set_value(f"+DH {stats.get('total_primes', 0.0):.2f}")
         self._card_net.set_value(f"DH {stats.get('net_salary', stats['total_salary']):.2f}")
 
-        # Populate table
-        cols = ["UID", "Employee Name", "Date", "Entry Time",
-                "Exit Time", "Worked Hours", "Hourly Rate", "Total Salary", "Late"]
-
+        # Table
         self._table.setRowCount(0)
         for _, row in df.iterrows():
             r = self._table.rowCount()
             self._table.insertRow(r)
-            for c, col in enumerate(cols):
+            for c, col in enumerate(["UID", "Employee Name", "Date", "Entry Time",
+                                     "Exit Time", "Worked Hours", "Hourly Rate", "Total Salary", "Late"]):
                 raw = row.get(col, "")
                 val = str(raw) if raw is not None and str(raw) != "nan" else ""
                 item = QTableWidgetItem(val)
                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 if col == "Late" and val.upper() == "YES":
-                    item.setForeground(Qt.GlobalColor.white)
-                    item.setBackground(
-                        __import__("PyQt6.QtGui", fromlist=["QColor"]).QColor(AMBER)
-                    )
+                    item.setForeground(__import__("PyQt6.QtGui", fromlist=["QColor"]).QColor(AMBER))
+                    item.setBackground(__import__("PyQt6.QtGui", fromlist=["QColor"]).QColor("#FFF4E5"))
                 self._table.setItem(r, c, item)
 
         self._table.viewport().update()
 
     def _clear_filters(self):
-        self._uid_input.clear()
-        self._name_input.clear()
-        self._late_combo.setCurrentText("All")
+        today = date.today()
+        self._month_combo.setCurrentIndex(today.month - 1)
+        self._year_combo.setCurrentText(str(today.year))
+        self._employee_combo.setCurrentIndex(0)
         self.refresh()
+
+    def _generate_bulletin(self):
+        month      = self._month_combo.currentData()
+        year       = self._year_combo.currentData()
+        uid_filter = self._employee_combo.currentData() or ""
+
+        try:
+            paths = generate_bulletins(month, year, uid_filter)
+            if paths:
+                msg = f"Generated {len(paths)} bulletin(s):\n" + "\n".join(paths)
+                QMessageBox.information(self, "Success", msg)
+                if paths:
+                    import subprocess
+                    import platform
+                    try:
+                        if platform.system() == "Windows":
+                            subprocess.Popen(["start", paths[0]], shell=True)
+                        elif platform.system() == "Darwin":
+                            subprocess.Popen(["open", paths[0]])
+                        else:
+                            subprocess.Popen(["xdg-open", paths[0]])
+                    except Exception:
+                        pass
+            else:
+                QMessageBox.information(self, "No Data", "No bulletins generated (no attendance data found).")
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Failed to generate bulletins: {str(e)}")

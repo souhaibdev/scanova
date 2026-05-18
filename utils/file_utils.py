@@ -45,14 +45,20 @@ def load_xlsx(filename: str, columns: list) -> pd.DataFrame:
     path = xlsx_path(filename)
     if not os.path.exists(path):
         df = pd.DataFrame(columns=columns)
-        df.to_excel(path, index=False)
+        df.to_excel(path, index=False, engine="openpyxl")
         return df
-    return pd.read_excel(path, dtype=str)
+    try:
+        return pd.read_excel(path, dtype=str, engine="openpyxl")
+    except Exception as e:
+        logger.warning("Error reading %s: %s. Creating new file.", filename, e)
+        df = pd.DataFrame(columns=columns)
+        df.to_excel(path, index=False, engine="openpyxl")
+        return df
 
 
 def save_xlsx(filename: str, df: pd.DataFrame):
     path = xlsx_path(filename)
-    df.to_excel(path, index=False)
+    df.to_excel(path, index=False, engine="openpyxl")
     # Ensure file is written and closed
     import time
     time.sleep(0.01)  # Small delay to ensure I/O completion

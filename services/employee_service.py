@@ -12,7 +12,6 @@ EMPLOYEES_FILE = "employees.json"
 def _load_all() -> dict[str, dict]:
     data = load_json(EMPLOYEES_FILE)
     if isinstance(data, list):
-        # migrate old format
         result = {}
         for emp in data:
             result[emp["uid"]] = emp
@@ -20,7 +19,7 @@ def _load_all() -> dict[str, dict]:
     return data if data else {}
 
 
-def _save_all(employees: dict[str, dict]):
+def _save_all(employees: dict[str, dict]) -> None:
     save_json(EMPLOYEES_FILE, employees)
 
 
@@ -30,15 +29,14 @@ def get_all_employees() -> list[Employee]:
 
 
 def get_employee_by_uid(uid: str) -> Optional[Employee]:
-    """Get employee by UID. Returns None if not found."""
     if not uid or not uid.strip():
         logger.warning("get_employee_by_uid called with empty/invalid UID: %r", uid)
         return None
 
     data = _load_all()
-    if uid in data:
-        employee_data = data[uid]
-        logger.debug("Employee found for UID %s: %s", uid, employee_data.get('full_name', 'Unknown'))
+    employee_data = data.get(uid)
+    if employee_data:
+        logger.debug("Employee found for UID %s: %s", uid, employee_data.get("full_name", "Unknown"))
         return Employee.from_dict(employee_data)
 
     logger.debug("No employee found for UID: %s", uid)
@@ -46,9 +44,13 @@ def get_employee_by_uid(uid: str) -> Optional[Employee]:
 
 
 def add_employee(employee: Employee) -> tuple[bool, str]:
+    if not employee.uid or not employee.uid.strip():
+        return False, "Employee UID is required."
+
     data = _load_all()
     if employee.uid in data:
         return False, "Employee with this UID already exists."
+
     data[employee.uid] = employee.to_dict()
     _save_all(data)
     logger.info("Employee added: %s (%s)", employee.full_name, employee.uid)
@@ -56,9 +58,13 @@ def add_employee(employee: Employee) -> tuple[bool, str]:
 
 
 def update_employee(employee: Employee) -> tuple[bool, str]:
+    if not employee.uid or not employee.uid.strip():
+        return False, "Employee UID is required."
+
     data = _load_all()
     if employee.uid not in data:
         return False, "Employee not found."
+
     data[employee.uid] = employee.to_dict()
     _save_all(data)
     logger.info("Employee updated: %s (%s)", employee.full_name, employee.uid)
@@ -66,14 +72,34 @@ def update_employee(employee: Employee) -> tuple[bool, str]:
 
 
 def delete_employee(uid: str) -> tuple[bool, str]:
+    if not uid or not uid.strip():
+        return False, "Employee UID is required."
+
     data = _load_all()
     if uid not in data:
         return False, "Employee not found."
+
     name = data[uid].get("full_name", uid)
     del data[uid]
     _save_all(data)
     logger.info("Employee deleted: %s (%s)", name, uid)
     return True, f"Employee '{name}' deleted."
+
+
+def get_employees_by_cin(cin: str) -> list[Employee]:
+    if not cin or not cin.strip():
+        logger.warning("get_employees_by_cin called with empty CIN")
+        return []
+
+    cin = cin.strip().upper()
+    data = _load_all()
+    results = [
+        Employee.from_dict(v)
+        for v in data.values()
+        if v.get("cin", "").upper() == cin
+    ]
+    logger.debug("Found %d employee(s) with CIN %s", len(results), cin)
+    return results
 
 
 def employee_count() -> int:

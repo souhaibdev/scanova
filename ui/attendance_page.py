@@ -2,9 +2,9 @@ from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QLineEdit, QComboBox, QPushButton,
     QTableWidget, QTableWidgetItem, QHeaderView,
-    QFileDialog, QMessageBox, QSizePolicy
+    QFileDialog, QMessageBox, QSizePolicy, QDateEdit
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QDate
 from PyQt6.QtGui import QFont
 
 import logging
@@ -32,7 +32,7 @@ QWidget {{
 }}
 
 /* ── Inputs ── */
-QLineEdit, QComboBox {{
+QLineEdit, QComboBox, QDateEdit {{
     background: {BG_CARD};
     border: 1.5px solid {BORDER};
     border-radius: 8px;
@@ -40,12 +40,53 @@ QLineEdit, QComboBox {{
     font-size: 13px;
     color: {TEXT_MAIN};
 }}
-QLineEdit:focus, QComboBox:focus {{
+QLineEdit:focus, QComboBox:focus, QDateEdit:focus {{
     border-color: {ACCENT};
 }}
 QComboBox::drop-down {{
     border: none;
     padding-right: 8px;
+}}
+QDateEdit::drop-down {{
+    border: none;
+    padding-right: 8px;
+}}
+QDateEdit::down-arrow {{
+    image: none;
+    width: 12px;
+    height: 12px;
+}}
+
+/* ── Calendar Popup ── */
+QCalendarWidget {{
+    background: {BG_CARD};
+    border: 1.5px solid {BORDER};
+    border-radius: 10px;
+    font-size: 13px;
+}}
+QCalendarWidget QToolButton {{
+    background: {BG_CARD};
+    color: {TEXT_MAIN};
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 8px;
+}}
+QCalendarWidget QToolButton:hover {{
+    background: #EBF2FF;
+    color: {ACCENT};
+}}
+QCalendarWidget QAbstractItemView {{
+    background: {BG_CARD};
+    selection-background-color: {ACCENT};
+    selection-color: white;
+    border-radius: 6px;
+}}
+QCalendarWidget QAbstractItemView:enabled {{
+    color: {TEXT_MAIN};
+}}
+QCalendarWidget QAbstractItemView:disabled {{
+    color: {TEXT_MUTED};
 }}
 
 /* ── Buttons ── */
@@ -137,11 +178,15 @@ class AttendancePage(QWidget):
         filt_row = QHBoxLayout()
         filt_row.setSpacing(10)
 
-        # Date
+        # Date — QDateEdit مع calendrier popup
         filt_row.addWidget(self._muted_label("Date:"))
-        self._date_input = QLineEdit()
-        self._date_input.setPlaceholderText("YYYY-MM-DD")
-        self._date_input.setFixedWidth(120)
+        self._date_input = QDateEdit()
+        self._date_input.setCalendarPopup(True)          # كيفتح calendrier بالكليك
+        self._date_input.setDate(QDate.currentDate())    # default = اليوم
+        self._date_input.setDisplayFormat("yyyy-MM-dd")  # نفس format YYYY-MM-DD
+        self._date_input.setFixedWidth(140)
+        self._date_input.setSpecialValueText(" ")         # يسمح بـ "بلا فلتر"
+        self._date_input.setMinimumDate(QDate(2000, 1, 1))
         filt_row.addWidget(self._date_input)
 
         # Employee
@@ -197,13 +242,15 @@ class AttendancePage(QWidget):
         df = get_attendance_df()
         logger.info("AttendancePage refresh: loaded %d records", len(df))
 
-        # نفس الـ logic ديال الفلترة — ماغيرناش والو
-        date_f = self._date_input.text().strip()
+        # Date — ناخدو من QDateEdit بـ format YYYY-MM-DD
+        selected_date = self._date_input.date()
+        date_f = selected_date.toString("yyyy-MM-dd")
+
         emp_f  = self._emp_input.text().strip().lower()
         late_f = self._late_combo.currentText()
 
         if date_f:
-            df = df[df["Date"].astype(str).str.contains(date_f, na=False)]
+            df = df[df["Date"].astype(str) == date_f]
         if emp_f:
             df = df[df["Employee Name"].astype(str).str.lower().str.contains(emp_f, na=False)]
         if late_f != "All":
@@ -223,13 +270,12 @@ class AttendancePage(QWidget):
                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 self._table.setItem(r, c, item)
 
-        # Force table update
         self._table.viewport().update()
         self._table.repaint()
         logger.info("AttendancePage refresh: table updated with %d rows", self._table.rowCount())
 
     def _clear_filters(self):
-        self._date_input.clear()
+        self._date_input.setDate(QDate.currentDate())
         self._emp_input.clear()
         self._late_combo.setCurrentText("All")
         self.refresh()

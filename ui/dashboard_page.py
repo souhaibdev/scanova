@@ -1,10 +1,10 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QFrame, QTableWidget, QTableWidgetItem,
-    QHeaderView, QScrollArea, QSizePolicy
+    QHeaderView, QSizePolicy
 )
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFont, QColor
+from PyQt6.QtGui import QFont
 
 from services.attendance_service import get_dashboard_stats
 
@@ -15,8 +15,6 @@ BG_PAGE     = "#F0F2F5"
 TEXT_MAIN   = "#111111"
 TEXT_MUTED  = "#888888"
 BORDER      = "#E4EAFF"
-LATE_BG     = "#FFF3E0"
-LATE_FG     = "#D97A00"
 
 
 STYLESHEET = f"""
@@ -25,15 +23,11 @@ QWidget {{
     color: {TEXT_MAIN};
     font-family: 'Segoe UI';
 }}
-
-/* ── KPI card ── */
 QFrame#kpiCard {{
     background: {BG_CARD};
     border: 1.5px solid {BORDER};
     border-radius: 12px;
 }}
-
-/* ── Table ── */
 QTableWidget {{
     background: {BG_CARD};
     border: 1.5px solid {BORDER};
@@ -70,8 +64,6 @@ QScrollBar::handle:vertical {{
 """
 
 
-# ── KPI Card ─────────────────────────────────────────────────────────────────
-
 class KpiCard(QFrame):
     def __init__(self, title: str, parent=None):
         super().__init__(parent)
@@ -96,8 +88,6 @@ class KpiCard(QFrame):
         self._value_label.setText(text)
 
 
-# ── Dashboard Page ────────────────────────────────────────────────────────────
-
 class DashboardPage(QWidget):
     """Real-time dashboard showing today's attendance summary."""
 
@@ -115,22 +105,19 @@ class DashboardPage(QWidget):
         root.setContentsMargins(20, 20, 20, 20)
         root.setSpacing(16)
 
-        # Title
         title = QLabel("Dashboard")
         title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
         title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         root.addWidget(title)
 
-        # KPI cards row
         kpi_row = QHBoxLayout()
         kpi_row.setSpacing(12)
 
         kpi_defs = [
-            ("total_employees",   "Total Employees"),
-            ("present_today",     "Present Today"),
-            ("late_today",        "Late Today"),
-            ("total_worked_hours","Worked Hours"),
-            ("total_salary",      "Total Salary"),
+            ("total_employees", "Total Employees"),
+            ("present_today",   "Present Today"),
+            ("absent_today",    "Absent Today"),       # ← بدلنا worked hours
+            ("late_today",      "Late Today"),
         ]
         for key, label in kpi_defs:
             card = KpiCard(label)
@@ -140,13 +127,11 @@ class DashboardPage(QWidget):
 
         root.addLayout(kpi_row)
 
-        # Section label
         section_lbl = QLabel("Late Employees Today")
         section_lbl.setFont(QFont("Segoe UI", 13, QFont.Weight.Bold))
         section_lbl.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         root.addWidget(section_lbl)
 
-        # Table
         cols = ["Name", "UID", "Entry Time"]
         self._table = QTableWidget(0, len(cols))
         self._table.setHorizontalHeaderLabels(cols)
@@ -160,28 +145,24 @@ class DashboardPage(QWidget):
     # ── Refresh ───────────────────────────────────────────────────────
 
     def refresh(self):
-        """Pull fresh stats and update all widgets — same logic as before."""
         stats = get_dashboard_stats()
 
         self._kpi_cards["total_employees"].set_value(str(stats["total_employees"]))
         self._kpi_cards["present_today"].set_value(str(stats["present_today"]))
+        self._kpi_cards["absent_today"].set_value(str(stats["absent_today"]))   # ← بدلنا
         self._kpi_cards["late_today"].set_value(str(stats["late_today"]))
-        self._kpi_cards["total_worked_hours"].set_value(str(stats["total_worked_hours"]))
-        self._kpi_cards["total_salary"].set_value(f"DH{stats['total_salary']:.2f}")
+        # ← مسحنا total_salary و total_worked_hours
 
-        # Rebuild late-employees table
         late_list = stats["late_employees"]
         self._table.setRowCount(0)
 
         for emp in late_list:
             row = self._table.rowCount()
             self._table.insertRow(row)
-
             for col, value in enumerate([emp["name"], emp["uid"], emp["entry"]]):
                 item = QTableWidgetItem(value)
                 item.setTextAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
                 self._table.setItem(row, col, item)
 
-        # Force table update
         self._table.viewport().update()
         self._table.repaint()

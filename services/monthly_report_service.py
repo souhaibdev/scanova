@@ -13,9 +13,74 @@ from datetime import date, timedelta
 import pandas as pd
 
 from services.attendance_service import get_attendance_df
+from services.advances_service import get_all_advances
+from services.primes_service import get_all_primes              # ← زيد
 
 
 # ── Public API ────────────────────────────────────────────────────────────────
+
+def _get_total_advances(month: int, year: int, uid_filter: str = "") -> float:
+    """
+    Calculate total advances deducted for a given month/year.
+    Optionally filter by UID if provided.
+    """
+    try:
+        df_advances = get_all_advances()
+        if df_advances.empty:
+            return 0.0
+        
+        # Filter by month and year
+        df_advances["Year"] = pd.to_numeric(df_advances["Year"], errors="coerce")
+        df_advances["Month_str"] = df_advances.get("Month", "")
+        
+        # Convert month number to month name
+        month_name = calendar.month_name[month]
+        
+        # Filter by month name and year
+        mask = (df_advances["Month_str"] == month_name) & (df_advances["Year"] == year)
+        df_filtered = df_advances[mask]
+        
+        # Filter by UID if provided
+        if uid_filter:
+            df_filtered = df_filtered[df_filtered["UID"].astype(str) == uid_filter]
+        
+        # Sum the amounts
+        total = pd.to_numeric(df_filtered["Amount"], errors="coerce").sum()
+        return float(total) if pd.notna(total) else 0.0
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning("Error calculating advances: %s", str(e))
+        return 0.0
+
+
+def _get_total_primes(month: int, year: int, uid_filter: str = "") -> float:   # ← زيد
+    """
+    Calculate total primes added for a given month/year.
+    Optionally filter by UID if provided.
+    """
+    try:
+        df_primes = get_all_primes()
+        if df_primes.empty:
+            return 0.0
+
+        df_primes["Year"] = pd.to_numeric(df_primes["Year"], errors="coerce")
+        month_name = calendar.month_name[month]
+
+        mask = (df_primes["Month"].astype(str) == month_name) & (df_primes["Year"] == year)
+        df_filtered = df_primes[mask]
+
+        if uid_filter:
+            df_filtered = df_filtered[df_filtered["UID"].astype(str) == uid_filter]
+
+        total = pd.to_numeric(df_filtered["Amount"], errors="coerce").sum()
+        return float(total) if pd.notna(total) else 0.0
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning("Error calculating primes: %s", str(e))
+        return 0.0
+
 
 def get_monthly_report(month: int, year: int) -> dict:
     """
@@ -27,9 +92,11 @@ def get_monthly_report(month: int, year: int) -> dict:
             "jours_absents":    int,
             "jours_late":       int,
             "total_salary":     float,
+            "total_advances":   float,
+            "total_primes":     float,
+            "net_salary":       float,
         }
     }
-    Filters by a single employee UID if uid is provided (passed via filter).
     Period: date(year, month, 1)  <=  Date  <  date(year, next_month, 1)
     """
     df = get_attendance_df()
@@ -48,8 +115,6 @@ def get_monthly_report(month: int, year: int) -> dict:
     df = df[mask].copy()
 
     # ── Stats ─────────────────────────────────────────────────────────
-    # Total calendar working days in the period (Mon–Fri only, or all days?)
-    # Here we count ALL calendar days in the period; adjust if needed.
     total_days_in_period = (end - start).days
 
     jours_travailles = int(df["Date"].nunique()) if not df.empty else 0
@@ -69,11 +134,18 @@ def get_monthly_report(month: int, year: int) -> dict:
         else 0.0
     )
 
+    total_advances = _get_total_advances(month, year)
+    total_primes   = _get_total_primes(month, year)                # ← زيد
+    net_salary     = round(float(total_salary) - total_advances + total_primes, 2)  # ← زيد
+
     stats = {
         "jours_travailles": jours_travailles,
         "jours_absents":    jours_absents,
         "jours_late":       jours_late,
         "total_salary":     round(float(total_salary), 2),
+        "total_advances":   round(total_advances, 2),              # ← زيد
+        "total_primes":     round(total_primes, 2),                # ← زيد
+        "net_salary":       net_salary,                            # ← زيد
     }
 
     return {"detail_rows": df, "stats": stats}
@@ -116,6 +188,10 @@ def get_monthly_report_filtered(
         if "Total Salary" in df.columns else 0.0
     )
 
+    total_advances = _get_total_advances(month, year, uid_filter)
+    total_primes   = _get_total_primes(month, year, uid_filter)    # ← زيد
+    net_salary     = round(float(total_salary) - total_advances + total_primes, 2)  # ← زيد
+
     return {
         "detail_rows": df,
         "stats": {
@@ -123,5 +199,8 @@ def get_monthly_report_filtered(
             "jours_absents":    jours_absents,
             "jours_late":       jours_late,
             "total_salary":     round(float(total_salary), 2),
+            "total_advances":   round(total_advances, 2),          # ← زيد
+            "total_primes":     round(total_primes, 2),            # ← زيد
+            "net_salary":       net_salary,                        # ← زيد
         },
     }
