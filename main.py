@@ -8,23 +8,18 @@ import sys
 import os
 import json
 
-# ─────────────────────────────────────────────
-# APP DATA (IMPORTANT FOR EXE / MULTI PC)
-# ─────────────────────────────────────────────
-APP_NAME = "SCANOVA"
-
-DATA_DIR = os.path.join(os.getenv("APPDATA"), APP_NAME)
-os.makedirs(DATA_DIR, exist_ok=True)
-
+from utils.storage import (
+    BASE_DIR,
+    EMPLOYEES_FILE,
+    ATTENDANCE_FILE,
+    ADVANCES_FILE,
+    PRIMES_FILE,
+    NOTES_FILE,
+)
 
 # ─────────────────────────────────────────────
 # DATA FILES PATHS
 # ─────────────────────────────────────────────
-EMPLOYEES_FILE = os.path.join(DATA_DIR, "employees.json")
-ATTENDANCE_FILE = os.path.join(DATA_DIR, "attendance.xlsx")
-ADVANCES_FILE = os.path.join(DATA_DIR, "advances.xlsx")
-PRIMES_FILE = os.path.join(DATA_DIR, "primes.xlsx")
-NOTES_FILE = os.path.join(DATA_DIR, "notes.xlsx")
 
 
 # ─────────────────────────────────────────────
@@ -119,7 +114,7 @@ class AppWindow(QMainWindow):
 # MAIN ENTRY
 # ─────────────────────────────────────────────
 def main():
-    print("DATA DIR:", DATA_DIR)
+    print("DATA DIR:", BASE_DIR)
 
     _ensure_data_files()
     ensure_directories()

@@ -4,11 +4,10 @@ from datetime import datetime
 import pandas as pd
 
 from utils.file_utils import load_xlsx, save_xlsx
+from utils.storage import PRIMES_FILE
 from utils.time_utils import now_date_str
 
 logger = logging.getLogger(__name__)
-
-PRIMES_FILE = "primes.xlsx"
 
 COLUMNS = ["UID", "Employee Name", "Amount", "Date", "Note", "Month", "Year"]
 

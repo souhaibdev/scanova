@@ -6,6 +6,7 @@ from models.attendance_record import AttendanceRecord
 from models.employee import Employee
 from services.employee_service import get_employee_by_uid
 from utils.file_utils import load_xlsx, save_xlsx
+from utils.storage import ATTENDANCE_FILE
 from utils.time_utils import (
     now_date_str,
     now_time_str,
@@ -15,8 +16,6 @@ from utils.time_utils import (
 )
 
 logger = logging.getLogger(__name__)
-
-ATTENDANCE_FILE = "attendance.xlsx"
 MIN_STAY_MINUTES = 15  # minimum minutes between entry and exit
 
 

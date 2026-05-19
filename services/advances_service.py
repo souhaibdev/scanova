@@ -4,11 +4,10 @@ from datetime import datetime
 import pandas as pd
 
 from utils.file_utils import load_xlsx, save_xlsx
+from utils.storage import ADVANCES_FILE
 from utils.time_utils import now_date_str
 
 logger = logging.getLogger(__name__)
-
-ADVANCES_FILE = "advances.xlsx"
 
 # Define columns for advances data
 COLUMNS = ["UID", "Employee Name", "Amount", "Date", "Note", "Month", "Year"]

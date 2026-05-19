@@ -7,7 +7,7 @@ def now_date_str() -> str:
 
 
 def now_time_str() -> str:
-    return datetime.now().strftime("%H:%M:%S")
+    return datetime.now().strftime("%H:%M")
 
 
 def now_datetime_str() -> str:
@@ -26,14 +26,15 @@ def parse_time(time_str: str) -> datetime:
     raise ValueError(f"Cannot parse time: {time_str}")
 
 
-def calc_worked_hours(entry_str: str, exit_str: str) -> int:
-    """Return floored full hours between entry and exit."""
+def calc_worked_hours(entry_str: str, exit_str: str) -> float:
+    """Return the worked hours between entry and exit as decimal hours."""
     entry = parse_time(entry_str)
     exit_ = parse_time(exit_str)
     delta = exit_ - entry
     if delta.total_seconds() < 0:
         delta += timedelta(days=1)
-    return int(math.floor(delta.total_seconds() / 3600))
+    hours = delta.total_seconds() / 3600
+    return round(hours, 2)
 
 
 def is_late(entry_str: str, expected_start: str, grace_minutes: int = 15) -> bool:

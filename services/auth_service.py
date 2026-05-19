@@ -1,12 +1,10 @@
 import hashlib
 import logging
-import os
 
 from utils.file_utils import load_json, save_json
+from utils.storage import CREDENTIALS_FILE
 
 logger = logging.getLogger(__name__)
-
-CREDENTIALS_FILE = "credentials.json"
 
 
 def _hash_password(password: str) -> str:

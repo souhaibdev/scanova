@@ -3,10 +3,9 @@ from typing import Optional
 
 from models.employee import Employee
 from utils.file_utils import load_json, save_json
+from utils.storage import EMPLOYEES_FILE
 
 logger = logging.getLogger(__name__)
-
-EMPLOYEES_FILE = "employees.json"
 
 
 def _load_all() -> dict[str, dict]:

@@ -18,7 +18,7 @@ from utils.time_utils import calc_worked_hours, is_late
 
 logger = logging.getLogger(__name__)
 
-ATTENDANCE_FILE = "attendance.xlsx"
+from utils.storage import ATTENDANCE_FILE
 
 
 def _load_df() -> pd.DataFrame:
