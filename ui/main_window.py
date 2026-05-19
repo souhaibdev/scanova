@@ -20,7 +20,8 @@ from ui.employees_page import EmployeesPage
 from ui.notes_page import NotesPage
 from ui.monthly_report_page import MonthlyReportPage
 from ui.employee_report_page import EmployeeReportPage
-from ui.primes_page import PrimesPage                        # ← زيد
+from ui.primes_page import PrimesPage     
+from ui.manual_attendance_page import ManualAttendancePage                   # ← زيد
 
 logger = logging.getLogger(__name__)
 
@@ -148,7 +149,7 @@ class ChangePasswordDialog(QDialog):
 class MainWindow(QWidget):
     """Main application shell: header, sidebar, content area, status bar."""
 
-    _NAV_PAGES = ("Dashboard", "Attendance", "Employees", "Monthly Report", "Advances", "Employee Reports", "Primes")
+    _NAV_PAGES = ("Dashboard", "Attendance", "Manual Entry", "Employees", "Monthly Report", "Advances", "Employee Reports", "Primes")
 
     def __init__(self, parent, username: str, on_logout=None):
         super().__init__(parent)
@@ -368,6 +369,7 @@ class MainWindow(QWidget):
             page_cls = {
                 "Dashboard":        DashboardPage,
                 "Attendance":       AttendancePage,
+                "Manual Entry":     ManualAttendancePage,
                 "Employees":        EmployeesPage,
                 "Advances":         NotesPage,
                 "Notes":            NotesPage,

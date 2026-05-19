@@ -28,7 +28,6 @@ TEXT_MAIN  = "#111111"
 TEXT_MUTED = "#888888"
 BORDER     = "#E4EAFF"
 DANGER     = "#E53935"
-GREEN      = "#2B79FF"
 
 STYLESHEET = f"""
 QWidget {{ background: {BG_PAGE}; color: {TEXT_MAIN}; font-family: 'Segoe UI'; }}
@@ -43,7 +42,7 @@ QTableWidget {{
     gridline-color: {BORDER}; font-size: 13px;
 }}
 QTableWidget::item {{ padding: 8px 12px; }}
-QTableWidget::item:selected {{ background: #E6F9F1; color: {TEXT_MAIN}; }}
+QTableWidget::item:selected {{ background: #EBF2FF; color: {TEXT_MAIN}; }}
 QHeaderView::section {{
     background: #F5F8FF; color: {TEXT_MUTED}; font-size: 11px; font-weight: 600;
     padding: 7px 10px; border: none; border-bottom: 1px solid {BORDER};
@@ -52,9 +51,9 @@ QPushButton {{
     background: {BG_CARD}; border: 1.5px solid {BORDER}; border-radius: 8px;
     padding: 7px 16px; font-size: 13px; font-weight: 600; color: {TEXT_MAIN};
 }}
-QPushButton:hover {{ background: #E6F9F1; border-color: {GREEN}; color: {GREEN}; }}
-QPushButton#saveBtn {{ background: {GREEN}; border-color: {GREEN}; color: white; }}
-QPushButton#saveBtn:hover {{ background: #0D9268; }}
+QPushButton:hover {{ background: #EBF2FF; border-color: {ACCENT}; color: {ACCENT}; }}
+QPushButton#saveBtn {{ background: {ACCENT}; border-color: {ACCENT}; color: white; }}
+QPushButton#saveBtn:hover {{ background: #1A65E0; }}
 QPushButton#delBtn {{ background: #FFF0F0; border-color: #FFCDD2; color: {DANGER}; }}
 QPushButton#delBtn:hover {{ background: #FFCDD2; }}
 QScrollBar:vertical {{ width: 6px; background: transparent; }}
@@ -91,7 +90,7 @@ class PrimesPage(QWidget):
 
         badge = QLabel("+  Adds to Net Salary")
         badge.setStyleSheet(
-            f"background: #E6F9F1; color: {GREEN}; font-size: 11px; font-weight: 600;"
+            f"background: #EBF2FF; color: {ACCENT}; font-size: 11px; font-weight: 600;"
             f"border-radius: 10px; padding: 3px 10px;"
         )
         title_row.addWidget(badge)
@@ -254,9 +253,8 @@ class PrimesPage(QWidget):
                 item = QTableWidgetItem(val)
                 item.setData(Qt.ItemDataRole.UserRole, idx)
                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                # Color the Amount cell green
                 if col == "Amount":
-                    item.setForeground(QColor(GREEN))
+                    item.setForeground(QColor(ACCENT))
                     item.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
                 self._hist_table.setItem(r, c, item)
 
@@ -279,7 +277,7 @@ class PrimesPage(QWidget):
         else:
             self._selected_lbl.setText(f"{self._selected_name}")
         self._selected_lbl.setStyleSheet(
-            f"color: {GREEN}; font-size: 14px; font-weight: 700; background: transparent;"
+            f"color: {ACCENT}; font-size: 14px; font-weight: 700; background: transparent;"
         )
         self._load_history(uid_filter=self._selected_uid)
         self._clear_form()
@@ -306,9 +304,9 @@ class PrimesPage(QWidget):
         if uid and uid != self._selected_uid:
             self._selected_uid  = uid
             self._selected_name = name
-            self._selected_lbl.setText(f"👤  {name}")
+            self._selected_lbl.setText(f"{name}")
             self._selected_lbl.setStyleSheet(
-                f"color: {GREEN}; font-size: 14px; font-weight: 700; background: transparent;"
+                f"color: {ACCENT}; font-size: 14px; font-weight: 700; background: transparent;"
             )
 
         self._del_btn.setVisible(True)

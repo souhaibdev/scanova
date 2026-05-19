@@ -3,7 +3,8 @@ ui/monthly_report_page.py
 ──────────────────────────
 Monthly attendance report:
   • Filters: Month, Year, UID, Name, Late
-  • Stats cards: Jours travaillés / Absents / Late / Total Salary
+  • Stats cards row 1: Jours travaillés / Absents / Late / Total Salary
+  • Stats cards row 2: Total Advances / Total Primes / Net Salary
   • Detail table: UID, Employee Name, Date, Entry, Exit,
                   Worked Hours, Hourly Rate, Total Salary, Late
 """
@@ -20,12 +21,9 @@ from PyQt6.QtWidgets import (
     QFrame, QSizePolicy
 )
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QColor
 
-from services.monthly_report_service import get_monthly_report_filtered
-from models.attendance_record import AttendanceRecord
-
-# ── Palette (same as the rest of the app) ─────────────────────────────────────
+# ── Palette ───────────────────────────────────────────────────────────────────
 ACCENT      = "#2B79FF"
 BG_PAGE     = "#F0F2F5"
 BG_CARD     = "#FFFFFF"
@@ -119,11 +117,16 @@ class StatCard(QFrame):
         lay.setSpacing(4)
 
         lbl = QLabel(label.upper())
-        lbl.setStyleSheet(f"color: {TEXT_MUTED}; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; background: transparent;")
+        lbl.setStyleSheet(
+            f"color: {TEXT_MUTED}; font-size: 10px; font-weight: 600; "
+            f"letter-spacing: 0.5px; background: transparent;"
+        )
         lay.addWidget(lbl)
 
         self._val = QLabel("—")
-        self._val.setStyleSheet(f"color: {accent}; font-size: 24px; font-weight: 700; background: transparent;")
+        self._val.setStyleSheet(
+            f"color: {accent}; font-size: 24px; font-weight: 700; background: transparent;"
+        )
         lay.addWidget(self._val)
 
     def set_value(self, text: str):
@@ -141,7 +144,7 @@ class MonthlyReportPage(QWidget):
         self._build_ui()
         self.refresh()
 
-    # ── Build ─────────────────────────────────────────────────────────
+    # ── Build ──────────────────────────────────────────────────────────
 
     def _build_ui(self):
         root = QVBoxLayout(self)
@@ -212,23 +215,34 @@ class MonthlyReportPage(QWidget):
         frow.addStretch()
         root.addLayout(frow)
 
-        # ── Stat cards ──
-        cards_row = QHBoxLayout()
-        cards_row.setSpacing(12)
+        # ── Stat cards row 1: attendance ──
+        cards_row1 = QHBoxLayout()
+        cards_row1.setSpacing(12)
 
         self._card_travailles = StatCard("Jours travaillés", GREEN)
         self._card_absents    = StatCard("Jours absents",    RED)
         self._card_late       = StatCard("Jours late",       AMBER)
         self._card_salary     = StatCard("Total Salary",     ACCENT)
-        self._card_advances   = StatCard("Total Advances",   RED)
-        self._card_primes     = StatCard("Total Primes",     GREEN)
-        self._card_net        = StatCard("Net Salary",       ACCENT)
 
-        for card in (self._card_travailles, self._card_absents, self._card_late,
-                     self._card_salary, self._card_advances, self._card_primes, self._card_net):
-            cards_row.addWidget(card)
+        for card in (self._card_travailles, self._card_absents,
+                     self._card_late, self._card_salary):
+            cards_row1.addWidget(card)
 
-        root.addLayout(cards_row)
+        root.addLayout(cards_row1)
+
+        # ── Stat cards row 2: advances / primes / net ──
+        cards_row2 = QHBoxLayout()
+        cards_row2.setSpacing(12)
+
+        self._card_advances = StatCard("Total Advances", RED)
+        self._card_primes   = StatCard("Total Primes",   GREEN)
+        self._card_net      = StatCard("Net Salary",     ACCENT)
+
+        for card in (self._card_advances, self._card_primes, self._card_net):
+            cards_row2.addWidget(card)
+
+        cards_row2.addStretch()
+        root.addLayout(cards_row2)
 
         # ── Table ──
         cols = ["UID", "Employee Name", "Date", "Entry Time",
@@ -246,9 +260,11 @@ class MonthlyReportPage(QWidget):
         lbl.setStyleSheet(f"color: {TEXT_MUTED}; font-size: 13px; background: transparent;")
         return lbl
 
-    # ── Data ──────────────────────────────────────────────────────────
+    # ── Data ───────────────────────────────────────────────────────────
 
     def refresh(self):
+        from services.monthly_report_service import get_monthly_report_filtered
+
         month = self._month_combo.currentData()
         year  = self._year_combo.currentData()
 
@@ -263,16 +279,18 @@ class MonthlyReportPage(QWidget):
         stats = result["stats"]
         df    = result["detail_rows"]
 
-        # Update stat cards
+        # Row 1
         self._card_travailles.set_value(str(stats["jours_travailles"]))
         self._card_absents.set_value(str(stats["jours_absents"]))
         self._card_late.set_value(str(stats["jours_late"]))
         self._card_salary.set_value(f"DH {stats['total_salary']:.2f}")
+
+        # Row 2
         self._card_advances.set_value(f"-DH {stats.get('total_advances', 0.0):.2f}")
         self._card_primes.set_value(f"+DH {stats.get('total_primes', 0.0):.2f}")
         self._card_net.set_value(f"DH {stats.get('net_salary', stats['total_salary']):.2f}")
 
-        # Populate table
+        # Table
         cols = ["UID", "Employee Name", "Date", "Entry Time",
                 "Exit Time", "Worked Hours", "Hourly Rate", "Total Salary", "Late"]
 
@@ -286,15 +304,16 @@ class MonthlyReportPage(QWidget):
                 item = QTableWidgetItem(val)
                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 if col == "Late" and val.upper() == "YES":
-                    item.setForeground(Qt.GlobalColor.white)
-                    item.setBackground(
-                        __import__("PyQt6.QtGui", fromlist=["QColor"]).QColor(AMBER)
-                    )
+                    item.setForeground(QColor(AMBER))
+                    item.setBackground(QColor("#FFF4E5"))
                 self._table.setItem(r, c, item)
 
         self._table.viewport().update()
 
     def _clear_filters(self):
+        today = date.today()
+        self._month_combo.setCurrentIndex(today.month - 1)
+        self._year_combo.setCurrentText(str(today.year))
         self._uid_input.clear()
         self._name_input.clear()
         self._late_combo.setCurrentText("All")

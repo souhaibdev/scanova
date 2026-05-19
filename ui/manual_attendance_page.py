@@ -1,0 +1,347 @@
+"""
+ui/manual_attendance_page.py
+─────────────────────────────
+Manual attendance entry — styled to match monthly_report_page.py
+"""
+
+from __future__ import annotations
+
+import re
+from PyQt6.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel,
+    QLineEdit, QPushButton, QTableWidget, QTableWidgetItem,
+    QHeaderView, QFrame, QMessageBox, QSizePolicy, QDateEdit,
+)
+from PyQt6.QtCore import Qt, QDate
+from PyQt6.QtGui import QFont
+
+from services.manual_attendance_service import add_manual_record, get_missing_employees
+
+ACCENT     = "#2B79FF"
+BG_PAGE    = "#F0F2F5"
+BG_CARD    = "#FFFFFF"
+TEXT_MAIN  = "#111111"
+TEXT_MUTED = "#888888"
+BORDER     = "#E4EAFF"
+AMBER      = "#D97A00"
+RED        = "#E53935"
+
+STYLESHEET = f"""
+QWidget {{
+    background: {BG_PAGE};
+    color: {TEXT_MAIN};
+    font-family: 'Segoe UI';
+}}
+QLineEdit, QDateEdit {{
+    background: {BG_CARD};
+    border: 1.5px solid {BORDER};
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 13px;
+    color: {TEXT_MAIN};
+    min-height: 23px;
+}}
+QLineEdit:focus, QDateEdit:focus {{
+    border-color: {ACCENT};
+}}
+QDateEdit::drop-down {{
+    border: none;
+    padding-right: 8px;
+}}
+QFrame#formCard {{
+    background: {BG_CARD};
+    border: 1.5px solid {BORDER};
+    border-radius: 12px;
+}}
+QPushButton {{
+    background: {BG_CARD};
+    border: 1.5px solid {BORDER};
+    border-radius: 8px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: {TEXT_MAIN};
+    min-height: 23px;
+}}
+QPushButton:hover {{
+    background: #EBF2FF;
+    border-color: {ACCENT};
+    color: {ACCENT};
+}}
+QPushButton#saveBtn {{
+    background: {ACCENT};
+    border-color: {ACCENT};
+    color: #FFFFFF;
+}}
+QPushButton#saveBtn:hover {{
+    background: #1A65E0;
+}}
+QPushButton#clearBtn {{
+    background: transparent;
+    border: 1.5px solid {BORDER};
+    color: {TEXT_MUTED};
+}}
+QPushButton#clearBtn:hover {{
+    background: #F7F9FF;
+}}
+QTableWidget {{
+    background: {BG_CARD};
+    border: 1.5px solid {BORDER};
+    border-radius: 12px;
+    gridline-color: {BORDER};
+    font-size: 13px;
+}}
+QTableWidget::item {{
+    padding: 7px 10px;
+    border-bottom: 1px solid {BORDER};
+}}
+QTableWidget::item:selected {{
+    background: #EBF2FF;
+    color: {TEXT_MAIN};
+}}
+QHeaderView::section {{
+    background: #F5F8FF;
+    color: {TEXT_MUTED};
+    font-size: 11px;
+    font-weight: 600;
+    padding: 8px 10px;
+    border: none;
+    border-bottom: 1px solid {BORDER};
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}}
+QScrollBar:vertical {{
+    width: 6px;
+    background: transparent;
+}}
+QScrollBar::handle:vertical {{
+    background: {BORDER};
+    border-radius: 3px;
+}}
+"""
+
+COLS = ("UID", "CIN", "Employee Name", "Entry Time", "Status")
+
+
+class ManualAttendancePage(QWidget):
+    """Manual attendance entry for employees who forgot to scan."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setStyleSheet(STYLESHEET)
+        self._build_ui()
+        self.refresh()
+
+    # ── Build ──────────────────────────────────────────────────────────
+
+    def _build_ui(self):
+        root = QVBoxLayout(self)
+        root.setContentsMargins(20, 20, 20, 20)
+        root.setSpacing(14)
+
+        title = QLabel("Manual Attendance Entry")
+        title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
+        title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
+        root.addWidget(title)
+
+        subtitle = QLabel("Employees without a complete record today.")
+        subtitle.setStyleSheet(f"color: {TEXT_MUTED}; font-size: 12px; background: transparent;")
+        root.addWidget(subtitle)
+
+        body = QHBoxLayout()
+        body.setSpacing(16)
+        root.addLayout(body, stretch=1)
+
+        # ── Table ──────────────────────────────────────────────────────
+        self._table = QTableWidget(0, len(COLS))
+        self._table.setHorizontalHeaderLabels(COLS)
+        self._table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self._table.verticalHeader().setVisible(False)
+        self._table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self._table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self._table.itemSelectionChanged.connect(self._on_table_selection_changed)
+        body.addWidget(self._table, stretch=3)
+
+        # ── Form Card ──────────────────────────────────────────────────
+        form_card = QFrame()
+        form_card.setObjectName("formCard")
+        form_card.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        form_card.setFixedWidth(300)
+
+        fl = QVBoxLayout(form_card)
+        fl.setContentsMargins(20, 20, 20, 20)
+        fl.setSpacing(0)
+
+        form_title = QLabel("Add Record")
+        form_title.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
+        form_title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
+        fl.addWidget(form_title)
+        fl.addSpacing(16)
+
+        def add_field(label_text, widget):
+            fl.addWidget(self._muted_label(label_text))
+            fl.addSpacing(4)
+            fl.addWidget(widget)
+            fl.addSpacing(12)
+
+        self._inp_uid = QLineEdit()
+        self._inp_uid.setFixedHeight(36)
+        self._inp_uid.setPlaceholderText("ex: A1B2C3D4")
+        add_field("UID (NFC Card)", self._inp_uid)
+
+        self._inp_name = QLineEdit()
+        self._inp_name.setFixedHeight(36)
+        self._inp_name.setReadOnly(True)
+        self._inp_name.setStyleSheet(f"background: #F5F8FF; color: {TEXT_MUTED};")
+        add_field("Employee Name", self._inp_name)
+
+        self._inp_cin = QLineEdit()
+        self._inp_cin.setFixedHeight(36)
+        self._inp_cin.setReadOnly(True)
+        self._inp_cin.setStyleSheet(f"background: #F5F8FF; color: {TEXT_MUTED};")
+        add_field("CIN", self._inp_cin)
+
+        self._inp_date = QDateEdit()
+        self._inp_date.setFixedHeight(36)
+        self._inp_date.setCalendarPopup(True)
+        self._inp_date.setDate(QDate.currentDate())
+        self._inp_date.setDisplayFormat("yyyy-MM-dd")
+        add_field("Date", self._inp_date)
+
+        self._inp_entry = QLineEdit()
+        self._inp_entry.setFixedHeight(36)
+        self._inp_entry.setPlaceholderText("08:30")
+        add_field("Entry Time (HH:MM)", self._inp_entry)
+
+        self._inp_exit = QLineEdit()
+        self._inp_exit.setFixedHeight(36)
+        self._inp_exit.setPlaceholderText("17:00  —  optional")
+        self._inp_exit.setToolTip("Leave empty to record entry only.")
+        add_field("Exit Time (HH:MM)", self._inp_exit)
+
+        fl.addSpacing(4)
+
+        btn_row = QHBoxLayout()
+        btn_row.setSpacing(8)
+
+        btn_clear = QPushButton("Clear")
+        btn_clear.setObjectName("clearBtn")
+        btn_clear.setFixedHeight(38)
+        btn_clear.clicked.connect(self._clear_form)
+        btn_row.addWidget(btn_clear)
+
+        btn_save = QPushButton("Save Record")
+        btn_save.setObjectName("saveBtn")
+        btn_save.setFixedHeight(38)
+        btn_save.clicked.connect(self._save)
+        btn_row.addWidget(btn_save)
+
+        fl.addLayout(btn_row)
+        fl.addStretch()
+        body.addWidget(form_card, stretch=0)
+
+    def _muted_label(self, text: str) -> QLabel:
+        lbl = QLabel(text)
+        lbl.setStyleSheet(
+            f"color: {TEXT_MUTED}; font-size: 11px; font-weight: 600; "
+            f"letter-spacing: 0.4px; background: transparent;"
+        )
+        return lbl
+
+    # ── Data ───────────────────────────────────────────────────────────
+
+    def refresh(self):
+        self._populate(get_missing_employees())
+
+    def _populate(self, df):
+        self._table.setRowCount(0)
+        for _, row in df.iterrows():
+            r = self._table.rowCount()
+            self._table.insertRow(r)
+            for c, col in enumerate(COLS):
+                val  = str(row.get(col, ""))
+                item = QTableWidgetItem(val)
+                item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                if col == "Status":
+                    if val == "Missing Exit":
+                        item.setForeground(Qt.GlobalColor.darkYellow)
+                    elif val == "No Record":
+                        item.setForeground(Qt.GlobalColor.red)
+                self._table.setItem(r, c, item)
+
+    # ── Selection ──────────────────────────────────────────────────────
+
+    def _on_table_selection_changed(self):
+        selected_rows = self._table.selectionModel().selectedRows()
+        if not selected_rows:
+            self._inp_name.clear()
+            self._inp_cin.clear()
+            return
+
+        row         = selected_rows[0].row()
+        uid_item    = self._table.item(row, 0)
+        cin_item    = self._table.item(row, 1)
+        name_item   = self._table.item(row, 2)
+        entry_item  = self._table.item(row, 3)
+        status_item = self._table.item(row, 4)
+
+        self._inp_uid.setText(uid_item.text()   if uid_item   else "")
+        self._inp_cin.setText(cin_item.text()   if cin_item   else "")
+        self._inp_name.setText(name_item.text() if name_item  else "")
+        self._inp_date.setDate(QDate.currentDate())
+
+        status = status_item.text() if status_item else ""
+
+        if status == "Missing Exit":
+            entry_val = entry_item.text() if entry_item else ""
+            self._inp_entry.setText(entry_val)
+            self._inp_entry.setReadOnly(True)
+            self._inp_entry.setStyleSheet(f"background: #F5F8FF; color: {TEXT_MUTED};")
+            self._inp_exit.clear()
+            self._inp_exit.setFocus()
+        else:
+            self._inp_entry.clear()
+            self._inp_entry.setReadOnly(False)
+            self._inp_entry.setStyleSheet("")
+            self._inp_exit.clear()
+
+    # ── Actions ────────────────────────────────────────────────────────
+
+    def _save(self):
+        uid        = self._inp_uid.text().strip()
+        date_str   = self._inp_date.date().toString("yyyy-MM-dd")
+        entry_time = self._inp_entry.text().strip()
+        exit_time  = self._inp_exit.text().strip()
+
+        if not uid:
+            QMessageBox.warning(self, "Validation", "UID is required.")
+            return
+        if not entry_time:
+            QMessageBox.warning(self, "Validation", "Entry Time is required.")
+            return
+
+        time_re = re.compile(r"^\d{2}:\d{2}$")
+        if not time_re.match(entry_time):
+            QMessageBox.warning(self, "Validation", "Entry Time must be HH:MM (ex: 08:30)")
+            return
+        if exit_time and not time_re.match(exit_time):
+            QMessageBox.warning(self, "Validation", "Exit Time must be HH:MM (ex: 17:00)")
+            return
+
+        ok, msg = add_manual_record(uid, date_str, entry_time, exit_time)
+        if ok:
+            self.refresh()
+            self._clear_form()
+            QMessageBox.information(self, "Success", msg)
+        else:
+            QMessageBox.warning(self, "Error", msg)
+
+    def _clear_form(self):
+        self._inp_uid.clear()
+        self._inp_name.clear()
+        self._inp_cin.clear()
+        self._inp_entry.clear()
+        self._inp_entry.setReadOnly(False)
+        self._inp_entry.setStyleSheet("")
+        self._inp_exit.clear()
+        self._inp_date.setDate(QDate.currentDate())

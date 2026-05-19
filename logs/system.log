@@ -2071,3 +2071,470 @@
 2026-05-18 14:56:58,717 [INFO] services.auth_service: Login successful: sohaib
 2026-05-18 14:56:58,772 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
 2026-05-18 14:57:17,212 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 18:47:28,996 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 18:54:54,508 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 18:55:03,557 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 18:55:03,632 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 18:57:35,289 [WARNING] services.nfc_reader: Invalid UID scanned (too long): coorigermanuelsatableafficheuisdcinnameetaffichesaufemployenoscanadatedeajourd'huiaetenselectionchar
+2026-05-18 18:58:08,924 [INFO] ui.attendance_page: AttendancePage refresh: loaded 31 records
+2026-05-18 18:58:08,931 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 3 records
+2026-05-18 18:58:08,939 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 3 rows
+2026-05-18 18:58:08,992 [INFO] ui.attendance_page: AttendancePage refresh: loaded 31 records
+2026-05-18 18:58:09,001 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 3 records
+2026-05-18 18:58:09,012 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 3 rows
+2026-05-18 19:00:51,713 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 19:03:01,501 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 19:03:12,796 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 19:03:12,880 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 19:04:15,520 [INFO] services.nfc_reader: Valid NFC UID captured: supprimerinputfilterretilabelet
+2026-05-18 19:04:15,521 [INFO] services.attendance_service: Processing scan for UID: supprimerinputfilterretilabelet
+2026-05-18 19:04:15,523 [WARNING] services.attendance_service: Unregistered UID scanned: supprimerinputfilterretilabelet
+2026-05-18 19:04:24,262 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 19:04:41,921 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 19:04:50,233 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 19:04:50,315 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 19:05:22,107 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): Smodifierledesign
+2026-05-18 19:05:44,502 [INFO] services.nfc_reader: Valid NFC UID captured: chehalmabkrichehalmamzyan
+2026-05-18 19:05:44,506 [INFO] services.attendance_service: Processing scan for UID: chehalmabkrichehalmamzyan
+2026-05-18 19:05:44,508 [WARNING] services.attendance_service: Unregistered UID scanned: chehalmabkrichehalmamzyan
+2026-05-18 19:05:56,404 [INFO] services.nfc_reader: Valid NFC UID captured: hitmchegholghada
+2026-05-18 19:05:56,407 [INFO] services.attendance_service: Processing scan for UID: hitmchegholghada
+2026-05-18 19:05:56,408 [WARNING] services.attendance_service: Unregistered UID scanned: hitmchegholghada
+2026-05-18 19:06:05,527 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 19:06:10,162 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 19:06:20,021 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 19:06:20,100 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 19:07:03,551 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): Scc
+2026-05-18 19:08:08,021 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 19:08:12,465 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 19:08:20,431 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 19:08:20,523 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 19:09:07,030 [WARNING] services.nfc_reader: Invalid UID scanned (too long): suuprimerbuttoncshowtodayrtetmodifierdesigninputetbutton
+2026-05-18 19:16:51,583 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 19:17:03,246 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 19:17:03,364 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 19:17:13,149 [INFO] ui.attendance_page: AttendancePage refresh: loaded 31 records
+2026-05-18 19:17:13,152 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 3 records
+2026-05-18 19:17:13,156 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 3 rows
+2026-05-18 19:17:13,179 [INFO] ui.attendance_page: AttendancePage refresh: loaded 31 records
+2026-05-18 19:17:13,182 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 3 records
+2026-05-18 19:17:13,185 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 3 rows
+2026-05-18 19:17:42,492 [INFO] ui.attendance_page: AttendancePage refresh: loaded 31 records
+2026-05-18 19:17:42,498 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 3 records
+2026-05-18 19:17:42,503 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 3 rows
+2026-05-18 19:18:29,584 [INFO] services.manual_attendance_service: Manual record added: ibrahim el hicho (4188606463) on 2026-05-18 — 19:17→21:05 | 1.00h | DH25.00
+2026-05-18 19:18:32,871 [INFO] ui.attendance_page: AttendancePage refresh: loaded 32 records
+2026-05-18 19:18:32,876 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 4 records
+2026-05-18 19:18:32,881 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 4 rows
+2026-05-18 19:18:35,407 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 19:22:42,939 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 19:22:51,303 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 19:22:51,398 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 19:23:08,250 [INFO] services.manual_attendance_service: Manual entry recorded (no exit): reda affelad (2893913171) on 2026-05-18 — 19:23
+2026-05-18 19:23:12,339 [INFO] ui.attendance_page: AttendancePage refresh: loaded 33 records
+2026-05-18 19:23:12,345 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 5 records
+2026-05-18 19:23:12,356 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 5 rows
+2026-05-18 19:23:12,413 [INFO] ui.attendance_page: AttendancePage refresh: loaded 33 records
+2026-05-18 19:23:12,418 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 5 records
+2026-05-18 19:23:12,425 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 5 rows
+2026-05-18 19:38:30,503 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): 19:23chmenseaea
+2026-05-18 19:38:42,115 [INFO] services.nfc_reader: Valid NFC UID captured: eandolors
+2026-05-18 19:38:42,117 [INFO] services.attendance_service: Processing scan for UID: eandolors
+2026-05-18 19:38:42,118 [WARNING] services.attendance_service: Unregistered UID scanned: eandolors
+2026-05-18 19:38:50,717 [INFO] ui.attendance_page: AttendancePage refresh: loaded 33 records
+2026-05-18 19:38:50,719 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 5 records
+2026-05-18 19:38:50,723 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 5 rows
+2026-05-18 19:39:57,527 [INFO] services.nfc_reader: Valid NFC UID captured: uk
+2026-05-18 19:39:57,528 [INFO] services.attendance_service: Processing scan for UID: uk
+2026-05-18 19:39:57,530 [WARNING] services.attendance_service: Unregistered UID scanned: uk
+2026-05-18 19:40:06,726 [INFO] services.nfc_reader: Valid NFC UID captured: ukhhh
+2026-05-18 19:40:06,727 [INFO] services.attendance_service: Processing scan for UID: ukhhh
+2026-05-18 19:40:06,728 [WARNING] services.attendance_service: Unregistered UID scanned: ukhhh
+2026-05-18 19:40:21,694 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): srdcodeaw10
+2026-05-18 19:40:25,589 [INFO] ui.attendance_page: AttendancePage refresh: loaded 33 records
+2026-05-18 19:40:25,591 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 5 records
+2026-05-18 19:40:25,596 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 5 rows
+2026-05-18 19:40:27,619 [INFO] ui.attendance_page: AttendancePage refresh: loaded 33 records
+2026-05-18 19:40:27,621 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 5 records
+2026-05-18 19:40:27,623 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 5 rows
+2026-05-18 19:41:02,645 [INFO] services.nfc_reader: Valid NFC UID captured: 3074757171
+2026-05-18 19:41:02,646 [INFO] services.attendance_service: Processing scan for UID: 3074757171
+2026-05-18 19:41:02,647 [WARNING] services.attendance_service: Unregistered UID scanned: 3074757171
+2026-05-18 19:41:02,783 [INFO] ui.attendance_page: AttendancePage refresh: loaded 33 records
+2026-05-18 19:41:02,785 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 5 records
+2026-05-18 19:41:02,788 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 5 rows
+2026-05-18 19:41:06,810 [INFO] services.nfc_reader: Valid NFC UID captured: 2432260243
+2026-05-18 19:41:06,811 [INFO] services.attendance_service: Processing scan for UID: 2432260243
+2026-05-18 19:41:06,812 [WARNING] services.attendance_service: Unregistered UID scanned: 2432260243
+2026-05-18 19:41:06,966 [INFO] ui.attendance_page: AttendancePage refresh: loaded 33 records
+2026-05-18 19:41:06,969 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 5 records
+2026-05-18 19:41:06,973 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 5 rows
+2026-05-18 19:41:12,793 [INFO] services.nfc_reader: Valid NFC UID captured: 2432298675
+2026-05-18 19:41:12,794 [INFO] services.attendance_service: Processing scan for UID: 2432298675
+2026-05-18 19:41:12,796 [WARNING] services.attendance_service: Unregistered UID scanned: 2432298675
+2026-05-18 19:41:12,985 [INFO] ui.attendance_page: AttendancePage refresh: loaded 33 records
+2026-05-18 19:41:12,987 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 5 records
+2026-05-18 19:41:12,990 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 5 rows
+2026-05-18 19:41:15,643 [INFO] services.nfc_reader: Valid NFC UID captured: 2432260243
+2026-05-18 19:41:15,643 [INFO] services.attendance_service: Processing scan for UID: 2432260243
+2026-05-18 19:41:15,645 [WARNING] services.attendance_service: Unregistered UID scanned: 2432260243
+2026-05-18 19:41:15,775 [INFO] ui.attendance_page: AttendancePage refresh: loaded 33 records
+2026-05-18 19:41:15,777 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 5 records
+2026-05-18 19:41:15,781 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 5 rows
+2026-05-18 19:41:20,325 [INFO] services.nfc_reader: Valid NFC UID captured: 2432260243
+2026-05-18 19:41:20,326 [INFO] services.attendance_service: Processing scan for UID: 2432260243
+2026-05-18 19:41:20,327 [WARNING] services.attendance_service: Unregistered UID scanned: 2432260243
+2026-05-18 19:41:20,457 [INFO] ui.attendance_page: AttendancePage refresh: loaded 33 records
+2026-05-18 19:41:20,460 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 5 records
+2026-05-18 19:41:20,463 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 5 rows
+2026-05-18 19:41:23,083 [INFO] services.nfc_reader: Valid NFC UID captured: 2432298675
+2026-05-18 19:41:23,084 [INFO] services.attendance_service: Processing scan for UID: 2432298675
+2026-05-18 19:41:23,085 [WARNING] services.attendance_service: Unregistered UID scanned: 2432298675
+2026-05-18 19:41:23,229 [INFO] ui.attendance_page: AttendancePage refresh: loaded 33 records
+2026-05-18 19:41:23,232 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 5 records
+2026-05-18 19:41:23,235 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 5 rows
+2026-05-18 19:41:26,356 [INFO] services.nfc_reader: Valid NFC UID captured: 2648457091
+2026-05-18 19:41:26,357 [INFO] services.attendance_service: Processing scan for UID: 2648457091
+2026-05-18 19:41:26,358 [WARNING] services.attendance_service: Unregistered UID scanned: 2648457091
+2026-05-18 19:41:26,508 [INFO] ui.attendance_page: AttendancePage refresh: loaded 33 records
+2026-05-18 19:41:26,511 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 5 records
+2026-05-18 19:41:26,515 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 5 rows
+2026-05-18 19:41:29,285 [INFO] services.nfc_reader: Valid NFC UID captured: 0559353283
+2026-05-18 19:41:29,286 [INFO] services.attendance_service: Processing scan for UID: 0559353283
+2026-05-18 19:41:29,287 [WARNING] services.attendance_service: Unregistered UID scanned: 0559353283
+2026-05-18 19:41:29,421 [INFO] ui.attendance_page: AttendancePage refresh: loaded 33 records
+2026-05-18 19:41:29,423 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 5 records
+2026-05-18 19:41:29,427 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 5 rows
+2026-05-18 19:41:34,654 [INFO] services.nfc_reader: Valid NFC UID captured: 1452822175
+2026-05-18 19:41:34,655 [INFO] services.attendance_service: Processing scan for UID: 1452822175
+2026-05-18 19:41:34,656 [INFO] services.attendance_service: Employee found for UID 1452822175: souhaib el mizzari
+2026-05-18 19:41:34,678 [INFO] services.attendance_service: Loaded attendance data: 33 records
+2026-05-18 19:41:34,745 [INFO] services.attendance_service: ENTRY recorded for souhaib el mizzari (1452822175)
+2026-05-18 19:41:34,951 [INFO] ui.attendance_page: AttendancePage refresh: loaded 34 records
+2026-05-18 19:41:34,953 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 6 records
+2026-05-18 19:41:34,955 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 6 rows
+2026-05-18 19:41:38,647 [INFO] services.nfc_reader: Valid NFC UID captured: 1452822175
+2026-05-18 19:41:38,648 [INFO] services.attendance_service: Processing scan for UID: 1452822175
+2026-05-18 19:41:38,650 [INFO] services.attendance_service: Employee found for UID 1452822175: souhaib el mizzari
+2026-05-18 19:41:38,677 [INFO] services.attendance_service: Loaded attendance data: 34 records
+2026-05-18 19:41:38,680 [INFO] services.attendance_service: Exit too soon for souhaib el mizzari: only 0 min elapsed
+2026-05-18 19:41:38,844 [INFO] ui.attendance_page: AttendancePage refresh: loaded 34 records
+2026-05-18 19:41:38,847 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 6 records
+2026-05-18 19:41:38,851 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 6 rows
+2026-05-18 19:41:44,854 [INFO] services.nfc_reader: Valid NFC UID captured: 4188540927
+2026-05-18 19:41:44,855 [INFO] services.attendance_service: Processing scan for UID: 4188540927
+2026-05-18 19:41:44,856 [INFO] services.attendance_service: Employee found for UID 4188540927: imran begdouri
+2026-05-18 19:41:44,887 [INFO] services.attendance_service: Loaded attendance data: 34 records
+2026-05-18 19:41:44,961 [INFO] services.attendance_service: ENTRY recorded for imran begdouri (4188540927)
+2026-05-18 19:41:45,119 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 19:41:45,121 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 19:41:45,124 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 19:41:57,382 [INFO] services.nfc_reader: Valid NFC UID captured: 1452822175
+2026-05-18 19:41:57,383 [INFO] services.attendance_service: Processing scan for UID: 1452822175
+2026-05-18 19:41:57,384 [INFO] services.attendance_service: Employee found for UID 1452822175: souhaib el mizzari
+2026-05-18 19:41:57,408 [INFO] services.attendance_service: Loaded attendance data: 35 records
+2026-05-18 19:41:57,411 [INFO] services.attendance_service: Exit too soon for souhaib el mizzari: only 0 min elapsed
+2026-05-18 19:41:57,574 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 19:41:57,577 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 19:41:57,583 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 19:42:09,484 [INFO] services.nfc_reader: Valid NFC UID captured: 3077813539
+2026-05-18 19:42:09,484 [INFO] services.attendance_service: Processing scan for UID: 3077813539
+2026-05-18 19:42:09,486 [INFO] services.attendance_service: Employee found for UID 3077813539: mohamed affelad
+2026-05-18 19:42:09,507 [INFO] services.attendance_service: Loaded attendance data: 35 records
+2026-05-18 19:42:09,608 [INFO] services.attendance_service: EXIT recorded for mohamed affelad (3077813539)
+2026-05-18 19:42:09,764 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 19:42:09,766 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 19:42:09,769 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 19:42:14,739 [INFO] services.nfc_reader: Valid NFC UID captured: 3076075299
+2026-05-18 19:42:14,741 [INFO] services.attendance_service: Processing scan for UID: 3076075299
+2026-05-18 19:42:14,743 [INFO] services.attendance_service: Employee found for UID 3076075299: adil maimouni
+2026-05-18 19:42:14,777 [INFO] services.attendance_service: Loaded attendance data: 35 records
+2026-05-18 19:42:14,851 [INFO] services.attendance_service: EXIT recorded for adil maimouni (3076075299)
+2026-05-18 19:42:15,009 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 19:42:15,012 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 19:42:15,018 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 19:42:22,240 [INFO] services.nfc_reader: Valid NFC UID captured: 3076125203
+2026-05-18 19:42:22,241 [INFO] services.attendance_service: Processing scan for UID: 3076125203
+2026-05-18 19:42:22,242 [INFO] services.attendance_service: Employee found for UID 3076125203: mouad classe
+2026-05-18 19:42:22,267 [INFO] services.attendance_service: Loaded attendance data: 35 records
+2026-05-18 19:42:22,270 [INFO] services.attendance_service: Already checked out today: mouad classe (3076125203)
+2026-05-18 19:42:22,426 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 19:42:22,427 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 19:42:22,431 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 19:42:28,738 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 19:42:28,742 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 19:42:28,750 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 19:42:40,903 [INFO] services.nfc_reader: Valid NFC UID captured: 2431152435
+2026-05-18 19:42:40,904 [INFO] services.attendance_service: Processing scan for UID: 2431152435
+2026-05-18 19:42:40,905 [WARNING] services.attendance_service: Unregistered UID scanned: 2431152435
+2026-05-18 19:42:43,315 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 19:42:43,318 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 19:42:43,343 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 19:42:49,541 [INFO] services.nfc_reader: Valid NFC UID captured: 2431152435
+2026-05-18 19:42:49,542 [INFO] services.attendance_service: Processing scan for UID: 2431152435
+2026-05-18 19:42:49,543 [WARNING] services.attendance_service: Unregistered UID scanned: 2431152435
+2026-05-18 19:42:49,679 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 19:42:49,681 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 19:42:49,686 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 19:42:52,555 [INFO] services.nfc_reader: Valid NFC UID captured: 2432260243
+2026-05-18 19:42:52,556 [INFO] services.attendance_service: Processing scan for UID: 2432260243
+2026-05-18 19:42:52,557 [WARNING] services.attendance_service: Unregistered UID scanned: 2432260243
+2026-05-18 19:42:52,714 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 19:42:52,717 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 19:42:52,724 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 19:43:27,384 [INFO] services.nfc_reader: Valid NFC UID captured: wasrdhadiklimoorrak
+2026-05-18 19:43:27,385 [INFO] services.attendance_service: Processing scan for UID: wasrdhadiklimoorrak
+2026-05-18 19:43:27,386 [WARNING] services.attendance_service: Unregistered UID scanned: wasrdhadiklimoorrak
+2026-05-18 19:43:33,504 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 19:43:33,506 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 19:43:33,510 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 19:43:34,439 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 19:48:29,879 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 19:48:42,324 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 19:48:42,402 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 19:49:36,805 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): Smodifierledesigndefmodifierdesigndeform
+2026-05-18 19:51:09,742 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 19:51:14,262 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 19:51:28,218 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 19:51:28,293 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 19:52:09,915 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 19:52:14,055 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 19:52:21,713 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 19:52:21,812 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 19:52:53,376 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 19:52:58,872 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 19:53:09,576 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 19:53:09,650 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 19:53:32,832 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 19:53:36,811 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 19:53:44,260 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 19:53:44,340 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 19:54:17,798 [INFO] services.employee_service: Employee updated: hicham jaidi (1802112026)
+2026-05-18 19:55:10,418 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 19:55:14,627 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 19:55:22,297 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 19:55:22,371 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 19:55:38,857 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 19:55:38,860 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 19:55:38,867 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 19:55:38,904 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 19:55:38,908 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 19:55:38,915 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 19:55:42,411 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 19:55:42,415 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 19:55:42,422 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 19:56:55,474 [WARNING] services.nfc_reader: Invalid UID scanned (too long): htafefilterfilterbetextmachibeselectmodiferdesignykonkaychbahny
+2026-05-18 19:57:00,914 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 19:58:00,375 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 19:58:07,530 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 19:58:07,605 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 19:59:33,202 [WARNING] services.nfc_reader: Invalid UID scanned (too long): dbbghitktslahfeykonodijkcadrelithtfilterfhalcadrelikaynfe
+2026-05-18 20:00:51,744 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 20:00:56,357 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 20:01:04,619 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 20:01:04,698 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 20:01:08,399 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 20:01:08,403 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 20:01:08,411 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 20:01:08,454 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 20:01:08,458 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 20:01:08,466 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 20:01:48,412 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): hayedaygreenwebdelobebleu
+2026-05-18 20:01:51,268 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 20:04:08,132 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 20:04:33,312 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 20:04:33,378 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 20:05:48,633 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 20:05:48,639 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 20:05:48,644 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 20:05:48,676 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 20:05:48,679 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 20:05:48,686 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 20:06:11,822 [INFO] services.nfc_reader: Valid NFC UID captured: 3076125203
+2026-05-18 20:06:11,824 [INFO] services.attendance_service: Processing scan for UID: 3076125203
+2026-05-18 20:06:11,826 [INFO] services.attendance_service: Employee found for UID 3076125203: mouad classe
+2026-05-18 20:06:11,856 [INFO] services.attendance_service: Loaded attendance data: 35 records
+2026-05-18 20:06:11,858 [INFO] services.attendance_service: Already checked out today: mouad classe (3076125203)
+2026-05-18 20:06:12,773 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 20:06:12,776 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 20:06:12,802 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 20:06:14,499 [INFO] services.nfc_reader: Valid NFC UID captured: 3077813539
+2026-05-18 20:06:14,500 [INFO] services.attendance_service: Processing scan for UID: 3077813539
+2026-05-18 20:06:14,503 [INFO] services.attendance_service: Employee found for UID 3077813539: mohamed affelad
+2026-05-18 20:06:14,540 [INFO] services.attendance_service: Loaded attendance data: 35 records
+2026-05-18 20:06:14,547 [INFO] services.attendance_service: Already checked out today: mohamed affelad (3077813539)
+2026-05-18 20:06:14,690 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 20:06:14,693 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 20:06:14,724 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 20:06:21,101 [INFO] services.nfc_reader: Valid NFC UID captured: 4188606463
+2026-05-18 20:06:21,103 [INFO] services.attendance_service: Processing scan for UID: 4188606463
+2026-05-18 20:06:21,104 [INFO] services.attendance_service: Employee found for UID 4188606463: ibrahim el hicho
+2026-05-18 20:06:21,145 [INFO] services.attendance_service: Loaded attendance data: 35 records
+2026-05-18 20:06:21,149 [INFO] services.attendance_service: Already checked out today: ibrahim el hicho (4188606463)
+2026-05-18 20:06:21,334 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 20:06:21,336 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 20:06:21,366 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 20:06:25,908 [INFO] services.nfc_reader: Valid NFC UID captured: 0559353283
+2026-05-18 20:06:25,909 [INFO] services.attendance_service: Processing scan for UID: 0559353283
+2026-05-18 20:06:25,910 [WARNING] services.attendance_service: Unregistered UID scanned: 0559353283
+2026-05-18 20:06:28,374 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 20:06:28,377 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 20:06:28,413 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 20:07:05,204 [INFO] ui.attendance_page: AttendancePage refresh: loaded 35 records
+2026-05-18 20:07:05,207 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 20:07:05,210 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 20:07:10,925 [INFO] services.manual_attendance_service: Manual entry recorded (no exit): hicham jaidi (1802112026) on 2027-05-18 — 20:06
+2026-05-18 20:07:13,804 [INFO] ui.attendance_page: AttendancePage refresh: loaded 36 records
+2026-05-18 20:07:13,807 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 7 records
+2026-05-18 20:07:13,813 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 7 rows
+2026-05-18 20:07:28,320 [INFO] services.manual_attendance_service: Manual entry recorded (no exit): hicham jaidi (1802112026) on 2026-05-18 — 20:06
+2026-05-18 20:07:31,378 [INFO] ui.attendance_page: AttendancePage refresh: loaded 37 records
+2026-05-18 20:07:31,383 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 8 records
+2026-05-18 20:07:31,387 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 8 rows
+2026-05-18 20:08:16,330 [INFO] services.manual_attendance_service: Manual record added: omar ellon (1801818826) on 2026-05-18 — 20:06→22:00 | 1.00h | DH20.00
+2026-05-18 20:08:19,873 [INFO] ui.attendance_page: AttendancePage refresh: loaded 38 records
+2026-05-18 20:08:19,876 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 9 records
+2026-05-18 20:08:19,885 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 9 rows
+2026-05-18 20:11:44,958 [INFO] services.advances_service: Advance added for reda affelad (2893913171): 200.0
+2026-05-18 20:13:03,840 [INFO] services.advances_service: Advance added for reda affelad (2893913171): 100.0
+2026-05-18 20:13:40,161 [INFO] services.primes_service: Prime added for reda affelad (2893913171): 100.0 DH
+2026-05-18 20:14:00,083 [INFO] services.advances_service: Advance added for reda affelad (2893913171): 80.0
+2026-05-18 20:21:04,298 [WARNING] services.nfc_reader: Invalid UID scanned (too long): 20:0620:0620:0610:0022ibraim200primadeleEidreda100100ateqtae100prima280avanceredaibrahimunpprob
+2026-05-18 20:21:44,245 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): 
+2026-05-18 20:21:49,288 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 20:23:55,747 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 20:24:03,891 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 20:24:03,961 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 20:25:13,697 [WARNING] services.nfc_reader: Invalid UID scanned (too long): redaibrahimwalakinbaqibnfesproblemeraftietinighipromptbefrancaiscoplilotyslaha
+2026-05-18 20:25:45,327 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): 
+2026-05-18 20:27:09,000 [INFO] services.nfc_reader: Valid NFC UID captured: walomagqolichenifhamtikhsesoytslah
+2026-05-18 20:27:09,002 [INFO] services.attendance_service: Processing scan for UID: walomagqolichenifhamtikhsesoytslah
+2026-05-18 20:27:09,003 [WARNING] services.attendance_service: Unregistered UID scanned: walomagqolichenifhamtikhsesoytslah
+2026-05-18 20:27:14,986 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 20:30:38,168 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 20:30:47,496 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 20:30:47,573 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 20:31:27,741 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): redaet
+2026-05-18 20:32:06,528 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-18 20:32:10,549 [INFO] utils.file_utils: Logging initialized.
+2026-05-18 20:32:18,198 [INFO] services.auth_service: Login successful: sohaib
+2026-05-18 20:32:18,276 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-18 20:32:36,012 [INFO] ui.attendance_page: AttendancePage refresh: loaded 38 records
+2026-05-18 20:32:36,016 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 9 records
+2026-05-18 20:32:36,025 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 9 rows
+2026-05-18 20:32:36,063 [INFO] ui.attendance_page: AttendancePage refresh: loaded 38 records
+2026-05-18 20:32:36,067 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 9 records
+2026-05-18 20:32:36,075 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 9 rows
+2026-05-18 20:32:38,884 [INFO] services.nfc_reader: Valid NFC UID captured: reda4188540927
+2026-05-18 20:32:38,884 [INFO] services.attendance_service: Processing scan for UID: reda4188540927
+2026-05-18 20:32:38,885 [WARNING] services.attendance_service: Unregistered UID scanned: reda4188540927
+2026-05-18 20:32:42,912 [INFO] ui.attendance_page: AttendancePage refresh: loaded 38 records
+2026-05-18 20:32:42,914 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 9 records
+2026-05-18 20:32:42,939 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 9 rows
+2026-05-18 20:32:43,831 [INFO] services.nfc_reader: Valid NFC UID captured: 4188540927
+2026-05-18 20:32:43,832 [INFO] services.attendance_service: Processing scan for UID: 4188540927
+2026-05-18 20:32:43,835 [INFO] services.attendance_service: Employee found for UID 4188540927: imran begdouri
+2026-05-18 20:32:43,869 [INFO] services.attendance_service: Loaded attendance data: 38 records
+2026-05-18 20:32:43,956 [INFO] services.attendance_service: EXIT recorded for imran begdouri (4188540927)
+2026-05-18 20:32:44,281 [INFO] ui.attendance_page: AttendancePage refresh: loaded 38 records
+2026-05-18 20:32:44,283 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 9 records
+2026-05-18 20:32:44,303 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 9 rows
+2026-05-18 20:32:48,343 [INFO] services.nfc_reader: Valid NFC UID captured: 1452822175
+2026-05-18 20:32:48,344 [INFO] services.attendance_service: Processing scan for UID: 1452822175
+2026-05-18 20:32:48,345 [INFO] services.attendance_service: Employee found for UID 1452822175: souhaib el mizzari
+2026-05-18 20:32:48,369 [INFO] services.attendance_service: Loaded attendance data: 38 records
+2026-05-18 20:32:48,451 [INFO] services.attendance_service: EXIT recorded for souhaib el mizzari (1452822175)
+2026-05-18 20:32:48,708 [INFO] ui.attendance_page: AttendancePage refresh: loaded 38 records
+2026-05-18 20:32:48,710 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 9 records
+2026-05-18 20:32:48,728 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 9 rows
+2026-05-18 20:32:53,689 [INFO] services.nfc_reader: Valid NFC UID captured: 4188606463
+2026-05-18 20:32:53,691 [INFO] services.attendance_service: Processing scan for UID: 4188606463
+2026-05-18 20:32:53,692 [INFO] services.attendance_service: Employee found for UID 4188606463: ibrahim el hicho
+2026-05-18 20:32:53,720 [INFO] services.attendance_service: Loaded attendance data: 38 records
+2026-05-18 20:32:53,726 [INFO] services.attendance_service: Already checked out today: ibrahim el hicho (4188606463)
+2026-05-18 20:32:54,021 [INFO] ui.attendance_page: AttendancePage refresh: loaded 38 records
+2026-05-18 20:32:54,023 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 9 records
+2026-05-18 20:32:54,042 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 9 rows
+2026-05-18 20:32:58,588 [INFO] services.nfc_reader: Valid NFC UID captured: 4188606463
+2026-05-18 20:32:58,589 [INFO] services.attendance_service: Processing scan for UID: 4188606463
+2026-05-18 20:32:58,590 [INFO] services.attendance_service: Employee found for UID 4188606463: ibrahim el hicho
+2026-05-18 20:32:58,617 [INFO] services.attendance_service: Loaded attendance data: 38 records
+2026-05-18 20:32:58,622 [INFO] services.attendance_service: Already checked out today: ibrahim el hicho (4188606463)
+2026-05-18 20:32:58,925 [INFO] ui.attendance_page: AttendancePage refresh: loaded 38 records
+2026-05-18 20:32:58,928 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 9 records
+2026-05-18 20:32:58,954 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 9 rows
+2026-05-18 20:33:12,783 [INFO] ui.attendance_page: AttendancePage refresh: loaded 38 records
+2026-05-18 20:33:12,786 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 9 records
+2026-05-18 20:33:12,795 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 9 rows
+2026-05-18 20:33:25,837 [INFO] ui.attendance_page: AttendancePage refresh: loaded 38 records
+2026-05-18 20:33:25,840 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 9 records
+2026-05-18 20:33:25,848 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 9 rows
+2026-05-18 20:34:22,062 [WARNING] services.nfc_reader: Invalid UID scanned (too long): ybteafichawhtalibaqimaeemloexitwezidnihtafilterbenom
+2026-05-18 20:37:38,485 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-19 11:23:31,210 [INFO] utils.file_utils: Logging initialized.
+2026-05-19 11:23:41,463 [INFO] services.auth_service: Login successful: sohaib
+2026-05-19 11:23:41,536 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-19 11:24:08,276 [INFO] services.manual_attendance_service: Manual entry recorded (no exit): hicham jaidi (1802112026) on 2026-05-19 — 11:23
+2026-05-19 11:24:22,378 [INFO] ui.attendance_page: AttendancePage refresh: loaded 39 records
+2026-05-19 11:24:22,382 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 1 records
+2026-05-19 11:24:22,385 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 1 rows
+2026-05-19 11:24:22,424 [INFO] ui.attendance_page: AttendancePage refresh: loaded 39 records
+2026-05-19 11:24:22,428 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 1 records
+2026-05-19 11:24:22,431 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 1 rows
+2026-05-19 11:24:36,680 [INFO] services.manual_attendance_service: Manual exit added: hicham jaidi (1802112026) on 2026-05-19 — 11:23→18:00 | 6.00h | DH102.00
+2026-05-19 11:24:39,505 [INFO] ui.attendance_page: AttendancePage refresh: loaded 39 records
+2026-05-19 11:24:39,509 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 1 records
+2026-05-19 11:24:39,513 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 1 rows
+2026-05-19 11:32:41,849 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): 11:23:4013:0018reda
+2026-05-19 11:32:48,886 [INFO] ui.attendance_page: AttendancePage refresh: loaded 39 records
+2026-05-19 11:32:48,889 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 1 records
+2026-05-19 11:32:48,892 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 1 rows
+2026-05-19 11:33:43,670 [INFO] services.nfc_reader: Valid NFC UID captured: redainbraibrahsohaib
+2026-05-19 11:33:43,671 [INFO] services.attendance_service: Processing scan for UID: redainbraibrahsohaib
+2026-05-19 11:33:43,672 [WARNING] services.attendance_service: Unregistered UID scanned: redainbraibrahsohaib
+2026-05-19 11:33:46,559 [INFO] ui.attendance_page: AttendancePage refresh: loaded 39 records
+2026-05-19 11:33:46,561 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 1 records
+2026-05-19 11:33:46,561 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 1 rows
+2026-05-19 11:36:25,014 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): ibrtraduction
+2026-05-19 11:36:45,888 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): amessageelach
+2026-05-19 11:38:26,893 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): wahadmochjkilfepdfmakayjichNC>IN..
+2026-05-19 11:39:35,053 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): 0.00%0atihalikamlamsloha
+2026-05-19 11:40:58,664 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): bulteinzidajouterNCINenbultein
+2026-05-19 11:41:29,625 [INFO] services.nfc_reader: Valid NFC UID captured: kifachnrjeaappdeskptopbelogofhalwhatsap
+2026-05-19 11:41:29,627 [INFO] services.attendance_service: Processing scan for UID: kifachnrjeaappdeskptopbelogofhalwhatsap
+2026-05-19 11:41:29,628 [WARNING] services.attendance_service: Unregistered UID scanned: kifachnrjeaappdeskptopbelogofhalwhatsap
+2026-05-19 11:41:40,132 [INFO] ui.attendance_page: AttendancePage refresh: loaded 39 records
+2026-05-19 11:41:40,135 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 1 records
+2026-05-19 11:41:40,138 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 1 rows
+2026-05-19 11:41:41,014 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-19 11:43:03,458 [INFO] utils.file_utils: Logging initialized.
+2026-05-19 11:43:11,421 [INFO] services.auth_service: Login successful: sohaib
+2026-05-19 11:43:11,698 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-19 11:43:58,324 [INFO] services.nfc_reader: Valid NFC UID captured: imrankk
+2026-05-19 11:43:58,325 [INFO] services.attendance_service: Processing scan for UID: imrankk
+2026-05-19 11:43:58,327 [WARNING] services.attendance_service: Unregistered UID scanned: imrankk
+2026-05-19 11:44:22,804 [INFO] services.employee_service: Employee added: imran begdouri (imran begdouri)
+2026-05-19 11:44:35,708 [INFO] services.employee_service: Employee deleted: imran begdouri (imran begdouri)
+2026-05-19 11:44:54,773 [INFO] services.employee_service: Employee updated: imran begdouri (4188540927)
+2026-05-19 11:46:34,025 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-19 11:46:37,205 [INFO] utils.file_utils: Logging initialized.
+2026-05-19 11:46:43,960 [INFO] services.auth_service: Login successful: sohaib
+2026-05-19 11:46:44,006 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-19 11:47:48,522 [WARNING] services.nfc_reader: Invalid UID scanned (too long): imranproblemdegenertebulteingenererbutlteindeemployeesohaibelmizzarimaisilaafilteranotreemployee
+2026-05-19 11:49:24,711 [WARNING] services.nfc_reader: Invalid UID scanned (contains invalid characters): bghitneeadlbhadicherahlilesetape
+2026-05-19 11:49:29,567 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-19 11:49:34,298 [INFO] utils.file_utils: Logging initialized.
+2026-05-19 11:49:44,410 [INFO] services.auth_service: Login successful: sohaib
+2026-05-19 11:49:44,432 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-19 11:50:17,370 [INFO] ui.attendance_page: AttendancePage refresh: loaded 39 records
+2026-05-19 11:50:17,371 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 1 records
+2026-05-19 11:50:17,372 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 1 rows
+2026-05-19 11:50:17,385 [INFO] ui.attendance_page: AttendancePage refresh: loaded 39 records
+2026-05-19 11:50:17,387 [INFO] ui.attendance_page: AttendancePage refresh: after filtering, 1 records
+2026-05-19 11:50:17,389 [INFO] ui.attendance_page: AttendancePage refresh: table updated with 1 rows
+2026-05-19 11:50:24,272 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-19 11:50:28,711 [INFO] utils.file_utils: Logging initialized.
+2026-05-19 11:50:36,240 [INFO] services.auth_service: Login successful: sohaib
+2026-05-19 11:50:36,263 [INFO] services.nfc_reader: NFC Reader (HID listener) started.
+2026-05-19 11:50:41,219 [INFO] services.nfc_reader: NFC Reader (HID listener) stopped.
+2026-05-19 12:18:52,039 [INFO] utils.file_utils: Logging initialized.

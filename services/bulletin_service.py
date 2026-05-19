@@ -10,27 +10,14 @@ from __future__ import annotations
 import calendar
 import pandas as pd
 
-from services.monthly_report_service import get_monthly_report, _get_total_advances
-from services.primes_service import get_all_primes
+from services.monthly_report_service import (
+    get_monthly_report,
+    get_monthly_report_filtered,
+    _get_total_advances,
+    _get_total_primes,
+)
 from services.employee_service import get_employee_by_uid
 from utils.pdf_generator import BulletinData, generate_bulletin_pdf
-
-
-def _get_total_primes_for_emp(uid: str, month: int, year: int) -> float:
-    """Total primes for a given employee in a given month."""
-    try:
-        df = get_all_primes()
-        if df.empty:
-            return 0.0
-        month_name = calendar.month_name[month]
-        df = df[
-            (df["Month"].astype(str) == month_name) &
-            (df["Year"].astype(str)  == str(year))  &
-            (df["UID"].astype(str)   == str(uid))
-        ]
-        return round(float(pd.to_numeric(df["Amount"], errors="coerce").sum()), 2)
-    except Exception:
-        return 0.0
 
 
 def _get_cin(uid: str) -> str:
@@ -83,13 +70,16 @@ def get_bulletin_summary(month: int, year: int) -> pd.DataFrame:
     CNSS_RATE = 0.0448
     AMO_RATE  = 0.0226
 
-    grp["Salaire Base"]   = (grp["Worked Hours"] * grp["Hourly Rate"]).round(2)
-    grp["Prime"]          = grp["UID"].apply(
-        lambda uid: _get_total_primes_for_emp(str(uid), month, year)
+    grp["Salaire Base"] = (grp["Worked Hours"] * grp["Hourly Rate"]).round(2)
+
+    # نعطيو list ديال UID واحد — متطابق مع signature الجديد
+    grp["Prime"] = grp["UID"].apply(
+        lambda uid: _get_total_primes(month, year, [str(uid)])
     )
-    grp["Avance"]         = grp["UID"].apply(
-        lambda uid: _get_total_advances(month, year, str(uid))
+    grp["Avance"] = grp["UID"].apply(
+        lambda uid: _get_total_advances(month, year, [str(uid)])
     )
+
     grp["Salaire Brut"]   = (grp["Salaire Base"] + grp["Prime"]).round(2)
     grp["CNSS"]           = (grp["Salaire Brut"] * CNSS_RATE).round(2)
     grp["AMO"]            = (grp["Salaire Brut"] * AMO_RATE).round(2)
@@ -104,10 +94,15 @@ def get_bulletin_summary(month: int, year: int) -> pd.DataFrame:
     ]]
 
 
-def generate_bulletins(month: int, year: int, uid_filter: str = "") -> list[str]:
+def generate_bulletins(
+    month: int,
+    year: int,
+    uid_filter: str = "",
+    name_filter: str = "",
+) -> list[str]:
     """
     Generate PDF bulletins for the given month/year.
-    If uid_filter is provided, generate only for that employee.
+    If uid_filter or name_filter is provided, generate only for matching employees.
     Returns list of generated PDF file paths.
     """
     df = get_bulletin_summary(month, year)
@@ -115,8 +110,20 @@ def generate_bulletins(month: int, year: int, uid_filter: str = "") -> list[str]
     if df.empty:
         return []
 
-    if uid_filter:
-        df = df[df["UID"].astype(str) == uid_filter]
+    if uid_filter or name_filter:
+        filtered = get_monthly_report_filtered(
+            month=month,
+            year=year,
+            uid_filter=uid_filter,
+            name_filter=name_filter,
+        )
+        exact_uids = (
+            filtered["detail_rows"]["UID"].astype(str).unique().tolist()
+            if not filtered["detail_rows"].empty else []
+        )
+        if not exact_uids:
+            return []
+        df = df[df["UID"].astype(str).isin(exact_uids)]
 
     paths = []
     for _, row in df.iterrows():
