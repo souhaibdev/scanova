@@ -191,10 +191,6 @@ class ManualAttendancePage(QWidget):
 
         def add_field(label_key, widget):
             fl.addWidget(self._muted_label(label_key))
-            fl.addSpacing(4)
-            fl.addWidget(widget)
-            fl.addSpacing(12)
-
         self._inp_uid = QLineEdit()
         self._inp_uid.setFixedHeight(36)
         self._translator.bind_placeholder(self._inp_uid, "manual.placeholder.uid")

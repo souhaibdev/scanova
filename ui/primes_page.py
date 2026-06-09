@@ -22,7 +22,6 @@ from PyQt6.QtGui import QFont, QColor
 from services.primes_service import get_all_primes, add_prime, delete_prime
 from services import employee_service
 
-
 # ── Palette ───────────────────────────────────────────────────────────────────
 ACCENT     = "#2B79FF"
 BG_PAGE    = "#F0F2F5"
