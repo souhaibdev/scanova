@@ -350,6 +350,7 @@ class NotesPage(QWidget):
         self._selected_history_index: int = -1
         self._all_employees: list[tuple[str, str]] = []
         self._build_ui()
+        self._translator.language_changed.connect(self._refresh_dynamic_translations)
         self.refresh()
 
     # ── Build ─────────────────────────────────────────────────────────
@@ -491,11 +492,13 @@ class NotesPage(QWidget):
 
     def _filter_employees(self, query: str):
         q = query.strip().lower()
+        previous_uid = self._selected_uid
         filtered = [
             (uid, name) for uid, name in self._all_employees
             if q in name.lower() or q in uid.lower()
         ] if q else self._all_employees
 
+        self._emp_table.blockSignals(True)
         self._emp_table.setRowCount(0)
         
         # Add "All Employees" option at the top
@@ -514,6 +517,12 @@ class NotesPage(QWidget):
             item.setData(Qt.ItemDataRole.UserRole, uid)
             item.setToolTip(f"UID: {uid}")
             self._emp_table.setItem(r, 0, item)
+            if uid == previous_uid:
+                self._emp_table.selectRow(r)
+
+        if previous_uid == "*all*":
+            self._emp_table.selectRow(0)
+        self._emp_table.blockSignals(False)
 
     def _load_history(self, uid_filter: str = ""):
         self._hist_table.setRowCount(0)
@@ -555,7 +564,10 @@ class NotesPage(QWidget):
             return
         self._selected_uid  = item.data(Qt.ItemDataRole.UserRole)
         self._selected_name = item.text()
-        self._selected_lbl.setText(f"{self._selected_name}")
+        if self._selected_uid == "*all*":
+            self._selected_lbl.setText(self._translator.t("notes.selected.all_employees"))
+        else:
+            self._selected_lbl.setText(f"{self._selected_name}")
         self._selected_lbl.setStyleSheet(
             f"color: {ACCENT}; font-size: 14px; font-weight: 700; background: transparent;"
         )
@@ -598,7 +610,7 @@ class NotesPage(QWidget):
     # ── Actions ───────────────────────────────────────────────────────
 
     def _save_advance(self):
-        if not self._selected_uid:
+        if not self._selected_uid or self._selected_uid == "*all*":
             QMessageBox.warning(
                 self,
                 self._translator.t("common.validation"),
@@ -656,3 +668,12 @@ class NotesPage(QWidget):
         self._selected_history_index = -1
         self._del_btn.setVisible(False)
         self._hist_table.clearSelection()
+
+    def _refresh_dynamic_translations(self):
+        if not self._selected_uid:
+            self._selected_lbl.setText(self._translator.t("notes.selected.select_employee"))
+            self._selected_lbl.setStyleSheet(f"color: {TEXT_MUTED}; background: transparent;")
+        elif self._selected_uid == "*all*":
+            self._selected_name = self._translator.t("notes.selected.all_employees")
+            self._selected_lbl.setText(self._selected_name)
+        self._filter_employees(self._search_input.text())

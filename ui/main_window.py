@@ -315,8 +315,13 @@ class MainWindow(QWidget):
         self._middle_layout.removeWidget(self._stack)
 
         is_rtl = self._translator.current_language == "ar"
-        
-        # ← بدل direction الـ layout
+
+        # Pin the middle layout to a fixed physical order so the window's
+        # RTL text direction can't mirror it again. With LeftToRight forced,
+        # index 0 is always the physical left and index 1 the physical right.
+        self._middle_layout.setDirection(QBoxLayout.Direction.LeftToRight)
+
+        # English → sidebar on the left, Arabic → sidebar on the right.
         if is_rtl:
             self._middle_layout.insertWidget(0, self._stack, stretch=1)
             self._middle_layout.insertWidget(1, self._sidebar)
@@ -324,14 +329,18 @@ class MainWindow(QWidget):
             self._middle_layout.insertWidget(0, self._sidebar)
             self._middle_layout.insertWidget(1, self._stack, stretch=1)
 
-    # ← بدل alignment ديال الـ sidebar buttons
-        for btn in self._nav_buttons.values():
-            if is_rtl:
-                btn.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
-                btn.setStyleSheet(btn.styleSheet().replace("text-align: left", "text-align: right"))
-            else:
-                btn.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-                btn.setStyleSheet(btn.styleSheet().replace("text-align: right", "text-align: left"))
+    def _apply_language_direction(self, language: str):
+        direction = self._translator.qt_layout_direction
+        self.setLayoutDirection(direction)
+        self._sidebar.setLayoutDirection(direction)
+        self._stack.setLayoutDirection(direction)
+        self._arrange_sidebar()
+        self._translate_dynamic_texts()
+        
+        # Update header layout direction
+        for widget in self.findChildren(QWidget):
+            if widget.parent() and widget.parent().objectName() == "header":
+                widget.setLayoutDirection(direction)
 
     def _rebuild_sidebar(self):
         if hasattr(self, "_sidebar_layout"):

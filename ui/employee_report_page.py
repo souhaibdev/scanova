@@ -121,23 +121,26 @@ QScrollBar::handle:vertical {{ background: {BORDER}; border-radius: 3px; }}
 # ── Stat Card ─────────────────────────────────────────────────────────────────
 
 class StatCard(QFrame):
-    def __init__(self, label: str, accent: str, parent=None):
+    def __init__(self, label_key: str, translator: TranslationManager, accent: str, parent=None):
         super().__init__(parent)
         self.setObjectName("statCard")
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self._label_key = label_key
+        self._translator = translator
 
         lay = QVBoxLayout(self)
         lay.setContentsMargins(16, 14, 16, 14)
         lay.setSpacing(4)
 
-        lbl = QLabel(label.upper())
+        lbl = QLabel(self._translator.t(self._label_key).upper())
+        self._label = lbl
         lbl.setStyleSheet(
             f"color: {TEXT_MUTED}; font-size: 10px; font-weight: 600; "
             f"letter-spacing: 0.5px; background: transparent;"
         )
         lay.addWidget(lbl)
 
-        self._val = QLabel("—")
+        self._val = QLabel("-")
         self._val.setStyleSheet(
             f"color: {accent}; font-size: 24px; font-weight: 700; background: transparent;"
         )
@@ -145,6 +148,9 @@ class StatCard(QFrame):
 
     def set_value(self, text: str):
         self._val.setText(text)
+
+    def refresh_translation(self):
+        self._label.setText(self._translator.t(self._label_key).upper())
 
 
 # ── Employee Report Page ──────────────────────────────────────────────────────
@@ -157,6 +163,7 @@ class EmployeeReportPage(QWidget):
         self._translator = TranslationManager.instance()
         self.setStyleSheet(STYLESHEET)
         self._build_ui()
+        self._translator.language_changed.connect(self._refresh_dynamic_translations)
         self.refresh()
 
     # ── Build ──────────────────────────────────────────────────────────
@@ -200,14 +207,14 @@ class EmployeeReportPage(QWidget):
         # UID — text input (same as monthly_report_page)
         frow.addWidget(self._muted("report.employee.filter.uid"))
         self._uid_input = QLineEdit()
-        self._uid_input.setPlaceholderText(self._translator.t("report.employee.filter.uid"))
+        self._translator.bind_placeholder(self._uid_input, "report.employee.filter.uid")
         self._uid_input.setFixedWidth(130)
         frow.addWidget(self._uid_input)
 
         # Name — text input (same as monthly_report_page)
         frow.addWidget(self._muted("report.employee.filter.name"))
         self._name_input = QLineEdit()
-        self._name_input.setPlaceholderText(self._translator.t("report.employee.filter.name"))
+        self._translator.bind_placeholder(self._name_input, "report.employee.filter.name")
         self._name_input.setFixedWidth(150)
         frow.addWidget(self._name_input)
 
@@ -238,10 +245,10 @@ class EmployeeReportPage(QWidget):
         cards_row1 = QHBoxLayout()
         cards_row1.setSpacing(12)
 
-        self._card_travailles = StatCard(self._translator.t("report.employee.stat.days_worked"), GREEN)
-        self._card_absents    = StatCard(self._translator.t("report.employee.stat.days_absent"), RED)
-        self._card_late       = StatCard(self._translator.t("report.employee.stat.late_days"), AMBER)
-        self._card_salary     = StatCard(self._translator.t("report.employee.stat.total_salary"), ACCENT)
+        self._card_travailles = StatCard("report.employee.stat.days_worked", self._translator, GREEN)
+        self._card_absents    = StatCard("report.employee.stat.days_absent", self._translator, RED)
+        self._card_late       = StatCard("report.employee.stat.late_days", self._translator, AMBER)
+        self._card_salary     = StatCard("report.employee.stat.total_salary", self._translator, ACCENT)
 
         for card in (self._card_travailles, self._card_absents,
                      self._card_late, self._card_salary):
@@ -253,9 +260,9 @@ class EmployeeReportPage(QWidget):
         cards_row2 = QHBoxLayout()
         cards_row2.setSpacing(12)
 
-        self._card_advances = StatCard(self._translator.t("report.employee.stat.total_advances"), RED)
-        self._card_primes   = StatCard(self._translator.t("report.employee.stat.total_primes"), GREEN)
-        self._card_net      = StatCard(self._translator.t("report.employee.stat.net_salary"), ACCENT)
+        self._card_advances = StatCard("report.employee.stat.total_advances", self._translator, RED)
+        self._card_primes   = StatCard("report.employee.stat.total_primes", self._translator, GREEN)
+        self._card_net      = StatCard("report.employee.stat.net_salary", self._translator, ACCENT)
 
         for card in (self._card_advances, self._card_primes, self._card_net):
             cards_row2.addWidget(card)
@@ -354,7 +361,11 @@ class EmployeeReportPage(QWidget):
         try:
             paths = generate_bulletins(month, year, uid_filter, name_filter)
             if paths:
-                msg = f"Generated {len(paths)} bulletin(s):\n" + "\n".join(paths)
+                msg = self._translator.t(
+                    "report.employee.bulletin.generated",
+                    count=len(paths),
+                    paths="\n".join(paths),
+                )
                 QMessageBox.information(self, self._translator.t("common.success"), msg)
                 import subprocess, platform
                 try:
@@ -378,3 +389,15 @@ class EmployeeReportPage(QWidget):
                 self._translator.t("common.error"),
                 self._translator.t("report.employee.bulletin.failed", error=str(e)),
             )
+
+    def _refresh_dynamic_translations(self):
+        for card in (
+            self._card_travailles,
+            self._card_absents,
+            self._card_late,
+            self._card_salary,
+            self._card_advances,
+            self._card_primes,
+            self._card_net,
+        ):
+            card.refresh_translation()

@@ -191,6 +191,8 @@ class ManualAttendancePage(QWidget):
 
         def add_field(label_key, widget):
             fl.addWidget(self._muted_label(label_key))
+            fl.addWidget(widget)
+
         self._inp_uid = QLineEdit()
         self._inp_uid.setFixedHeight(36)
         self._translator.bind_placeholder(self._inp_uid, "manual.placeholder.uid")
@@ -217,11 +219,13 @@ class ManualAttendancePage(QWidget):
 
         self._inp_entry = QLineEdit()
         self._inp_entry.setFixedHeight(36)
+        self._inp_entry.setInputMask("00:00")
         self._translator.bind_placeholder(self._inp_entry, "manual.placeholder.entry")
         add_field("manual.field.entry_time", self._inp_entry)
 
         self._inp_exit = QLineEdit()
         self._inp_exit.setFixedHeight(36)
+        self._inp_exit.setInputMask("00:00")
         self._translator.bind_placeholder(self._inp_exit, "manual.placeholder.exit")
         self._translator.bind_tooltip(self._inp_exit, "manual.tooltip.exit_optional")
         add_field("manual.field.exit_time", self._inp_exit)
@@ -312,8 +316,10 @@ class ManualAttendancePage(QWidget):
         else:
             self._inp_entry.clear()
             self._inp_entry.setReadOnly(False)
+            self._inp_entry.setEnabled(True)
             self._inp_entry.setStyleSheet("")
             self._inp_exit.clear()
+            self._inp_exit.setEnabled(True)
 
     # ── Actions ────────────────────────────────────────────────────────
 

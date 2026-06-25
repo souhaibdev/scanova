@@ -182,7 +182,7 @@ class AttendancePage(QWidget):
         filt_row.setSpacing(10)
 
         # Date — QDateEdit مع calendrier popup
-        filt_row.addWidget(self._muted_label("Date:"))
+        filt_row.addWidget(self._muted_label("attendance.filter.date"))
         self._date_input = QDateEdit()
         self._date_input.setCalendarPopup(True)          # كيفتح calendrier بالكليك
         self._date_input.setDate(QDate.currentDate())    # default = اليوم
@@ -195,14 +195,18 @@ class AttendancePage(QWidget):
         # Employee
         filt_row.addWidget(self._muted_label("attendance.filter.employee"))
         self._emp_input = QLineEdit()
-        self._emp_input.setPlaceholderText("Search name...")
+        self._translator.bind_placeholder(self._emp_input, "attendance.search.placeholder")
         self._emp_input.setFixedWidth(180)
         filt_row.addWidget(self._emp_input)
 
         # Late
         filt_row.addWidget(self._muted_label("attendance.filter.late"))
         self._late_combo = QComboBox()
-        self._late_combo.addItems(["All", "YES", "NO"])
+        self._translator.bind_combo_items(self._late_combo, [
+            ("attendance.filter.all", "All"),
+            ("attendance.filter.yes", "YES"),
+            ("attendance.filter.no", "NO"),
+        ])
         self._late_combo.setFixedWidth(80)
         filt_row.addWidget(self._late_combo)
 
@@ -231,9 +235,15 @@ class AttendancePage(QWidget):
         cols = AttendanceRecord.columns()
         self._table = QTableWidget(0, len(cols))
         self._translator.bind_table_headers(self._table, [
-            "attendance.table.name",
             "attendance.table.uid",
+            "attendance.table.name",
+            "attendance.table.date",
             "attendance.table.entry_time",
+            "attendance.table.exit_time",
+            "attendance.table.worked_hours",
+            "attendance.table.hourly_rate",
+            "attendance.table.total_salary",
+            "attendance.table.late",
         ])
         self._table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self._table.verticalHeader().setVisible(False)
@@ -258,7 +268,7 @@ class AttendancePage(QWidget):
         date_f = selected_date.toString("yyyy-MM-dd")
 
         emp_f  = self._emp_input.text().strip().lower()
-        late_f = self._late_combo.currentText()
+        late_f = self._late_combo.currentData()
 
         if date_f:
             df = df[df["Date"].astype(str) == date_f]
@@ -288,17 +298,23 @@ class AttendancePage(QWidget):
     def _clear_filters(self):
         self._date_input.setDate(QDate.currentDate())
         self._emp_input.clear()
-        self._late_combo.setCurrentText("All")
+        all_index = self._late_combo.findData("All")
+        if all_index >= 0:
+            self._late_combo.setCurrentIndex(all_index)
         self.refresh()
 
     def _export(self):
         path, _ = QFileDialog.getSaveFileName(
             self,
-            "Export Attendance",
-            "attendance.xlsx",
-            "Excel files (*.xlsx)"
+            self._translator.t("attendance.export.dialog_title"),
+            self._translator.t("attendance.export.file_name"),
+            self._translator.t("attendance.export.filter"),
         )
         if path:
             df = get_attendance_df()
             df.to_excel(path, index=False)
-            QMessageBox.information(self, "Exported", f"Attendance exported to:\n{path}")
+            QMessageBox.information(
+                self,
+                self._translator.t("common.success"),
+                self._translator.t("attendance.export.success", path=path),
+            )

@@ -75,6 +75,7 @@ class PrimesPage(QWidget):
         self._selected_history_index: int = -1
         self._all_employees: list[tuple[str, str]] = []
         self._build_ui()
+        self._translator.language_changed.connect(self._refresh_dynamic_translations)
         self.refresh()
 
     # ── Build ─────────────────────────────────────────────────────────
@@ -142,7 +143,6 @@ class PrimesPage(QWidget):
         right.setSpacing(10)
 
         self._selected_lbl = QLabel(self._translator.t("primes.select_employee"))
-        self._translator.bind_text(self._selected_lbl, "primes.select_employee")
         self._selected_lbl.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
         self._selected_lbl.setStyleSheet(f"color: {TEXT_MUTED}; background: transparent;")
         right.addWidget(self._selected_lbl)
@@ -229,11 +229,13 @@ class PrimesPage(QWidget):
 
     def _filter_employees(self, query: str):
         q = query.strip().lower()
+        previous_uid = self._selected_uid
         filtered = [
             (uid, name) for uid, name in self._all_employees
             if q in name.lower() or q in uid.lower()
         ] if q else self._all_employees
 
+        self._emp_table.blockSignals(True)
         self._emp_table.setRowCount(0)
 
         # "All Employees" option
@@ -250,6 +252,12 @@ class PrimesPage(QWidget):
             item.setData(Qt.ItemDataRole.UserRole, uid)
             item.setToolTip(f"UID: {uid}")
             self._emp_table.setItem(r, 0, item)
+            if uid == previous_uid:
+                self._emp_table.selectRow(r)
+
+        if previous_uid == "*all*":
+            self._emp_table.selectRow(0)
+        self._emp_table.blockSignals(False)
 
     def _load_history(self, uid_filter: str = ""):
         self._hist_table.setRowCount(0)
@@ -392,3 +400,12 @@ class PrimesPage(QWidget):
         self._selected_history_index = -1
         self._del_btn.setVisible(False)
         self._hist_table.clearSelection()
+
+    def _refresh_dynamic_translations(self):
+        if not self._selected_uid:
+            self._selected_lbl.setText(self._translator.t("primes.select_employee"))
+            self._selected_lbl.setStyleSheet(f"color: {TEXT_MUTED}; background: transparent;")
+        elif self._selected_uid == "*all*":
+            self._selected_name = self._translator.t("primes.selected.all_employees")
+            self._selected_lbl.setText(self._selected_name)
+        self._filter_employees(self._search_input.text())
