@@ -21,6 +21,7 @@ from PyQt6.QtGui import QFont, QColor
 
 from services.monthly_report_service import get_monthly_report_filtered
 from services.bulletin_service import generate_bulletins
+from translation_manager import TranslationManager
 
 # ── Palette (same as monthly_report_page.py) ──────────────────────────────────
 ACCENT      = "#2B79FF"
@@ -120,23 +121,26 @@ QScrollBar::handle:vertical {{ background: {BORDER}; border-radius: 3px; }}
 # ── Stat Card ─────────────────────────────────────────────────────────────────
 
 class StatCard(QFrame):
-    def __init__(self, label: str, accent: str, parent=None):
+    def __init__(self, label_key: str, translator: TranslationManager, accent: str, parent=None):
         super().__init__(parent)
         self.setObjectName("statCard")
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self._label_key = label_key
+        self._translator = translator
 
         lay = QVBoxLayout(self)
         lay.setContentsMargins(16, 14, 16, 14)
         lay.setSpacing(4)
 
-        lbl = QLabel(label.upper())
+        lbl = QLabel(self._translator.t(self._label_key).upper())
+        self._label = lbl
         lbl.setStyleSheet(
             f"color: {TEXT_MUTED}; font-size: 10px; font-weight: 600; "
             f"letter-spacing: 0.5px; background: transparent;"
         )
         lay.addWidget(lbl)
 
-        self._val = QLabel("—")
+        self._val = QLabel("-")
         self._val.setStyleSheet(
             f"color: {accent}; font-size: 24px; font-weight: 700; background: transparent;"
         )
@@ -144,6 +148,9 @@ class StatCard(QFrame):
 
     def set_value(self, text: str):
         self._val.setText(text)
+
+    def refresh_translation(self):
+        self._label.setText(self._translator.t(self._label_key).upper())
 
 
 # ── Employee Report Page ──────────────────────────────────────────────────────
@@ -153,8 +160,10 @@ class EmployeeReportPage(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._translator = TranslationManager.instance()
         self.setStyleSheet(STYLESHEET)
         self._build_ui()
+        self._translator.language_changed.connect(self._refresh_dynamic_translations)
         self.refresh()
 
     # ── Build ──────────────────────────────────────────────────────────
@@ -165,7 +174,8 @@ class EmployeeReportPage(QWidget):
         root.setSpacing(14)
 
         # ── Title ──
-        title = QLabel("Employee Reports")
+        title = QLabel(self._translator.t("report.employee.title"))
+        self._translator.bind_text(title, "report.employee.title")
         title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
         title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         root.addWidget(title)
@@ -177,16 +187,16 @@ class EmployeeReportPage(QWidget):
         today = date.today()
 
         # Month
-        frow.addWidget(self._muted("Month:"))
+        frow.addWidget(self._muted("report.employee.filter.month"))
         self._month_combo = QComboBox()
-        for i in range(1, 13):
-            self._month_combo.addItem(calendar.month_name[i], i)
+        month_items = [(f"month.{calendar.month_name[i].lower()}", i) for i in range(1, 13)]
+        self._translator.bind_combo_items(self._month_combo, month_items)
         self._month_combo.setCurrentIndex(today.month - 1)
         self._month_combo.setFixedWidth(120)
         frow.addWidget(self._month_combo)
 
         # Year
-        frow.addWidget(self._muted("Year:"))
+        frow.addWidget(self._muted("report.employee.filter.year"))
         self._year_combo = QComboBox()
         for y in range(today.year - 3, today.year + 2):
             self._year_combo.addItem(str(y), y)
@@ -195,32 +205,35 @@ class EmployeeReportPage(QWidget):
         frow.addWidget(self._year_combo)
 
         # UID — text input (same as monthly_report_page)
-        frow.addWidget(self._muted("UID:"))
+        frow.addWidget(self._muted("report.employee.filter.uid"))
         self._uid_input = QLineEdit()
-        self._uid_input.setPlaceholderText("Filter UID...")
+        self._translator.bind_placeholder(self._uid_input, "report.employee.filter.uid")
         self._uid_input.setFixedWidth(130)
         frow.addWidget(self._uid_input)
 
         # Name — text input (same as monthly_report_page)
-        frow.addWidget(self._muted("Name:"))
+        frow.addWidget(self._muted("report.employee.filter.name"))
         self._name_input = QLineEdit()
-        self._name_input.setPlaceholderText("Filter name...")
+        self._translator.bind_placeholder(self._name_input, "report.employee.filter.name")
         self._name_input.setFixedWidth(150)
         frow.addWidget(self._name_input)
 
         # Apply
-        btn_apply = QPushButton("Apply")
+        btn_apply = QPushButton(self._translator.t("report.employee.button.apply"))
+        self._translator.bind_text(btn_apply, "report.employee.button.apply")
         btn_apply.setObjectName("applyBtn")
         btn_apply.clicked.connect(self.refresh)
         frow.addWidget(btn_apply)
 
         # Clear
-        btn_clear = QPushButton("Clear")
+        btn_clear = QPushButton(self._translator.t("report.employee.button.clear"))
+        self._translator.bind_text(btn_clear, "report.employee.button.clear")
         btn_clear.clicked.connect(self._clear_filters)
         frow.addWidget(btn_clear)
 
         # Generate Bulletin
-        btn_bulletin = QPushButton("Generate Bulletin")
+        btn_bulletin = QPushButton(self._translator.t("report.employee.button.generate_bulletin"))
+        self._translator.bind_text(btn_bulletin, "report.employee.button.generate_bulletin")
         btn_bulletin.setObjectName("bulletinBtn")
         btn_bulletin.clicked.connect(self._generate_bulletin)
         frow.addWidget(btn_bulletin)
@@ -232,10 +245,10 @@ class EmployeeReportPage(QWidget):
         cards_row1 = QHBoxLayout()
         cards_row1.setSpacing(12)
 
-        self._card_travailles = StatCard("Days Worked",  GREEN)
-        self._card_absents    = StatCard("Days Absent",  RED)
-        self._card_late       = StatCard("Late Days",    AMBER)
-        self._card_salary     = StatCard("Total Salary", ACCENT)
+        self._card_travailles = StatCard("report.employee.stat.days_worked", self._translator, GREEN)
+        self._card_absents    = StatCard("report.employee.stat.days_absent", self._translator, RED)
+        self._card_late       = StatCard("report.employee.stat.late_days", self._translator, AMBER)
+        self._card_salary     = StatCard("report.employee.stat.total_salary", self._translator, ACCENT)
 
         for card in (self._card_travailles, self._card_absents,
                      self._card_late, self._card_salary):
@@ -247,9 +260,9 @@ class EmployeeReportPage(QWidget):
         cards_row2 = QHBoxLayout()
         cards_row2.setSpacing(12)
 
-        self._card_advances = StatCard("Total Advances", RED)
-        self._card_primes   = StatCard("Total Primes",   GREEN)
-        self._card_net      = StatCard("Net Salary",     ACCENT)
+        self._card_advances = StatCard("report.employee.stat.total_advances", self._translator, RED)
+        self._card_primes   = StatCard("report.employee.stat.total_primes", self._translator, GREEN)
+        self._card_net      = StatCard("report.employee.stat.net_salary", self._translator, ACCENT)
 
         for card in (self._card_advances, self._card_primes, self._card_net):
             cards_row2.addWidget(card)
@@ -258,18 +271,28 @@ class EmployeeReportPage(QWidget):
         root.addLayout(cards_row2)
 
         # ── Table ──
-        cols = ["UID", "Employee Name", "Date", "Entry Time",
-                "Exit Time", "Worked Hours", "Hourly Rate", "Total Salary", "Late"]
+        cols = [
+            "report.employee.table.uid",
+            "report.employee.table.employee_name",
+            "report.employee.table.date",
+            "report.employee.table.entry_time",
+            "report.employee.table.exit_time",
+            "report.employee.table.worked_hours",
+            "report.employee.table.hourly_rate",
+            "report.employee.table.total_salary",
+            "report.employee.table.late",
+        ]
         self._table = QTableWidget(0, len(cols))
-        self._table.setHorizontalHeaderLabels(cols)
+        self._translator.bind_table_headers(self._table, cols)
         self._table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self._table.verticalHeader().setVisible(False)
         self._table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self._table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         root.addWidget(self._table, stretch=1)
 
-    def _muted(self, text: str) -> QLabel:
-        lbl = QLabel(text)
+    def _muted(self, text_key: str) -> QLabel:
+        lbl = QLabel(self._translator.t(text_key))
+        self._translator.bind_text(lbl, text_key)
         lbl.setStyleSheet(f"color: {TEXT_MUTED}; font-size: 13px; background: transparent;")
         return lbl
 
@@ -338,8 +361,12 @@ class EmployeeReportPage(QWidget):
         try:
             paths = generate_bulletins(month, year, uid_filter, name_filter)
             if paths:
-                msg = f"Generated {len(paths)} bulletin(s):\n" + "\n".join(paths)
-                QMessageBox.information(self, "Success", msg)
+                msg = self._translator.t(
+                    "report.employee.bulletin.generated",
+                    count=len(paths),
+                    paths="\n".join(paths),
+                )
+                QMessageBox.information(self, self._translator.t("common.success"), msg)
                 import subprocess, platform
                 try:
                     if platform.system() == "Windows":
@@ -351,7 +378,26 @@ class EmployeeReportPage(QWidget):
                 except Exception:
                     pass
             else:
-                QMessageBox.information(self, "No Data",
-                    "No bulletins generated (no attendance data found).")
+                QMessageBox.information(
+                    self,
+                    self._translator.t("common.success"),
+                    self._translator.t("report.employee.bulletin.no_data"),
+                )
         except Exception as e:
-            QMessageBox.warning(self, "Error", f"Failed to generate bulletins: {str(e)}")
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.error"),
+                self._translator.t("report.employee.bulletin.failed", error=str(e)),
+            )
+
+    def _refresh_dynamic_translations(self):
+        for card in (
+            self._card_travailles,
+            self._card_absents,
+            self._card_late,
+            self._card_salary,
+            self._card_advances,
+            self._card_primes,
+            self._card_net,
+        ):
+            card.refresh_translation()

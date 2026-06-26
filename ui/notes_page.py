@@ -296,6 +296,7 @@ from PyQt6.QtGui import QFont
 
 from services.advances_service import get_all_advances, add_advance, delete_advance
 from services import employee_service
+from translation_manager import TranslationManager
 
 ACCENT     = "#2B79FF"
 BG_PAGE    = "#F0F2F5"
@@ -342,12 +343,14 @@ class NotesPage(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._translator = TranslationManager.instance()
         self.setStyleSheet(STYLESHEET)
         self._selected_uid: str = ""
         self._selected_name: str = ""
         self._selected_history_index: int = -1
         self._all_employees: list[tuple[str, str]] = []
         self._build_ui()
+        self._translator.language_changed.connect(self._refresh_dynamic_translations)
         self.refresh()
 
     # ── Build ─────────────────────────────────────────────────────────
@@ -357,7 +360,8 @@ class NotesPage(QWidget):
         root.setContentsMargins(20, 20, 20, 20)
         root.setSpacing(14)
 
-        title = QLabel("Advances & Notes")
+        title = QLabel(self._translator.t("notes.title"))
+        self._translator.bind_text(title, "notes.title")
         title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
         title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         root.addWidget(title)
@@ -374,13 +378,14 @@ class NotesPage(QWidget):
         ll.setContentsMargins(12, 12, 12, 12)
         ll.setSpacing(8)
 
-        lbl = QLabel("Select Employee")
+        lbl = QLabel(self._translator.t("notes.select_employee"))
+        self._translator.bind_text(lbl, "notes.select_employee")
         lbl.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
         lbl.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         ll.addWidget(lbl)
 
         self._search_input = QLineEdit()
-        self._search_input.setPlaceholderText("Search name or UID...")
+        self._translator.bind_placeholder(self._search_input, "notes.search.placeholder")
         self._search_input.textChanged.connect(self._filter_employees)
         ll.addWidget(self._search_input)
 
@@ -400,7 +405,7 @@ class NotesPage(QWidget):
         right = QVBoxLayout()
         right.setSpacing(10)
 
-        self._selected_lbl = QLabel("← Select an employee")
+        self._selected_lbl = QLabel(self._translator.t("notes.selected.select_employee"))
         self._selected_lbl.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
         self._selected_lbl.setStyleSheet(f"color: {TEXT_MUTED}; background: transparent;")
         right.addWidget(self._selected_lbl)
@@ -412,42 +417,54 @@ class NotesPage(QWidget):
         fl.setContentsMargins(16, 14, 16, 14)
         fl.setSpacing(12)
 
-        fl.addWidget(self._muted("Amount (DH):"))
+        fl.addWidget(self._muted("notes.field.amount"))
         self._amount_input = QLineEdit()
-        self._amount_input.setPlaceholderText("ex: 500")
+        self._translator.bind_placeholder(self._amount_input, "notes.placeholder.amount")
         self._amount_input.setFixedWidth(110)
         fl.addWidget(self._amount_input)
 
-        fl.addWidget(self._muted("Note:"))
+        fl.addWidget(self._muted("notes.field.note"))
         self._note_input = QLineEdit()
-        self._note_input.setPlaceholderText("Avance sur salaire...")
+        self._translator.bind_placeholder(self._note_input, "notes.placeholder.note")
         fl.addWidget(self._note_input, stretch=1)
 
-        self._save_btn = QPushButton("Save Advance")
+        self._save_btn = QPushButton(self._translator.t("notes.button.save"))
+        self._translator.bind_text(self._save_btn, "notes.button.save")
         self._save_btn.setObjectName("saveBtn")
         self._save_btn.clicked.connect(self._save_advance)
         fl.addWidget(self._save_btn)
 
-        self._del_btn = QPushButton("Delete")
+        self._del_btn = QPushButton(self._translator.t("notes.button.delete"))
+        self._translator.bind_text(self._del_btn, "notes.button.delete")
         self._del_btn.setObjectName("delBtn")
         self._del_btn.clicked.connect(self._delete_advance)
         self._del_btn.setVisible(False)
         fl.addWidget(self._del_btn)
 
-        btn_clear = QPushButton("Clear")
+        btn_clear = QPushButton(self._translator.t("notes.button.clear"))
+        self._translator.bind_text(btn_clear, "notes.button.clear")
         btn_clear.clicked.connect(self._clear_form)
         fl.addWidget(btn_clear)
 
         right.addWidget(form_card)
 
-        hist_lbl = QLabel("Advance History")
+        hist_lbl = QLabel(self._translator.t("notes.history.title"))
+        self._translator.bind_text(hist_lbl, "notes.history.title")
         hist_lbl.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
         hist_lbl.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         right.addWidget(hist_lbl)
 
-        cols = ["UID", "Employee Name", "Amount (DH)", "Date", "Note", "Month", "Year"]
+        cols = [
+            "notes.table.uid",
+            "notes.table.employee_name",
+            "notes.table.amount",
+            "notes.table.date",
+            "notes.table.note",
+            "notes.table.month",
+            "notes.table.year",
+        ]
         self._hist_table = QTableWidget(0, len(cols))
-        self._hist_table.setHorizontalHeaderLabels(cols)
+        self._translator.bind_table_headers(self._hist_table, cols)
         self._hist_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self._hist_table.verticalHeader().setVisible(False)
         self._hist_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
@@ -458,7 +475,8 @@ class NotesPage(QWidget):
         body.addLayout(right, stretch=1)
 
     def _muted(self, text: str) -> QLabel:
-        lbl = QLabel(text)
+        lbl = QLabel(self._translator.t(text))
+        self._translator.bind_text(lbl, text)
         lbl.setStyleSheet(f"color: {TEXT_MUTED}; font-size: 12px; background: transparent;")
         return lbl
 
@@ -474,19 +492,21 @@ class NotesPage(QWidget):
 
     def _filter_employees(self, query: str):
         q = query.strip().lower()
+        previous_uid = self._selected_uid
         filtered = [
             (uid, name) for uid, name in self._all_employees
             if q in name.lower() or q in uid.lower()
         ] if q else self._all_employees
 
+        self._emp_table.blockSignals(True)
         self._emp_table.setRowCount(0)
         
         # Add "All Employees" option at the top
         r = self._emp_table.rowCount()
         self._emp_table.insertRow(r)
-        all_item = QTableWidgetItem("All Employees")
+        all_item = QTableWidgetItem(self._translator.t("notes.selected.all_employees"))
         all_item.setData(Qt.ItemDataRole.UserRole, "*all*")
-        all_item.setToolTip("Show all employees advances")
+        all_item.setToolTip(self._translator.t("notes.tooltip.show_all"))
         self._emp_table.setItem(r, 0, all_item)
         
         # Add filtered employees
@@ -497,6 +517,12 @@ class NotesPage(QWidget):
             item.setData(Qt.ItemDataRole.UserRole, uid)
             item.setToolTip(f"UID: {uid}")
             self._emp_table.setItem(r, 0, item)
+            if uid == previous_uid:
+                self._emp_table.selectRow(r)
+
+        if previous_uid == "*all*":
+            self._emp_table.selectRow(0)
+        self._emp_table.blockSignals(False)
 
     def _load_history(self, uid_filter: str = ""):
         self._hist_table.setRowCount(0)
@@ -538,7 +564,10 @@ class NotesPage(QWidget):
             return
         self._selected_uid  = item.data(Qt.ItemDataRole.UserRole)
         self._selected_name = item.text()
-        self._selected_lbl.setText(f"{self._selected_name}")
+        if self._selected_uid == "*all*":
+            self._selected_lbl.setText(self._translator.t("notes.selected.all_employees"))
+        else:
+            self._selected_lbl.setText(f"{self._selected_name}")
         self._selected_lbl.setStyleSheet(
             f"color: {ACCENT}; font-size: 14px; font-weight: 700; background: transparent;"
         )
@@ -581,33 +610,47 @@ class NotesPage(QWidget):
     # ── Actions ───────────────────────────────────────────────────────
 
     def _save_advance(self):
-        if not self._selected_uid:
-            QMessageBox.warning(self, "Validation", "Please select an employee first.")
+        if not self._selected_uid or self._selected_uid == "*all*":
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.validation"),
+                self._translator.t("notes.validation.select_employee"),
+            )
             return
         amount_str = self._amount_input.text().strip()
         note       = self._note_input.text().strip()
         if not amount_str:
-            QMessageBox.warning(self, "Validation", "Please enter an amount.")
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.validation"),
+                self._translator.t("notes.validation.enter_amount"),
+            )
             return
         try:
             amount = float(amount_str)
         except ValueError:
-            QMessageBox.warning(self, "Validation", "Amount must be a number.")
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.validation"),
+                self._translator.t("notes.validation.amount_number"),
+            )
             return
 
         ok, msg = add_advance(self._selected_uid, self._selected_name, amount, note)
         if ok:
-            QMessageBox.information(self, "Success", msg)
+            QMessageBox.information(self, self._translator.t("common.success"), msg)
             self._clear_form()
             self._load_history(uid_filter=self._selected_uid)
         else:
-            QMessageBox.warning(self, "Error", msg)
+            QMessageBox.warning(self, self._translator.t("common.error"), msg)
 
     def _delete_advance(self):
         if self._selected_history_index < 0:
             return
         reply = QMessageBox.question(
-            self, "Confirm", "Delete this advance record?",
+            self,
+            self._translator.t("common.confirm"),
+            self._translator.t("notes.confirm.delete"),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
         if reply != QMessageBox.StandardButton.Yes:
@@ -617,7 +660,7 @@ class NotesPage(QWidget):
             self._clear_form()
             self._load_history(uid_filter=self._selected_uid)
         else:
-            QMessageBox.warning(self, "Error", msg)
+            QMessageBox.warning(self, self._translator.t("common.error"), msg)
 
     def _clear_form(self):
         self._amount_input.clear()
@@ -625,3 +668,12 @@ class NotesPage(QWidget):
         self._selected_history_index = -1
         self._del_btn.setVisible(False)
         self._hist_table.clearSelection()
+
+    def _refresh_dynamic_translations(self):
+        if not self._selected_uid:
+            self._selected_lbl.setText(self._translator.t("notes.selected.select_employee"))
+            self._selected_lbl.setStyleSheet(f"color: {TEXT_MUTED}; background: transparent;")
+        elif self._selected_uid == "*all*":
+            self._selected_name = self._translator.t("notes.selected.all_employees")
+            self._selected_lbl.setText(self._selected_name)
+        self._filter_employees(self._search_input.text())

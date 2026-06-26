@@ -6,6 +6,8 @@ Prime ADDS to the monthly net salary.
 """
 
 from __future__ import annotations
+from translation_manager import TranslationManager
+
 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
@@ -66,12 +68,14 @@ class PrimesPage(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._translator = TranslationManager.instance()
         self.setStyleSheet(STYLESHEET)
         self._selected_uid: str = ""
         self._selected_name: str = ""
         self._selected_history_index: int = -1
         self._all_employees: list[tuple[str, str]] = []
         self._build_ui()
+        self._translator.language_changed.connect(self._refresh_dynamic_translations)
         self.refresh()
 
     # ── Build ─────────────────────────────────────────────────────────
@@ -83,12 +87,14 @@ class PrimesPage(QWidget):
 
         # Title + badge
         title_row = QHBoxLayout()
-        title = QLabel("Primes")
+        title = QLabel(self._translator.t("primes.title"))
+        self._translator.bind_text(title, "primes.title")
         title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
         title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         title_row.addWidget(title)
 
-        badge = QLabel("+  Adds to Net Salary")
+        badge = QLabel(self._translator.t("primes.badge"))
+        self._translator.bind_text(badge, "primes.badge")
         badge.setStyleSheet(
             f"background: #EBF2FF; color: {ACCENT}; font-size: 11px; font-weight: 600;"
             f"border-radius: 10px; padding: 3px 10px;"
@@ -109,13 +115,14 @@ class PrimesPage(QWidget):
         ll.setContentsMargins(12, 12, 12, 12)
         ll.setSpacing(8)
 
-        lbl = QLabel("Select Employee")
+        lbl = QLabel(self._translator.t("primes.select_employee"))
+        self._translator.bind_text(lbl, "primes.select_employee")
         lbl.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
         lbl.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         ll.addWidget(lbl)
 
         self._search_input = QLineEdit()
-        self._search_input.setPlaceholderText(" Search name or UID...")
+        self._translator.bind_placeholder(self._search_input, "primes.search.placeholder")
         self._search_input.textChanged.connect(self._filter_employees)
         ll.addWidget(self._search_input)
 
@@ -135,7 +142,7 @@ class PrimesPage(QWidget):
         right = QVBoxLayout()
         right.setSpacing(10)
 
-        self._selected_lbl = QLabel("← Select an employee")
+        self._selected_lbl = QLabel(self._translator.t("primes.select_employee"))
         self._selected_lbl.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
         self._selected_lbl.setStyleSheet(f"color: {TEXT_MUTED}; background: transparent;")
         right.addWidget(self._selected_lbl)
@@ -147,42 +154,54 @@ class PrimesPage(QWidget):
         fl.setContentsMargins(16, 14, 16, 14)
         fl.setSpacing(12)
 
-        fl.addWidget(self._muted("Amount (DH):"))
+        fl.addWidget(self._muted("primes.field.amount"))
         self._amount_input = QLineEdit()
-        self._amount_input.setPlaceholderText("ex: 500")
+        self._translator.bind_placeholder(self._amount_input, "primes.placeholder.amount")
         self._amount_input.setFixedWidth(110)
         fl.addWidget(self._amount_input)
 
-        fl.addWidget(self._muted("Note:"))
+        fl.addWidget(self._muted("primes.field.note"))
         self._note_input = QLineEdit()
-        self._note_input.setPlaceholderText("Prime de rendement...")
+        self._translator.bind_placeholder(self._note_input, "primes.placeholder.note")
         fl.addWidget(self._note_input, stretch=1)
 
-        self._save_btn = QPushButton("Save Prime")
+        self._save_btn = QPushButton(self._translator.t("primes.button.save"))
+        self._translator.bind_text(self._save_btn, "primes.button.save")
         self._save_btn.setObjectName("saveBtn")
         self._save_btn.clicked.connect(self._save_prime)
         fl.addWidget(self._save_btn)
 
-        self._del_btn = QPushButton("Delete")
+        self._del_btn = QPushButton(self._translator.t("primes.button.delete"))
+        self._translator.bind_text(self._del_btn, "primes.button.delete")
         self._del_btn.setObjectName("delBtn")
         self._del_btn.clicked.connect(self._delete_prime)
         self._del_btn.setVisible(False)
         fl.addWidget(self._del_btn)
 
-        btn_clear = QPushButton("Clear")
+        btn_clear = QPushButton(self._translator.t("primes.button.clear"))
+        self._translator.bind_text(btn_clear, "primes.button.clear")
         btn_clear.clicked.connect(self._clear_form)
         fl.addWidget(btn_clear)
 
         right.addWidget(form_card)
 
-        hist_lbl = QLabel("Prime History")
+        hist_lbl = QLabel(self._translator.t("primes.history.title"))
+        self._translator.bind_text(hist_lbl, "primes.history.title")
         hist_lbl.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
         hist_lbl.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         right.addWidget(hist_lbl)
 
-        cols = ["UID", "Employee Name", "Amount (DH)", "Date", "Note", "Month", "Year"]
+        cols = [
+            "primes.table.uid",
+            "primes.table.employee_name",
+            "primes.table.amount",
+            "primes.table.date",
+            "primes.table.note",
+            "primes.table.month",
+            "primes.table.year",
+        ]
         self._hist_table = QTableWidget(0, len(cols))
-        self._hist_table.setHorizontalHeaderLabels(cols)
+        self._translator.bind_table_headers(self._hist_table, cols)
         self._hist_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self._hist_table.verticalHeader().setVisible(False)
         self._hist_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
@@ -192,8 +211,9 @@ class PrimesPage(QWidget):
 
         body.addLayout(right, stretch=1)
 
-    def _muted(self, text: str) -> QLabel:
-        lbl = QLabel(text)
+    def _muted(self, text_key: str) -> QLabel:
+        lbl = QLabel(self._translator.t(text_key))
+        self._translator.bind_text(lbl, text_key)
         lbl.setStyleSheet(f"color: {TEXT_MUTED}; font-size: 12px; background: transparent;")
         return lbl
 
@@ -209,15 +229,17 @@ class PrimesPage(QWidget):
 
     def _filter_employees(self, query: str):
         q = query.strip().lower()
+        previous_uid = self._selected_uid
         filtered = [
             (uid, name) for uid, name in self._all_employees
             if q in name.lower() or q in uid.lower()
         ] if q else self._all_employees
 
+        self._emp_table.blockSignals(True)
         self._emp_table.setRowCount(0)
 
         # "All Employees" option
-        all_item = QTableWidgetItem("All Employees")
+        all_item = QTableWidgetItem(self._translator.t("primes.selected.all_employees"))
         all_item.setData(Qt.ItemDataRole.UserRole, "*all*")
         all_item.setForeground(QColor(ACCENT))
         self._emp_table.insertRow(0)
@@ -230,6 +252,12 @@ class PrimesPage(QWidget):
             item.setData(Qt.ItemDataRole.UserRole, uid)
             item.setToolTip(f"UID: {uid}")
             self._emp_table.setItem(r, 0, item)
+            if uid == previous_uid:
+                self._emp_table.selectRow(r)
+
+        if previous_uid == "*all*":
+            self._emp_table.selectRow(0)
+        self._emp_table.blockSignals(False)
 
     def _load_history(self, uid_filter: str = ""):
         self._hist_table.setRowCount(0)
@@ -273,7 +301,7 @@ class PrimesPage(QWidget):
         self._selected_name = item.text()
 
         if self._selected_uid == "*all*":
-            self._selected_lbl.setText("All Employees")
+            self._selected_lbl.setText(self._translator.t("primes.selected.all_employees"))
         else:
             self._selected_lbl.setText(f"{self._selected_name}")
         self._selected_lbl.setStyleSheet(
@@ -315,32 +343,46 @@ class PrimesPage(QWidget):
 
     def _save_prime(self):
         if not self._selected_uid or self._selected_uid == "*all*":
-            QMessageBox.warning(self, "Validation", "Please select a specific employee.")
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.validation"),
+                self._translator.t("primes.validation.select_employee"),
+            )
             return
         amount_str = self._amount_input.text().strip()
         note       = self._note_input.text().strip()
         if not amount_str:
-            QMessageBox.warning(self, "Validation", "Please enter an amount.")
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.validation"),
+                self._translator.t("primes.validation.enter_amount"),
+            )
             return
         try:
             amount = float(amount_str)
         except ValueError:
-            QMessageBox.warning(self, "Validation", "Amount must be a number.")
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.validation"),
+                self._translator.t("primes.validation.amount_number"),
+            )
             return
 
         ok, msg = add_prime(self._selected_uid, self._selected_name, amount, note)
         if ok:
-            QMessageBox.information(self, "Success", msg)
+            QMessageBox.information(self, self._translator.t("common.success"), msg)
             self._clear_form()
             self._load_history(uid_filter=self._selected_uid)
         else:
-            QMessageBox.warning(self, "Error", msg)
+            QMessageBox.warning(self, self._translator.t("common.error"), msg)
 
     def _delete_prime(self):
         if self._selected_history_index < 0:
             return
         reply = QMessageBox.question(
-            self, "Confirm", "Delete this prime record?",
+            self,
+            self._translator.t("common.confirm"),
+            self._translator.t("primes.confirm.delete"),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
         if reply != QMessageBox.StandardButton.Yes:
@@ -350,7 +392,7 @@ class PrimesPage(QWidget):
             self._clear_form()
             self._load_history(uid_filter=self._selected_uid)
         else:
-            QMessageBox.warning(self, "Error", msg)
+            QMessageBox.warning(self, self._translator.t("common.error"), msg)
 
     def _clear_form(self):
         self._amount_input.clear()
@@ -358,3 +400,12 @@ class PrimesPage(QWidget):
         self._selected_history_index = -1
         self._del_btn.setVisible(False)
         self._hist_table.clearSelection()
+
+    def _refresh_dynamic_translations(self):
+        if not self._selected_uid:
+            self._selected_lbl.setText(self._translator.t("primes.select_employee"))
+            self._selected_lbl.setStyleSheet(f"color: {TEXT_MUTED}; background: transparent;")
+        elif self._selected_uid == "*all*":
+            self._selected_name = self._translator.t("primes.selected.all_employees")
+            self._selected_lbl.setText(self._selected_name)
+        self._filter_employees(self._search_input.text())

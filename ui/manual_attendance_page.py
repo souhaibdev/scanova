@@ -16,6 +16,7 @@ from PyQt6.QtCore import Qt, QDate
 from PyQt6.QtGui import QFont
 
 from services.manual_attendance_service import add_manual_record, get_missing_employees
+from translation_manager import TranslationManager
 
 ACCENT     = "#2B79FF"
 BG_PAGE    = "#F0F2F5"
@@ -128,6 +129,7 @@ class ManualAttendancePage(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._translator = TranslationManager.instance()
         self.setStyleSheet(STYLESHEET)
         self._build_ui()
         self.refresh()
@@ -139,12 +141,14 @@ class ManualAttendancePage(QWidget):
         root.setContentsMargins(20, 20, 20, 20)
         root.setSpacing(14)
 
-        title = QLabel("Manual Attendance Entry")
+        title = QLabel(self._translator.t("manual.title"))
+        self._translator.bind_text(title, "manual.title")
         title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
         title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         root.addWidget(title)
 
-        subtitle = QLabel("Employees without a complete record today.")
+        subtitle = QLabel(self._translator.t("manual.subtitle"))
+        self._translator.bind_text(subtitle, "manual.subtitle")
         subtitle.setStyleSheet(f"color: {TEXT_MUTED}; font-size: 12px; background: transparent;")
         root.addWidget(subtitle)
 
@@ -154,7 +158,13 @@ class ManualAttendancePage(QWidget):
 
         # ── Table ──────────────────────────────────────────────────────
         self._table = QTableWidget(0, len(COLS))
-        self._table.setHorizontalHeaderLabels(COLS)
+        self._translator.bind_table_headers(self._table, [
+            "employee.table.uid",
+            "employee.table.cin",
+            "employee.table.full_name",
+            "manual.field.entry_time",
+            "manual.field.status",
+        ])
         self._table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self._table.verticalHeader().setVisible(False)
         self._table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
@@ -172,65 +182,68 @@ class ManualAttendancePage(QWidget):
         fl.setContentsMargins(20, 20, 20, 20)
         fl.setSpacing(0)
 
-        form_title = QLabel("Add Record")
+        form_title = QLabel(self._translator.t("manual.form.title"))
+        self._translator.bind_text(form_title, "manual.form.title")
         form_title.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
         form_title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         fl.addWidget(form_title)
         fl.addSpacing(16)
 
-        def add_field(label_text, widget):
-            fl.addWidget(self._muted_label(label_text))
-            fl.addSpacing(4)
+        def add_field(label_key, widget):
+            fl.addWidget(self._muted_label(label_key))
             fl.addWidget(widget)
-            fl.addSpacing(12)
 
         self._inp_uid = QLineEdit()
         self._inp_uid.setFixedHeight(36)
-        self._inp_uid.setPlaceholderText("ex: A1B2C3D4")
-        add_field("UID (NFC Card)", self._inp_uid)
+        self._translator.bind_placeholder(self._inp_uid, "manual.placeholder.uid")
+        add_field("manual.field.uid", self._inp_uid)
 
         self._inp_name = QLineEdit()
         self._inp_name.setFixedHeight(36)
         self._inp_name.setReadOnly(True)
         self._inp_name.setStyleSheet(f"background: #F5F8FF; color: {TEXT_MUTED};")
-        add_field("Employee Name", self._inp_name)
+        add_field("employee.field.full_name", self._inp_name)
 
         self._inp_cin = QLineEdit()
         self._inp_cin.setFixedHeight(36)
         self._inp_cin.setReadOnly(True)
         self._inp_cin.setStyleSheet(f"background: #F5F8FF; color: {TEXT_MUTED};")
-        add_field("CIN", self._inp_cin)
+        add_field("employee.field.cin", self._inp_cin)
 
         self._inp_date = QDateEdit()
         self._inp_date.setFixedHeight(36)
         self._inp_date.setCalendarPopup(True)
         self._inp_date.setDate(QDate.currentDate())
         self._inp_date.setDisplayFormat("yyyy-MM-dd")
-        add_field("Date", self._inp_date)
+        add_field("manual.field.date", self._inp_date)
 
         self._inp_entry = QLineEdit()
         self._inp_entry.setFixedHeight(36)
-        self._inp_entry.setPlaceholderText("08:30")
-        add_field("Entry Time (HH:MM)", self._inp_entry)
+        self._inp_entry.setInputMask("00:00")
+        self._translator.bind_placeholder(self._inp_entry, "manual.placeholder.entry")
+        add_field("manual.field.entry_time", self._inp_entry)
 
         self._inp_exit = QLineEdit()
         self._inp_exit.setFixedHeight(36)
-        self._inp_exit.setPlaceholderText("17:00  —  optional")
-        self._inp_exit.setToolTip("Leave empty to record entry only.")
-        add_field("Exit Time (HH:MM)", self._inp_exit)
+        self._inp_exit.setInputMask("00:00")
+        self._translator.bind_placeholder(self._inp_exit, "manual.placeholder.exit")
+        self._translator.bind_tooltip(self._inp_exit, "manual.tooltip.exit_optional")
+        add_field("manual.field.exit_time", self._inp_exit)
 
         fl.addSpacing(4)
 
         btn_row = QHBoxLayout()
         btn_row.setSpacing(8)
 
-        btn_clear = QPushButton("Clear")
+        btn_clear = QPushButton(self._translator.t("manual.button.clear"))
+        self._translator.bind_text(btn_clear, "manual.button.clear")
         btn_clear.setObjectName("clearBtn")
         btn_clear.setFixedHeight(38)
         btn_clear.clicked.connect(self._clear_form)
         btn_row.addWidget(btn_clear)
 
-        btn_save = QPushButton("Save Record")
+        btn_save = QPushButton(self._translator.t("manual.button.save"))
+        self._translator.bind_text(btn_save, "manual.button.save")
         btn_save.setObjectName("saveBtn")
         btn_save.setFixedHeight(38)
         btn_save.clicked.connect(self._save)
@@ -240,8 +253,9 @@ class ManualAttendancePage(QWidget):
         fl.addStretch()
         body.addWidget(form_card, stretch=0)
 
-    def _muted_label(self, text: str) -> QLabel:
-        lbl = QLabel(text)
+    def _muted_label(self, text_key: str) -> QLabel:
+        lbl = QLabel(self._translator.t(text_key))
+        self._translator.bind_text(lbl, text_key)
         lbl.setStyleSheet(
             f"color: {TEXT_MUTED}; font-size: 11px; font-weight: 600; "
             f"letter-spacing: 0.4px; background: transparent;"
@@ -302,8 +316,10 @@ class ManualAttendancePage(QWidget):
         else:
             self._inp_entry.clear()
             self._inp_entry.setReadOnly(False)
+            self._inp_entry.setEnabled(True)
             self._inp_entry.setStyleSheet("")
             self._inp_exit.clear()
+            self._inp_exit.setEnabled(True)
 
     # ── Actions ────────────────────────────────────────────────────────
 
@@ -314,27 +330,43 @@ class ManualAttendancePage(QWidget):
         exit_time  = self._inp_exit.text().strip()
 
         if not uid:
-            QMessageBox.warning(self, "Validation", "UID is required.")
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.validation"),
+                self._translator.t("manual.validation.uid_required"),
+            )
             return
         if not entry_time:
-            QMessageBox.warning(self, "Validation", "Entry Time is required.")
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.validation"),
+                self._translator.t("manual.validation.entry_required"),
+            )
             return
 
         time_re = re.compile(r"^\d{2}:\d{2}$")
         if not time_re.match(entry_time):
-            QMessageBox.warning(self, "Validation", "Entry Time must be HH:MM (ex: 08:30)")
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.validation"),
+                self._translator.t("manual.validation.entry_format"),
+            )
             return
         if exit_time and not time_re.match(exit_time):
-            QMessageBox.warning(self, "Validation", "Exit Time must be HH:MM (ex: 17:00)")
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.validation"),
+                self._translator.t("manual.validation.exit_format"),
+            )
             return
 
         ok, msg = add_manual_record(uid, date_str, entry_time, exit_time)
         if ok:
             self.refresh()
             self._clear_form()
-            QMessageBox.information(self, "Success", msg)
+            QMessageBox.information(self, self._translator.t("common.success"), msg)
         else:
-            QMessageBox.warning(self, "Error", msg)
+            QMessageBox.warning(self, self._translator.t("common.error"), msg)
 
     def _clear_form(self):
         self._inp_uid.clear()

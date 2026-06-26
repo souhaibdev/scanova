@@ -57,8 +57,12 @@ def _ensure_data_files():
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget
 
 from utils.file_utils import setup_logging, ensure_directories
+from ui.activation_page import ActivationPage
 from ui.login_page import LoginPage
 from ui.main_window import MainWindow
+from translation_manager import TranslationManager
+from services import license_service
+from services.attendance_cleanup_service import cleanup_old_attendance_months
 
 
 # ─────────────────────────────────────────────
@@ -69,7 +73,7 @@ class AppWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("SCANOVA")
+        self.setWindowTitle(TranslationManager.instance().t("app.title"))
         self.resize(1200, 750)
         self.setMinimumSize(1000, 600)
 
@@ -77,12 +81,43 @@ class AppWindow(QMainWindow):
         self.setCentralWidget(self.stack)
 
         self.main_window = None
-        self._show_login()
+        self.login_page = None
+        self.activation_page = None
+        self._show_initial_page()
+
+    def _show_initial_page(self):
+        if not license_service.is_activated():
+            self._show_activation()
+        else:
+            self._show_login()
+
+    def _show_activation(self):
+        self.main_window = self._clear_page(self.main_window)
+        self.login_page = self._clear_page(self.login_page)
+
+        if self.activation_page is None:
+            self.activation_page = ActivationPage(self.stack, on_activate=self._show_login)
+            self.stack.addWidget(self.activation_page)
+        self.stack.setCurrentWidget(self.activation_page)
 
     def _show_login(self):
-        login = LoginPage(self.stack, on_login_success=self._on_login_success)
-        self.stack.addWidget(login)
-        self.stack.setCurrentWidget(login)
+        self.activation_page = self._clear_page(self.activation_page)
+        self.main_window = self._clear_page(self.main_window)
+
+        if self.login_page is None:
+            self.login_page = LoginPage(self.stack, on_login_success=self._on_login_success)
+            self.stack.addWidget(self.login_page)
+        self.stack.setCurrentWidget(self.login_page)
+
+    def _clear_page(self, page):
+        if page is None:
+            return None
+        try:
+            self.stack.removeWidget(page)
+        except Exception:
+            pass
+        page.deleteLater()
+        return None
 
     def _on_login_success(self, username: str):
         if self.main_window:
@@ -119,9 +154,16 @@ def main():
     _ensure_data_files()
     ensure_directories()
     setup_logging()
+    cleanup_old_attendance_months()
 
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
+
+    translator = TranslationManager.instance()
+    app.setLayoutDirection(translator.qt_layout_direction)
+    translator.language_changed.connect(
+        lambda lang: app.setLayoutDirection(translator.qt_layout_direction)
+    )
 
     window = AppWindow()
     window.show()

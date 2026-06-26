@@ -27,14 +27,21 @@ def parse_time(time_str: str) -> datetime:
 
 
 def calc_worked_hours(entry_str: str, exit_str: str) -> float:
-    """Return the worked hours between entry and exit as decimal hours."""
+    """Return the worked hours between entry and exit using a 45-minute rounding rule."""
     entry = parse_time(entry_str)
     exit_ = parse_time(exit_str)
     delta = exit_ - entry
     if delta.total_seconds() < 0:
         delta += timedelta(days=1)
-    hours = delta.total_seconds() / 3600
-    return round(hours, 2)
+
+    total_minutes = int(delta.total_seconds() // 60)
+    full_hours = total_minutes // 60
+    remaining_minutes = total_minutes % 60
+
+    if remaining_minutes >= 45:
+        full_hours += 1
+
+    return float(full_hours)
 
 
 def is_late(entry_str: str, expected_start: str, grace_minutes: int = 15) -> bool:

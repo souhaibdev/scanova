@@ -7,6 +7,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 
 from services.attendance_service import get_dashboard_stats
+from translation_manager import TranslationManager
 
 
 ACCENT      = "#2B79FF"
@@ -65,16 +66,19 @@ QScrollBar::handle:vertical {{
 
 
 class KpiCard(QFrame):
-    def __init__(self, title: str, parent=None):
+    def __init__(self, title_key: str, translator: TranslationManager, parent=None):
         super().__init__(parent)
         self.setObjectName("kpiCard")
         self.setMinimumWidth(130)
+        self._translator = translator
+        self._title_key = title_key
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(16, 14, 16, 14)
         layout.setSpacing(4)
 
-        lbl_title = QLabel(title)
+        lbl_title = QLabel(self._translator.t(self._title_key))
+        self._translator.bind_text(lbl_title, self._title_key)
         lbl_title.setFont(QFont("Segoe UI", 10, QFont.Weight.DemiBold))
         lbl_title.setStyleSheet(f"color: {TEXT_MUTED}; background: transparent; border: none;")
         layout.addWidget(lbl_title)
@@ -93,6 +97,7 @@ class DashboardPage(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._translator = TranslationManager.instance()
         self.setStyleSheet(STYLESHEET)
         self._kpi_cards: dict[str, KpiCard] = {}
         self._build_ui()
@@ -105,7 +110,8 @@ class DashboardPage(QWidget):
         root.setContentsMargins(20, 20, 20, 20)
         root.setSpacing(16)
 
-        title = QLabel("Dashboard")
+        title = QLabel(self._translator.t("dashboard.title"))
+        self._translator.bind_text(title, "dashboard.title")
         title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
         title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         root.addWidget(title)
@@ -114,27 +120,32 @@ class DashboardPage(QWidget):
         kpi_row.setSpacing(12)
 
         kpi_defs = [
-            ("total_employees", "Total Employees"),
-            ("present_today",   "Present Today"),
-            ("absent_today",    "Absent Today"),       # ← بدلنا worked hours
-            ("late_today",      "Late Today"),
+            ("total_employees", "dashboard.kpi.total_employees"),
+            ("present_today",   "dashboard.kpi.present_today"),
+            ("absent_today",    "dashboard.kpi.absent_today"),
+            ("late_today",      "dashboard.kpi.late_today"),
         ]
-        for key, label in kpi_defs:
-            card = KpiCard(label)
+        for key, label_key in kpi_defs:
+            card = KpiCard(label_key, self._translator)
             card.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
             kpi_row.addWidget(card)
             self._kpi_cards[key] = card
 
         root.addLayout(kpi_row)
 
-        section_lbl = QLabel("Late Employees Today")
+        section_lbl = QLabel(self._translator.t("dashboard.section.late_employees"))
+        self._translator.bind_text(section_lbl, "dashboard.section.late_employees")
         section_lbl.setFont(QFont("Segoe UI", 13, QFont.Weight.Bold))
         section_lbl.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         root.addWidget(section_lbl)
 
-        cols = ["Name", "UID", "Entry Time"]
+        cols = [
+            "attendance.table.name",
+            "attendance.table.uid",
+            "attendance.table.entry_time",
+        ]
         self._table = QTableWidget(0, len(cols))
-        self._table.setHorizontalHeaderLabels(cols)
+        self._translator.bind_table_headers(self._table, cols)
         self._table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self._table.verticalHeader().setVisible(False)
         self._table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)

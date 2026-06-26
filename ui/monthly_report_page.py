@@ -19,6 +19,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QColor
+from translation_manager import TranslationManager
 
 # ── Palette ───────────────────────────────────────────────────────────────────
 ACCENT      = "#2B79FF"
@@ -104,23 +105,26 @@ QScrollBar::handle:vertical {{ background: {BORDER}; border-radius: 3px; }}
 # ── Stat Card ─────────────────────────────────────────────────────────────────
 
 class StatCard(QFrame):
-    def __init__(self, label: str, accent: str, parent=None):
+    def __init__(self, label_key: str, translator: TranslationManager, accent: str, parent=None):
         super().__init__(parent)
         self.setObjectName("statCard")
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self._label_key = label_key
+        self._translator = translator
 
         lay = QVBoxLayout(self)
         lay.setContentsMargins(16, 14, 16, 14)
         lay.setSpacing(4)
 
-        lbl = QLabel(label.upper())
+        lbl = QLabel(self._translator.t(self._label_key).upper())
+        self._label = lbl
         lbl.setStyleSheet(
             f"color: {TEXT_MUTED}; font-size: 10px; font-weight: 600; "
             f"letter-spacing: 0.5px; background: transparent;"
         )
         lay.addWidget(lbl)
 
-        self._val = QLabel("—")
+        self._val = QLabel("-")
         self._val.setStyleSheet(
             f"color: {accent}; font-size: 24px; font-weight: 700; background: transparent;"
         )
@@ -128,6 +132,9 @@ class StatCard(QFrame):
 
     def set_value(self, text: str):
         self._val.setText(text)
+
+    def refresh_translation(self):
+        self._label.setText(self._translator.t(self._label_key).upper())
 
 
 # ── Last 15 Days Report Page ──────────────────────────────────────────────────
@@ -137,8 +144,10 @@ class MonthlyReportPage(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._translator = TranslationManager.instance()
         self.setStyleSheet(STYLESHEET)
         self._build_ui()
+        self._translator.language_changed.connect(self._refresh_dynamic_translations)
         self.refresh()
 
     # ── Build ──────────────────────────────────────────────────────────
@@ -161,31 +170,37 @@ class MonthlyReportPage(QWidget):
         # UID
         frow.addWidget(self._muted("UID:"))
         self._uid_input = QLineEdit()
-        self._uid_input.setPlaceholderText("Filter UID...")
+        self._translator.bind_placeholder(self._uid_input, "monthly.filter.uid")
         self._uid_input.setFixedWidth(120)
         frow.addWidget(self._uid_input)
 
         # Name
-        frow.addWidget(self._muted("Name:"))
+        frow.addWidget(self._muted("monthly.filter.name"))
         self._name_input = QLineEdit()
-        self._name_input.setPlaceholderText("Filter name...")
+        self._translator.bind_placeholder(self._name_input, "monthly.filter.name")
         self._name_input.setFixedWidth(150)
         frow.addWidget(self._name_input)
 
         # Late
-        frow.addWidget(self._muted("Late:"))
+        frow.addWidget(self._muted("monthly.filter.late"))
         self._late_combo = QComboBox()
-        self._late_combo.addItems(["All", "YES", "NO"])
+        self._translator.bind_combo_items(self._late_combo, [
+            ("monthly.filter.all", "All"),
+            ("monthly.filter.yes", "YES"),
+            ("monthly.filter.no", "NO"),
+        ])
         self._late_combo.setFixedWidth(80)
         frow.addWidget(self._late_combo)
 
         # Buttons
-        btn_apply = QPushButton("Apply")
+        btn_apply = QPushButton(self._translator.t("monthly.button.apply"))
+        self._translator.bind_text(btn_apply, "monthly.button.apply")
         btn_apply.setObjectName("applyBtn")
         btn_apply.clicked.connect(self.refresh)
         frow.addWidget(btn_apply)
 
-        btn_clear = QPushButton("Clear")
+        btn_clear = QPushButton(self._translator.t("monthly.button.clear"))
+        self._translator.bind_text(btn_clear, "monthly.button.clear")
         btn_clear.clicked.connect(self._clear_filters)
         frow.addWidget(btn_clear)
 
@@ -196,10 +211,10 @@ class MonthlyReportPage(QWidget):
         cards_row1 = QHBoxLayout()
         cards_row1.setSpacing(12)
 
-        self._card_travailles = StatCard("Jours travaillés", GREEN)
-        self._card_absents    = StatCard("Jours absents",    RED)
-        self._card_late       = StatCard("Jours late",       AMBER)
-        self._card_salary     = StatCard("Total Salary",     ACCENT)
+        self._card_travailles = StatCard("monthly.stat.days_worked", self._translator, GREEN)
+        self._card_absents    = StatCard("monthly.stat.days_absent", self._translator, RED)
+        self._card_late       = StatCard("monthly.stat.late_days", self._translator, AMBER)
+        self._card_salary     = StatCard("monthly.stat.total_salary", self._translator, ACCENT)
 
         for card in (self._card_travailles, self._card_absents,
                      self._card_late, self._card_salary):
@@ -211,9 +226,9 @@ class MonthlyReportPage(QWidget):
         cards_row2 = QHBoxLayout()
         cards_row2.setSpacing(12)
 
-        self._card_advances = StatCard("Total Advances", RED)
-        self._card_primes   = StatCard("Total Primes",   GREEN)
-        self._card_net      = StatCard("Net Salary",     ACCENT)
+        self._card_advances = StatCard("monthly.stat.total_advances", self._translator, RED)
+        self._card_primes   = StatCard("monthly.stat.total_primes", self._translator, GREEN)
+        self._card_net      = StatCard("monthly.stat.net_salary", self._translator, ACCENT)
 
         for card in (self._card_advances, self._card_primes, self._card_net):
             cards_row2.addWidget(card)
@@ -222,18 +237,28 @@ class MonthlyReportPage(QWidget):
         root.addLayout(cards_row2)
 
         # ── Table ──
-        cols = ["UID", "Employee Name", "Date", "Entry Time",
-                "Exit Time", "Worked Hours", "Hourly Rate", "Total Salary", "Late"]
+        cols = [
+            "report.employee.table.uid",
+            "report.employee.table.employee_name",
+            "report.employee.table.date",
+            "report.employee.table.entry_time",
+            "report.employee.table.exit_time",
+            "report.employee.table.worked_hours",
+            "report.employee.table.hourly_rate",
+            "report.employee.table.total_salary",
+            "report.employee.table.late",
+        ]
         self._table = QTableWidget(0, len(cols))
-        self._table.setHorizontalHeaderLabels(cols)
+        self._translator.bind_table_headers(self._table, cols)
         self._table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self._table.verticalHeader().setVisible(False)
         self._table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self._table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         root.addWidget(self._table, stretch=1)
 
-    def _muted(self, text: str) -> QLabel:
-        lbl = QLabel(text)
+    def _muted(self, text_key: str) -> QLabel:
+        lbl = QLabel(self._translator.t(text_key))
+        self._translator.bind_text(lbl, text_key)
         lbl.setStyleSheet(f"color: {TEXT_MUTED}; font-size: 13px; background: transparent;")
         return lbl
 
@@ -245,7 +270,7 @@ class MonthlyReportPage(QWidget):
         result = get_monthly_report_filtered(
             uid_filter  = self._uid_input.text().strip(),
             name_filter = self._name_input.text().strip(),
-            late_filter = self._late_combo.currentText(),
+            late_filter = self._late_combo.currentData(),
         )
 
         stats = result["stats"]
@@ -285,5 +310,20 @@ class MonthlyReportPage(QWidget):
     def _clear_filters(self):
         self._uid_input.clear()
         self._name_input.clear()
-        self._late_combo.setCurrentText("All")
+        all_index = self._late_combo.findData("All")
+        if all_index >= 0:
+            self._late_combo.setCurrentIndex(all_index)
         self.refresh()
+
+    def _refresh_dynamic_translations(self):
+        for card in (
+            self._card_travailles,
+            self._card_absents,
+            self._card_late,
+            self._card_salary,
+            self._card_advances,
+            self._card_primes,
+            self._card_net,
+        ):
+            card.refresh_translation()
+

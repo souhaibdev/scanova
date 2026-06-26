@@ -12,6 +12,7 @@ import pandas as pd
 
 from services.attendance_service import get_attendance_df
 from models.attendance_record import AttendanceRecord
+from translation_manager import TranslationManager
 
 logger = logging.getLogger(__name__)
 
@@ -157,6 +158,7 @@ class AttendancePage(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._translator = TranslationManager.instance()
         self.setStyleSheet(STYLESHEET)
         self._build_ui()
         self.refresh()
@@ -169,7 +171,8 @@ class AttendancePage(QWidget):
         root.setSpacing(14)
 
         # Title
-        title = QLabel("Attendance Records")
+        title = QLabel(self._translator.t("attendance.title"))
+        self._translator.bind_text(title, "attendance.title")
         title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
         title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         root.addWidget(title)
@@ -179,7 +182,7 @@ class AttendancePage(QWidget):
         filt_row.setSpacing(10)
 
         # Date — QDateEdit مع calendrier popup
-        filt_row.addWidget(self._muted_label("Date:"))
+        filt_row.addWidget(self._muted_label("attendance.filter.date"))
         self._date_input = QDateEdit()
         self._date_input.setCalendarPopup(True)          # كيفتح calendrier بالكليك
         self._date_input.setDate(QDate.currentDate())    # default = اليوم
@@ -190,31 +193,38 @@ class AttendancePage(QWidget):
         filt_row.addWidget(self._date_input)
 
         # Employee
-        filt_row.addWidget(self._muted_label("Employee:"))
+        filt_row.addWidget(self._muted_label("attendance.filter.employee"))
         self._emp_input = QLineEdit()
-        self._emp_input.setPlaceholderText("Search name...")
+        self._translator.bind_placeholder(self._emp_input, "attendance.search.placeholder")
         self._emp_input.setFixedWidth(180)
         filt_row.addWidget(self._emp_input)
 
         # Late
-        filt_row.addWidget(self._muted_label("Late:"))
+        filt_row.addWidget(self._muted_label("attendance.filter.late"))
         self._late_combo = QComboBox()
-        self._late_combo.addItems(["All", "YES", "NO"])
+        self._translator.bind_combo_items(self._late_combo, [
+            ("attendance.filter.all", "All"),
+            ("attendance.filter.yes", "YES"),
+            ("attendance.filter.no", "NO"),
+        ])
         self._late_combo.setFixedWidth(80)
         filt_row.addWidget(self._late_combo)
 
         # Buttons
-        btn_apply = QPushButton("Apply Filters")
+        btn_apply = QPushButton(self._translator.t("attendance.button.apply_filters"))
+        self._translator.bind_text(btn_apply, "attendance.button.apply_filters")
         btn_apply.clicked.connect(self.refresh)
         filt_row.addWidget(btn_apply)
 
-        btn_clear = QPushButton("Clear Filters")
+        btn_clear = QPushButton(self._translator.t("attendance.button.clear_filters"))
+        self._translator.bind_text(btn_clear, "attendance.button.clear_filters")
         btn_clear.clicked.connect(self._clear_filters)
         filt_row.addWidget(btn_clear)
 
         filt_row.addStretch()
 
-        btn_export = QPushButton("Export Excel")
+        btn_export = QPushButton(self._translator.t("attendance.button.export_excel"))
+        self._translator.bind_text(btn_export, "attendance.button.export_excel")
         btn_export.setObjectName("exportBtn")
         btn_export.clicked.connect(self._export)
         filt_row.addWidget(btn_export)
@@ -224,15 +234,26 @@ class AttendancePage(QWidget):
         # ── Table ──
         cols = AttendanceRecord.columns()
         self._table = QTableWidget(0, len(cols))
-        self._table.setHorizontalHeaderLabels(cols)
+        self._translator.bind_table_headers(self._table, [
+            "attendance.table.uid",
+            "attendance.table.name",
+            "attendance.table.date",
+            "attendance.table.entry_time",
+            "attendance.table.exit_time",
+            "attendance.table.worked_hours",
+            "attendance.table.hourly_rate",
+            "attendance.table.total_salary",
+            "attendance.table.late",
+        ])
         self._table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self._table.verticalHeader().setVisible(False)
         self._table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self._table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         root.addWidget(self._table, stretch=1)
 
-    def _muted_label(self, text: str) -> QLabel:
-        lbl = QLabel(text)
+    def _muted_label(self, text_key: str) -> QLabel:
+        lbl = QLabel(self._translator.t(text_key))
+        self._translator.bind_text(lbl, text_key)
         lbl.setStyleSheet(f"color: {TEXT_MUTED}; font-size: 13px; background: transparent;")
         return lbl
 
@@ -247,7 +268,7 @@ class AttendancePage(QWidget):
         date_f = selected_date.toString("yyyy-MM-dd")
 
         emp_f  = self._emp_input.text().strip().lower()
-        late_f = self._late_combo.currentText()
+        late_f = self._late_combo.currentData()
 
         if date_f:
             df = df[df["Date"].astype(str) == date_f]
@@ -277,17 +298,23 @@ class AttendancePage(QWidget):
     def _clear_filters(self):
         self._date_input.setDate(QDate.currentDate())
         self._emp_input.clear()
-        self._late_combo.setCurrentText("All")
+        all_index = self._late_combo.findData("All")
+        if all_index >= 0:
+            self._late_combo.setCurrentIndex(all_index)
         self.refresh()
 
     def _export(self):
         path, _ = QFileDialog.getSaveFileName(
             self,
-            "Export Attendance",
-            "attendance.xlsx",
-            "Excel files (*.xlsx)"
+            self._translator.t("attendance.export.dialog_title"),
+            self._translator.t("attendance.export.file_name"),
+            self._translator.t("attendance.export.filter"),
         )
         if path:
             df = get_attendance_df()
             df.to_excel(path, index=False)
-            QMessageBox.information(self, "Exported", f"Attendance exported to:\n{path}")
+            QMessageBox.information(
+                self,
+                self._translator.t("common.success"),
+                self._translator.t("attendance.export.success", path=path),
+            )

@@ -4,6 +4,7 @@ import pandas as pd
 
 from models.attendance_record import AttendanceRecord
 from models.employee import Employee
+from services.attendance_cleanup_service import cleanup_old_attendance_months
 from services.employee_service import get_employee_by_uid
 from utils.file_utils import load_xlsx, save_xlsx
 from utils.storage import ATTENDANCE_FILE
@@ -27,9 +28,18 @@ def _save_df(df: pd.DataFrame):
     save_xlsx(ATTENDANCE_FILE, df)
 
 
+def _ensure_monthly_cleanup() -> None:
+    """Run monthly cleanup once per process to keep current and previous months only."""
+    try:
+        cleanup_old_attendance_months()
+    except Exception as exc:
+        logger.exception("Monthly attendance cleanup failed: %s", exc)
+
+
 def process_scan(uid: str) -> dict:
     """Process a UID scan. Returns a result dict for UI feedback."""
     logger.info("Processing scan for UID: %s", uid)
+    _ensure_monthly_cleanup()
 
     if not uid or not uid.strip():
         logger.warning("Empty or whitespace-only UID received: %r", uid)

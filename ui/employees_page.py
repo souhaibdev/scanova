@@ -9,6 +9,7 @@ import re
 
 from models.employee import Employee
 from services import employee_service
+from translation_manager import TranslationManager
 
 
 ACCENT     = "#2B79FF"
@@ -116,6 +117,7 @@ class EmployeesPage(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._translator = TranslationManager.instance()
         self.setStyleSheet(STYLESHEET)
         self._build_ui()
         self.refresh()
@@ -127,7 +129,8 @@ class EmployeesPage(QWidget):
         root.setContentsMargins(20, 20, 20, 20)
         root.setSpacing(14)
 
-        title = QLabel("Employee Management")
+        title = QLabel(self._translator.t("employee.title"))
+        self._translator.bind_text(title, "employee.title")
         title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
         title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         root.addWidget(title)
@@ -138,7 +141,13 @@ class EmployeesPage(QWidget):
 
         # Table
         self._table = QTableWidget(0, len(COLS))
-        self._table.setHorizontalHeaderLabels(COLS)
+        self._translator.bind_table_headers(self._table, [
+            "employee.table.uid",
+            "employee.table.cin",
+            "employee.table.full_name",
+            "employee.table.hourly_rate",
+            "employee.table.expected_start",
+        ])
         self._table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self._table.verticalHeader().setVisible(False)
         self._table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
@@ -156,7 +165,8 @@ class EmployeesPage(QWidget):
         fl.setContentsMargins(18, 18, 18, 18)
         fl.setSpacing(4)
 
-        form_title = QLabel("Employee Details")
+        form_title = QLabel(self._translator.t("employee.form.title"))
+        self._translator.bind_text(form_title, "employee.form.title")
         form_title.setFont(QFont("Segoe UI", 13, QFont.Weight.Bold))
         form_title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         fl.addWidget(form_title)
@@ -164,15 +174,16 @@ class EmployeesPage(QWidget):
         fl.addSpacing(8)
 
         fields = [
-            ("UID (NFC Card)",         "uid"),
-            ("CIN",                    "cin"),
-            ("Full Name",              "name"),
-            ("Hourly Rate (DH)",       "rate"),
-            ("Expected Start (HH:MM)", "start"),
+            ("employee.field.uid",         "uid"),
+            ("employee.field.cin",         "cin"),
+            ("employee.field.full_name",   "name"),
+            ("employee.field.hourly_rate", "rate"),
+            ("employee.field.expected_start", "start"),
         ]
         self._inputs: dict[str, QLineEdit] = {}
         for label_text, key in fields:
-            lbl = QLabel(label_text)
+            lbl = QLabel(self._translator.t(label_text))
+            self._translator.bind_text(lbl, label_text)
             lbl.setStyleSheet(f"color: {TEXT_MUTED}; font-size: 12px; background: transparent;")
             fl.addWidget(lbl)
             inp = QLineEdit()
@@ -183,24 +194,28 @@ class EmployeesPage(QWidget):
 
         fl.addSpacing(10)
 
-        btn_add = QPushButton("Add Employee")
+        btn_add = QPushButton(self._translator.t("employee.button.add"))
+        self._translator.bind_text(btn_add, "employee.button.add")
         btn_add.setFixedHeight(38)
         btn_add.setObjectName("addBtn")
         btn_add.clicked.connect(self._add)
         fl.addWidget(btn_add)
 
-        btn_update = QPushButton("Update")
+        btn_update = QPushButton(self._translator.t("employee.button.update"))
+        self._translator.bind_text(btn_update, "employee.button.update")
         btn_update.setFixedHeight(38)
         btn_update.clicked.connect(self._update)
         fl.addWidget(btn_update)
 
-        btn_delete = QPushButton("Delete")
+        btn_delete = QPushButton(self._translator.t("employee.button.delete"))
+        self._translator.bind_text(btn_delete, "employee.button.delete")
         btn_delete.setFixedHeight(38)
         btn_delete.setObjectName("deleteBtn")
         btn_delete.clicked.connect(self._delete)
         fl.addWidget(btn_delete)
 
-        btn_clear = QPushButton("Clear")
+        btn_clear = QPushButton(self._translator.t("employee.button.clear"))
+        self._translator.bind_text(btn_clear, "employee.button.clear")
         btn_clear.setFixedHeight(38)
         btn_clear.clicked.connect(self._clear_form)
         fl.addWidget(btn_clear)
@@ -244,11 +259,19 @@ class EmployeesPage(QWidget):
         start    = self._inputs["start"].text().strip()
 
         if not all([uid, cin, name, rate_str, start]):
-            QMessageBox.warning(self, "Validation", "All fields are required.")
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.validation"),
+                self._translator.t("employee.validation.all_required"),
+            )
             return None
 
         if not cin.isalnum() or not (6 <= len(cin) <= 8):
-            QMessageBox.warning(self, "Validation", "CIN must be 6 to 8 alphanumeric characters.")
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.validation"),
+                self._translator.t("employee.validation.cin_invalid"),
+            )
             return None
 
         try:
@@ -256,11 +279,19 @@ class EmployeesPage(QWidget):
             if rate <= 0:
                 raise ValueError
         except ValueError:
-            QMessageBox.warning(self, "Validation", "Hourly Rate must be a positive number.")
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.validation"),
+                self._translator.t("employee.validation.rate_invalid"),
+            )
             return None
 
         if not re.fullmatch(r"\d{2}:\d{2}", start):
-            QMessageBox.warning(self, "Validation", "Expected Start must follow this format: 08:00")
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.validation"),
+                self._translator.t("employee.validation.start_invalid"),
+            )
             return None
 
         return Employee(
@@ -281,9 +312,9 @@ class EmployeesPage(QWidget):
         if ok:
             self.refresh()
             self._clear_form()
-            QMessageBox.information(self, "Success", msg)
+            QMessageBox.information(self, self._translator.t("common.success"), msg)
         else:
-            QMessageBox.warning(self, "Error", msg)
+            QMessageBox.warning(self, self._translator.t("common.error"), msg)
 
     def _update(self):
         emp = self._get_form_employee()
@@ -292,18 +323,23 @@ class EmployeesPage(QWidget):
         ok, msg = employee_service.update_employee(emp)
         if ok:
             self.refresh()
-            QMessageBox.information(self, "Success", msg)
+            QMessageBox.information(self, self._translator.t("common.success"), msg)
         else:
-            QMessageBox.warning(self, "Error", msg)
+            QMessageBox.warning(self, self._translator.t("common.error"), msg)
 
     def _delete(self):
         uid = self._inputs["uid"].text().strip()
         if not uid:
-            QMessageBox.warning(self, "Validation", "Please select an employee first.")
+            QMessageBox.warning(
+                self,
+                self._translator.t("common.validation"),
+                self._translator.t("employee.validation.all_required"),
+            )
             return
         confirm = QMessageBox.question(
-            self, "Confirm",
-            f"Delete employee with UID '{uid}'?",
+            self,
+            self._translator.t("common.confirm"),
+            self._translator.t("employee.confirm.delete_employee", uid=uid),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         )
         if confirm != QMessageBox.StandardButton.Yes:
@@ -312,9 +348,9 @@ class EmployeesPage(QWidget):
         if ok:
             self.refresh()
             self._clear_form()
-            QMessageBox.information(self, "Deleted", msg)
+            QMessageBox.information(self, self._translator.t("common.success"), msg)
         else:
-            QMessageBox.warning(self, "Error", msg)
+            QMessageBox.warning(self, self._translator.t("common.error"), msg)
 
     def _clear_form(self):
         for inp in self._inputs.values():

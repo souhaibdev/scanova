@@ -6,6 +6,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 
 from services import auth_service
+from translation_manager import TranslationManager
 
 
 ACCENT     = "#2B79FF"
@@ -69,6 +70,7 @@ class LoginPage(QWidget):
         super().__init__(parent)
         self._on_login_success = on_login_success
         self._is_register = auth_service.is_first_launch()
+        self._translator = TranslationManager.instance()
         self.setStyleSheet(STYLESHEET)
         self._build_ui()
 
@@ -89,15 +91,16 @@ class LoginPage(QWidget):
         layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
         # App title
-        app_title = QLabel("SCANOVA")
+        app_title = QLabel(self._translator.t("app.title"))
         app_title.setFont(QFont("Segoe UI", 20, QFont.Weight.Bold))
         app_title.setStyleSheet(f"color: {TEXT_MAIN};")
         app_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(app_title)
 
         # Page subtitle
-        subtitle_text = "Admin Registration" if self._is_register else "Login"
-        subtitle = QLabel(subtitle_text)
+        subtitle = QLabel(
+            self._translator.t("login.title.register") if self._is_register else self._translator.t("login.title.login")
+        )
         subtitle.setFont(QFont("Segoe UI", 14))
         subtitle.setStyleSheet(f"color: {TEXT_MUTED};")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -105,41 +108,46 @@ class LoginPage(QWidget):
         layout.addSpacing(10)
 
         # Username
-        lbl_user = QLabel("Username")
+        lbl_user = QLabel(self._translator.t("login.username"))
         lbl_user.setStyleSheet(f"color: {TEXT_MUTED}; font-size: 12px;")
         layout.addWidget(lbl_user)
 
         self._username_input = QLineEdit()
-        self._username_input.setPlaceholderText("Enter username")
+        self._translator.bind_placeholder(self._username_input, "login.username.placeholder")
         layout.addWidget(self._username_input)
 
         # Password
-        lbl_pass = QLabel("Password")
+        lbl_pass = QLabel(self._translator.t("login.password"))
         lbl_pass.setStyleSheet(f"color: {TEXT_MUTED}; font-size: 12px;")
         layout.addWidget(lbl_pass)
 
         self._password_input = QLineEdit()
-        self._password_input.setPlaceholderText("Enter password")
+        self._translator.bind_placeholder(self._password_input, "login.password.placeholder")
         self._password_input.setEchoMode(QLineEdit.EchoMode.Password)
         layout.addWidget(self._password_input)
 
         # Confirm password (register only)
         self._confirm_input = None
         if self._is_register:
-            lbl_confirm = QLabel("Confirm Password")
+            lbl_confirm = QLabel(self._translator.t("login.confirm_password"))
             lbl_confirm.setStyleSheet(f"color: {TEXT_MUTED}; font-size: 12px;")
             layout.addWidget(lbl_confirm)
 
             self._confirm_input = QLineEdit()
-            self._confirm_input.setPlaceholderText("Repeat password")
+            self._translator.bind_placeholder(self._confirm_input, "login.confirm_password.placeholder")
             self._confirm_input.setEchoMode(QLineEdit.EchoMode.Password)
             layout.addWidget(self._confirm_input)
 
         layout.addSpacing(6)
 
         # Submit button
-        btn_text = "Register" if self._is_register else "Login"
-        btn = QPushButton(btn_text)
+        btn = QPushButton(
+            self._translator.t("login.action.register") if self._is_register else self._translator.t("login.action.login")
+        )
+        self._translator.bind_text(
+            btn,
+            "login.action.register" if self._is_register else "login.action.login",
+        )
         btn.setObjectName("submitBtn")
         btn.clicked.connect(self._submit)
         # Allow Enter key to submit
@@ -164,12 +172,12 @@ class LoginPage(QWidget):
         if self._is_register:
             confirm = self._confirm_input.text().strip()
             if password != confirm:
-                self._status_label.setText("Passwords do not match.")
+                self._status_label.setText(self._translator.t("login.validation.password_mismatch"))
                 return
             ok, msg = auth_service.register_admin(username, password)
             if ok:
                 from PyQt6.QtWidgets import QMessageBox
-                QMessageBox.information(self, "Success", msg)
+                QMessageBox.information(self, self._translator.t("common.success"), msg)
                 self._on_login_success(username)
             else:
                 self._status_label.setText(msg)
