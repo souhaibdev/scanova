@@ -11,9 +11,6 @@ Monthly attendance report:
 
 from __future__ import annotations
 
-import calendar
-from datetime import date
-
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QLineEdit, QComboBox, QPushButton,
@@ -133,10 +130,10 @@ class StatCard(QFrame):
         self._val.setText(text)
 
 
-# ── Monthly Report Page ───────────────────────────────────────────────────────
+# ── Last 15 Days Report Page ──────────────────────────────────────────────────
 
 class MonthlyReportPage(QWidget):
-    """Monthly attendance report with filters and stats."""
+    """Rolling last 15 days attendance report with filters and stats."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -152,7 +149,7 @@ class MonthlyReportPage(QWidget):
         root.setSpacing(14)
 
         # ── Title ──
-        title = QLabel("Monthly Report")
+        title = QLabel("Last 15 Days Report")
         title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
         title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         root.addWidget(title)
@@ -160,26 +157,6 @@ class MonthlyReportPage(QWidget):
         # ── Filter row ──
         frow = QHBoxLayout()
         frow.setSpacing(10)
-
-        today = date.today()
-
-        # Month
-        frow.addWidget(self._muted("Month:"))
-        self._month_combo = QComboBox()
-        for i in range(1, 13):
-            self._month_combo.addItem(calendar.month_name[i], i)
-        self._month_combo.setCurrentIndex(today.month - 1)
-        self._month_combo.setFixedWidth(120)
-        frow.addWidget(self._month_combo)
-
-        # Year
-        frow.addWidget(self._muted("Year:"))
-        self._year_combo = QComboBox()
-        for y in range(today.year - 3, today.year + 2):
-            self._year_combo.addItem(str(y), y)
-        self._year_combo.setCurrentText(str(today.year))
-        self._year_combo.setFixedWidth(80)
-        frow.addWidget(self._year_combo)
 
         # UID
         frow.addWidget(self._muted("UID:"))
@@ -265,12 +242,7 @@ class MonthlyReportPage(QWidget):
     def refresh(self):
         from services.monthly_report_service import get_monthly_report_filtered
 
-        month = self._month_combo.currentData()
-        year  = self._year_combo.currentData()
-
         result = get_monthly_report_filtered(
-            month       = month,
-            year        = year,
             uid_filter  = self._uid_input.text().strip(),
             name_filter = self._name_input.text().strip(),
             late_filter = self._late_combo.currentText(),
@@ -311,9 +283,6 @@ class MonthlyReportPage(QWidget):
         self._table.viewport().update()
 
     def _clear_filters(self):
-        today = date.today()
-        self._month_combo.setCurrentIndex(today.month - 1)
-        self._year_combo.setCurrentText(str(today.year))
         self._uid_input.clear()
         self._name_input.clear()
         self._late_combo.setCurrentText("All")
