@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QLineEdit, QPushButton, QTableWidget, QTableWidgetItem,
-    QHeaderView, QFrame, QMessageBox, QSizePolicy
+    QHeaderView, QFrame, QMessageBox, QSizePolicy, QCheckBox
 )
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
@@ -19,34 +19,67 @@ TEXT_MAIN  = "#111111"
 TEXT_MUTED = "#888888"
 BORDER     = "#E4EAFF"
 DANGER     = "#E53935"
-
 STYLESHEET = f"""
 QWidget {{
     background: {BG_PAGE};
     color: {TEXT_MAIN};
     font-family: 'Segoe UI';
 }}
+
 QLineEdit {{
     background: {BG_CARD};
     border: 1.5px solid {BORDER};
     border-radius: 8px;
-    padding: 0px 12px;
+    padding: 8px 14px;
     font-size: 13px;
     color: {TEXT_MAIN};
+    selection-background-color: {ACCENT};
 }}
 QLineEdit:focus {{
+    border: 2px solid {ACCENT};
+    background: #F8FBFF;
+}}
+QLineEdit:disabled {{
+    background: #F5F5F5;
+    color: #BBBBBB;
+    border-color: #E0E0E0;
+}}
+QLineEdit:hover:!focus {{
+    border-color: #B0C4FF;
+}}
+
+QCheckBox {{
+    font-size: 13px;
+    color: {TEXT_MAIN};
+    spacing: 8px;
+}}
+QCheckBox::indicator {{
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid {BORDER};
+    border-radius: 4px;
+    background: {BG_CARD};
+}}
+QCheckBox::indicator:checked {{
+    background: {ACCENT};
+    border-color: {ACCENT};
+    image: url(none);
+}}
+QCheckBox::indicator:hover {{
     border-color: {ACCENT};
 }}
+
 QFrame#formCard {{
     background: {BG_CARD};
     border: 1.5px solid {BORDER};
-    border-radius: 12px;
+    border-radius: 16px;
 }}
+
 QPushButton {{
     background: {BG_CARD};
     border: 1.5px solid {BORDER};
     border-radius: 8px;
-    padding: 0px 12px;
+    padding: 0px 16px;
     font-size: 13px;
     font-weight: 600;
     height: 38px;
@@ -57,54 +90,99 @@ QPushButton:hover {{
     border-color: {ACCENT};
     color: {ACCENT};
 }}
+QPushButton:pressed {{
+    background: #D6E8FF;
+}}
 QPushButton#addBtn {{
     background: {ACCENT};
     border-color: {ACCENT};
     color: #FFFFFF;
+    border-radius: 8px;
 }}
 QPushButton#addBtn:hover {{
     background: #1A65E0;
+    border-color: #1A65E0;
+}}
+QPushButton#addBtn:pressed {{
+    background: #1255C0;
 }}
 QPushButton#deleteBtn {{
-    background: #FFF0F0;
+    background: #FFF5F5;
     border-color: #FFCDD2;
     color: {DANGER};
 }}
 QPushButton#deleteBtn:hover {{
     background: #FFCDD2;
+    border-color: {DANGER};
 }}
+QPushButton#deleteBtn:pressed {{
+    background: #FFB3B3;
+}}
+
 QTableWidget {{
     background: {BG_CARD};
     border: 1.5px solid {BORDER};
     border-radius: 12px;
     gridline-color: {BORDER};
     font-size: 13px;
+    outline: none;
 }}
 QTableWidget::item {{
     padding: 10px 12px;
+    border-bottom: 1px solid {BORDER};
 }}
 QTableWidget::item:selected {{
     background: #EBF2FF;
     color: {TEXT_MAIN};
 }}
+QTableWidget::item:hover {{
+    background: #F5F9FF;
+}}
 QHeaderView::section {{
     background: #F5F8FF;
     color: {TEXT_MUTED};
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     padding: 10px 12px;
     border: none;
-    border-bottom: 1px solid {BORDER};
+    border-bottom: 2px solid {BORDER};
     text-transform: uppercase;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.5px;
 }}
+QHeaderView::section:first {{
+    border-top-left-radius: 10px;
+}}
+QHeaderView::section:last {{
+    border-top-right-radius: 10px;
+}}
+
 QScrollBar:vertical {{
     width: 6px;
     background: transparent;
+    margin: 0;
 }}
 QScrollBar::handle:vertical {{
     background: {BORDER};
     border-radius: 3px;
+    min-height: 30px;
+}}
+QScrollBar::handle:vertical:hover {{
+    background: {ACCENT};
+}}
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {{
+    height: 0px;
+}}
+QScrollBar:horizontal {{
+    height: 6px;
+    background: transparent;
+}}
+QScrollBar::handle:horizontal {{
+    background: {BORDER};
+    border-radius: 3px;
+}}
+QScrollBar::handle:horizontal:hover {{
+    background: {ACCENT};
 }}
 """
 
@@ -192,6 +270,30 @@ class EmployeesPage(QWidget):
             fl.addSpacing(6)
             self._inputs[key] = inp
 
+        self._cnss_checkbox = QCheckBox(self._translator.t("employee.checkbox.cnss"))
+        self._translator.bind_text(self._cnss_checkbox, "employee.checkbox.cnss")
+        self._cnss_checkbox.toggled.connect(self._set_cnss_enabled)
+        fl.addWidget(self._cnss_checkbox)
+
+        self._cnss_input = QLineEdit()
+        self._cnss_input.setFixedHeight(38)
+        self._cnss_input.setEnabled(False)
+        self._translator.bind_placeholder(self._cnss_input, "employee.field.cnss")
+        fl.addWidget(self._cnss_input)
+        fl.addSpacing(6)
+
+        self._amo_checkbox = QCheckBox(self._translator.t("employee.checkbox.amo"))
+        self._translator.bind_text(self._amo_checkbox, "employee.checkbox.amo")
+        self._amo_checkbox.toggled.connect(self._set_amo_enabled)
+        fl.addWidget(self._amo_checkbox)
+
+        self._amo_input = QLineEdit()
+        self._amo_input.setFixedHeight(38)
+        self._amo_input.setEnabled(False)
+        self._translator.bind_placeholder(self._amo_input, "employee.field.amo")
+        fl.addWidget(self._amo_input)
+        fl.addSpacing(6)
+
         fl.addSpacing(10)
 
         btn_add = QPushButton(self._translator.t("employee.button.add"))
@@ -245,9 +347,33 @@ class EmployeesPage(QWidget):
         if not self._table.selectedItems():
             return
         row = self._table.currentRow()
-        for col, key in enumerate(FIELD_MAP):
-            item = self._table.item(row, col)
-            self._inputs[key].setText(item.text() if item else "")
+        uid_item = self._table.item(row, 0)
+        uid = uid_item.text() if uid_item else ""
+        emp = employee_service.get_employee_by_uid(uid)
+        if emp:
+            self._inputs["uid"].setText(emp.uid)
+            self._inputs["cin"].setText(emp.cin)
+            self._inputs["name"].setText(emp.full_name)
+            self._inputs["rate"].setText(f"{emp.hourly_rate:.2f}")
+            self._inputs["start"].setText(emp.expected_start_time)
+
+            self._cnss_checkbox.setChecked(emp.cnss_enabled)
+            self._cnss_input.setText(f"{emp.cnss_value*100:.2f}" if emp.cnss_enabled and emp.cnss_value is not None else "")
+            self._cnss_input.setEnabled(emp.cnss_enabled)
+
+            self._amo_checkbox.setChecked(emp.amo_enabled)
+            self._amo_input.setText(f"{emp.amo_value*100:.2f}" if emp.amo_enabled and emp.amo_value is not None else "")
+            self._amo_input.setEnabled(emp.amo_enabled)
+        else:
+            for col, key in enumerate(FIELD_MAP):
+                item = self._table.item(row, col)
+                self._inputs[key].setText(item.text() if item else "")
+            self._cnss_checkbox.setChecked(False)
+            self._cnss_input.clear()
+            self._cnss_input.setEnabled(False)
+            self._amo_checkbox.setChecked(False)
+            self._amo_input.clear()
+            self._amo_input.setEnabled(False)
 
     # ── Validation ────────────────────────────────────────────────────
 
@@ -294,12 +420,58 @@ class EmployeesPage(QWidget):
             )
             return None
 
+        cnss_enabled = self._cnss_checkbox.isChecked()
+        cnss_value = None
+        if cnss_enabled:
+            cnss_text = self._cnss_input.text().strip()
+            if not cnss_text:
+                QMessageBox.warning(
+                    self,
+                    self._translator.t("common.validation"),
+                    self._translator.t("employee.validation.cnss_required"),
+                )
+                return None
+            try:
+                cnss_value = float(cnss_text.replace(",", ".")) / 100
+            except ValueError:
+                QMessageBox.warning(
+                    self,
+                    self._translator.t("common.validation"),
+                    self._translator.t("employee.validation.cnss_invalid"),
+                )
+                return None
+
+        amo_enabled = self._amo_checkbox.isChecked()
+        amo_value = None
+        if amo_enabled:
+            amo_text = self._amo_input.text().strip()
+            if not amo_text:
+                QMessageBox.warning(
+                    self,
+                    self._translator.t("common.validation"),
+                    self._translator.t("employee.validation.amo_required"),
+                )
+                return None
+            try:
+                amo_value = float(amo_text.replace(",", ".")) / 100
+            except ValueError:
+                QMessageBox.warning(
+                    self,
+                    self._translator.t("common.validation"),
+                    self._translator.t("employee.validation.amo_invalid"),
+                )
+                return None
+
         return Employee(
             uid=uid,
             cin=cin.upper(),
             full_name=name,
             hourly_rate=rate,
             expected_start_time=start,
+            cnss_enabled=cnss_enabled,
+            cnss_value=cnss_value,
+            amo_enabled=amo_enabled,
+            amo_value=amo_value,
         )
 
     # ── CRUD ──────────────────────────────────────────────────────────
@@ -326,6 +498,16 @@ class EmployeesPage(QWidget):
             QMessageBox.information(self, self._translator.t("common.success"), msg)
         else:
             QMessageBox.warning(self, self._translator.t("common.error"), msg)
+
+    def _set_cnss_enabled(self, enabled: bool):
+        self._cnss_input.setEnabled(enabled)
+        if not enabled:
+            self._cnss_input.clear()
+
+    def _set_amo_enabled(self, enabled: bool):
+        self._amo_input.setEnabled(enabled)
+        if not enabled:
+            self._amo_input.clear()
 
     def _delete(self):
         uid = self._inputs["uid"].text().strip()
@@ -355,3 +537,9 @@ class EmployeesPage(QWidget):
     def _clear_form(self):
         for inp in self._inputs.values():
             inp.clear()
+        self._cnss_checkbox.setChecked(False)
+        self._cnss_input.clear()
+        self._cnss_input.setEnabled(False)
+        self._amo_checkbox.setChecked(False)
+        self._amo_input.clear()
+        self._amo_input.setEnabled(False)

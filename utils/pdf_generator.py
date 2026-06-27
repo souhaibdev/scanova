@@ -12,6 +12,9 @@ Usage:
 from __future__ import annotations
 import os
 import tempfile
+import logging
+import uuid
+import time
 from dataclasses import dataclass, field
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
@@ -22,10 +25,10 @@ from reportlab.platypus import (
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 
+logger = logging.getLogger(__name__)
+
 # ── Taux fixes ────────────────────────────────────────────────────────────────
-CNSS_SALARIAL   = 0.0448   # 4.48%
 CNSS_PATRONAL   = 0.0000   # à adapter
-AMO_SALARIAL    = 0.0226   # 2.26%
 AMO_PATRONAL    = 0.0000   # à adapter
 AF_PATRONAL     = 0.0000   # Allocations familiales
 TFP_PATRONAL    = 0.0000   # Taxe de formation professionnelle
@@ -65,6 +68,8 @@ class BulletinData:
     taux_horaire:       float = 0.0
     prime:              float = 0.0
     avance:             float = 0.0
+    cnss_rate:          float = 0.0
+    amo_rate:           float = 0.0
 
 
 def _mois_label(m: int) -> str:
@@ -78,13 +83,24 @@ def generate_bulletin_pdf(data: BulletinData) -> str:
     Generate a Bulletin de Paie PDF.
     Returns the path to the generated file.
     """
+    # ── Logging des taux ───────────────────────────────────────────────
+    logger.debug(
+        "Bulletin PDF generation for UID %s: cnss_rate=%s, amo_rate=%s",
+        data.uid, data.cnss_rate, data.amo_rate
+    )
+    
     # ── Calculs ───────────────────────────────────────────────────────
     salaire_base = round(data.heures_travaillees * data.taux_horaire, 2)
     salaire_brut = round(salaire_base + data.prime, 2)
 
-    cnss_sal  = round(salaire_brut * CNSS_SALARIAL, 2)
-    amo_sal   = round(salaire_brut * AMO_SALARIAL,  2)
+    cnss_sal  = round(salaire_brut * data.cnss_rate, 2)
+    amo_sal   = round(salaire_brut * data.amo_rate,  2)
     total_ret = round(cnss_sal + amo_sal + data.avance, 2)
+    
+    logger.debug(
+        "Bulletin calculations for UID %s: salaire_brut=%s, cnss_sal=%s (rate=%s), amo_sal=%s (rate=%s)",
+        data.uid, salaire_brut, cnss_sal, data.cnss_rate, amo_sal, data.amo_rate
+    )
 
     cnss_pat  = round(salaire_brut * CNSS_PATRONAL, 2)
     amo_pat   = round(salaire_brut * AMO_PATRONAL,  2)
@@ -97,6 +113,32 @@ def generate_bulletin_pdf(data: BulletinData) -> str:
     # ── Output path ───────────────────────────────────────────────────
     fname = f"bulletin_{data.uid}_{data.annee}_{data.mois:02d}.pdf"
     path  = os.path.join(tempfile.gettempdir(), fname)
+
+    # Try to remove the old file to avoid permission errors
+    # If removal fails, use a unique filename to avoid conflicts
+    old_path = path
+    attempt = 0
+    max_attempts = 3
+    
+    while attempt < max_attempts:
+        try:
+            if os.path.exists(path):
+                os.remove(path)
+            break  # Successfully removed or file doesn't exist
+        except PermissionError:
+            attempt += 1
+            if attempt < max_attempts:
+                # Small delay before retry
+                time.sleep(0.2)
+            else:
+                # All removal attempts failed, use a unique path
+                unique_id = uuid.uuid4().hex[:8]
+                path = os.path.join(tempfile.gettempdir(), 
+                                   f"bulletin_{data.uid}_{data.annee}_{data.mois:02d}_{unique_id}.pdf")
+                logger.warning(
+                    "Could not remove old PDF %s, using unique path instead: %s",
+                    old_path, path
+                )
 
     doc = SimpleDocTemplate(
         path,
@@ -268,7 +310,7 @@ def generate_bulletin_pdf(data: BulletinData) -> str:
         [
             para("CNSS", size=9),
             para(fmt(salaire_brut),              size=9, align=TA_CENTER),
-            para(f"{CNSS_SALARIAL*100:.2f}%",    size=9, align=TA_CENTER),
+            para(f"{data.cnss_rate*100:.2f}%",    size=9, align=TA_CENTER),
             para("",                             size=9),
             para(fmt(cnss_sal),                  size=9, align=TA_CENTER),
             para(f"{CNSS_PATRONAL*100:.2f}%",    size=9, align=TA_CENTER),
@@ -280,7 +322,7 @@ def generate_bulletin_pdf(data: BulletinData) -> str:
         [
             para("AMO", size=9),
             para(fmt(salaire_brut),              size=9, align=TA_CENTER),
-            para(f"{AMO_SALARIAL*100:.2f}%",     size=9, align=TA_CENTER),
+            para(f"{data.amo_rate*100:.2f}%",     size=9, align=TA_CENTER),
             para("",                             size=9),
             para(fmt(amo_sal),                   size=9, align=TA_CENTER),
             para(f"{AMO_PATRONAL*100:.2f}%",     size=9, align=TA_CENTER),

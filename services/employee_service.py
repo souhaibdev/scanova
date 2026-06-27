@@ -35,8 +35,12 @@ def get_employee_by_uid(uid: str) -> Optional[Employee]:
     data = _load_all()
     employee_data = data.get(uid)
     if employee_data:
-        logger.debug("Employee found for UID %s: %s", uid, employee_data.get("full_name", "Unknown"))
-        return Employee.from_dict(employee_data)
+        emp = Employee.from_dict(employee_data)
+        logger.debug(
+            "Employee found for UID %s: %s | CNSS: enabled=%s, value=%s | AMO: enabled=%s, value=%s",
+            uid, emp.full_name, emp.cnss_enabled, emp.cnss_value, emp.amo_enabled, emp.amo_value
+        )
+        return emp
 
     logger.debug("No employee found for UID: %s", uid)
     return None
@@ -50,7 +54,13 @@ def add_employee(employee: Employee) -> tuple[bool, str]:
     if employee.uid in data:
         return False, "Employee with this UID already exists."
 
-    data[employee.uid] = employee.to_dict()
+    emp_dict = employee.to_dict()
+    logger.debug(
+        "Adding employee: %s (%s) with CNSS: enabled=%s, value=%s | AMO: enabled=%s, value=%s",
+        employee.full_name, employee.uid, employee.cnss_enabled, employee.cnss_value,
+        employee.amo_enabled, employee.amo_value
+    )
+    data[employee.uid] = emp_dict
     _save_all(data)
     logger.info("Employee added: %s (%s)", employee.full_name, employee.uid)
     return True, "Employee added successfully."
@@ -64,7 +74,13 @@ def update_employee(employee: Employee) -> tuple[bool, str]:
     if employee.uid not in data:
         return False, "Employee not found."
 
-    data[employee.uid] = employee.to_dict()
+    emp_dict = employee.to_dict()
+    logger.debug(
+        "Updating employee: %s (%s) with CNSS: enabled=%s, value=%s | AMO: enabled=%s, value=%s",
+        employee.full_name, employee.uid, employee.cnss_enabled, employee.cnss_value,
+        employee.amo_enabled, employee.amo_value
+    )
+    data[employee.uid] = emp_dict
     _save_all(data)
     logger.info("Employee updated: %s (%s)", employee.full_name, employee.uid)
     return True, "Employee updated successfully."

@@ -158,7 +158,8 @@ class MonthlyReportPage(QWidget):
         root.setSpacing(14)
 
         # ── Title ──
-        title = QLabel("Last 15 Days Report")
+        title = QLabel(self._translator.t("monthly.title"))
+        self._translator.bind_text(title, "monthly.title")
         title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
         title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         root.addWidget(title)
