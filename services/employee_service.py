@@ -2,10 +2,12 @@ import logging
 from typing import Optional
 
 from models.employee import Employee
+from translation_manager import TranslationManager
 from utils.file_utils import load_json, save_json
 from utils.storage import EMPLOYEES_FILE
 
 logger = logging.getLogger(__name__)
+_translator = TranslationManager.instance()
 
 
 def _load_all() -> dict[str, dict]:
@@ -48,11 +50,11 @@ def get_employee_by_uid(uid: str) -> Optional[Employee]:
 
 def add_employee(employee: Employee) -> tuple[bool, str]:
     if not employee.uid or not employee.uid.strip():
-        return False, "Employee UID is required."
+        return False, _translator.t("service.employee_uid_required")
 
     data = _load_all()
     if employee.uid in data:
-        return False, "Employee with this UID already exists."
+        return False, _translator.t("service.employee_uid_exists")
 
     emp_dict = employee.to_dict()
     logger.debug(
@@ -63,16 +65,16 @@ def add_employee(employee: Employee) -> tuple[bool, str]:
     data[employee.uid] = emp_dict
     _save_all(data)
     logger.info("Employee added: %s (%s)", employee.full_name, employee.uid)
-    return True, "Employee added successfully."
+    return True, _translator.t("service.employee_added")
 
 
 def update_employee(employee: Employee) -> tuple[bool, str]:
     if not employee.uid or not employee.uid.strip():
-        return False, "Employee UID is required."
+        return False, _translator.t("service.employee_uid_required")
 
     data = _load_all()
     if employee.uid not in data:
-        return False, "Employee not found."
+        return False, _translator.t("service.employee_not_found")
 
     emp_dict = employee.to_dict()
     logger.debug(
@@ -83,22 +85,22 @@ def update_employee(employee: Employee) -> tuple[bool, str]:
     data[employee.uid] = emp_dict
     _save_all(data)
     logger.info("Employee updated: %s (%s)", employee.full_name, employee.uid)
-    return True, "Employee updated successfully."
+    return True, _translator.t("service.employee_updated")
 
 
 def delete_employee(uid: str) -> tuple[bool, str]:
     if not uid or not uid.strip():
-        return False, "Employee UID is required."
+        return False, _translator.t("service.employee_uid_required")
 
     data = _load_all()
     if uid not in data:
-        return False, "Employee not found."
+        return False, _translator.t("service.employee_not_found")
 
     name = data[uid].get("full_name", uid)
     del data[uid]
     _save_all(data)
     logger.info("Employee deleted: %s (%s)", name, uid)
-    return True, f"Employee '{name}' deleted."
+    return True, _translator.t("service.employee_deleted", name=name)
 
 
 def get_employees_by_cin(cin: str) -> list[Employee]:

@@ -3,11 +3,13 @@ from datetime import datetime
 
 import pandas as pd
 
+from translation_manager import TranslationManager
 from utils.file_utils import load_xlsx, save_xlsx
 from utils.storage import ADVANCES_FILE
 from utils.time_utils import now_date_str
 
 logger = logging.getLogger(__name__)
+_translator = TranslationManager.instance()
 
 # Define columns for advances data
 COLUMNS = ["UID", "Employee Name", "Amount", "Date", "Note", "Month", "Year"]
@@ -66,11 +68,11 @@ def add_advance(uid: str, employee_name: str, amount: float, note: str = "") -> 
         _save_df(df)
         
         logger.info("Advance added for %s (%s): %s", employee_name, uid_clean, amount)
-        return True, f"Advance of {amount} added for {employee_name}."
+        return True, _translator.t("service.advance_added", amount=amount, employee_name=employee_name)
         
     except Exception as e:
         logger.error("Error adding advance: %s", str(e))
-        return False, f"Error adding advance: {str(e)}"
+        return False, _translator.t("service.advance_error", error=str(e))
 
 
 def delete_advance(index: int) -> tuple[bool, str]:
@@ -87,7 +89,7 @@ def delete_advance(index: int) -> tuple[bool, str]:
         df = _load_df()
         
         if index < 0 or index >= len(df):
-            return False, "Invalid record index."
+            return False, _translator.t("service.invalid_index")
         
         employee_name = df.iloc[index]["Employee Name"]
         amount = df.iloc[index]["Amount"]
@@ -100,8 +102,8 @@ def delete_advance(index: int) -> tuple[bool, str]:
         _save_df(df)
         
         logger.info("Advance deleted for %s: %s", employee_name, amount)
-        return True, f"Advance record deleted."
+        return True, _translator.t("service.advance_deleted")
         
     except Exception as e:
         logger.error("Error deleting advance: %s", str(e))
-        return False, f"Error deleting advance: {str(e)}"
+        return False, _translator.t("service.advance_delete_error", error=str(e))

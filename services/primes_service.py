@@ -3,11 +3,13 @@ from datetime import datetime
 
 import pandas as pd
 
+from translation_manager import TranslationManager
 from utils.file_utils import load_xlsx, save_xlsx
 from utils.storage import PRIMES_FILE
 from utils.time_utils import now_date_str
 
 logger = logging.getLogger(__name__)
+_translator = TranslationManager.instance()
 
 COLUMNS = ["UID", "Employee Name", "Amount", "Date", "Note", "Month", "Year"]
 
@@ -61,22 +63,22 @@ def add_prime(uid: str, employee_name: str, amount: float, note: str = "") -> tu
         df = pd.concat([df, new_row], ignore_index=True)
         _save_df(df)
         logger.info("Prime added for %s (%s): %s DH", employee_name, uid_clean, amount)
-        return True, f"Prime of {amount} DH added for {employee_name}."
+        return True, _translator.t("service.prime_added", amount=amount, employee_name=employee_name)
     except Exception as e:
         logger.error("Error adding prime: %s", e)
-        return False, f"Error: {e}"
+        return False, _translator.t("service.prime_error", error=str(e))
 
 
 def delete_prime(index: int) -> tuple[bool, str]:
     try:
         df = _load_df()
         if index < 0 or index >= len(df):
-            return False, "Invalid record index."
+            return False, _translator.t("service.invalid_index")
         employee_name = df.iloc[index]["Employee Name"]
         df = df.drop(index).reset_index(drop=True)
         _save_df(df)
         logger.info("Prime deleted for %s", employee_name)
-        return True, "Prime deleted."
+        return True, _translator.t("service.prime_deleted")
     except Exception as e:
         logger.error("Error deleting prime: %s", e)
-        return False, f"Error: {e}"
+        return False, _translator.t("service.prime_error", error=str(e))
