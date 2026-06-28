@@ -1,7 +1,8 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QLineEdit, QPushButton, QTableWidget, QTableWidgetItem,
-    QHeaderView, QFrame, QMessageBox, QSizePolicy, QCheckBox
+    QHeaderView, QFrame, QMessageBox, QSizePolicy, QCheckBox,
+    QScrollArea
 )
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
@@ -73,6 +74,11 @@ QFrame#formCard {{
     background: {BG_CARD};
     border: 1.5px solid {BORDER};
     border-radius: 16px;
+}}
+
+QScrollArea {{
+    background: transparent;
+    border: none;
 }}
 
 QPushButton {{
@@ -323,7 +329,17 @@ class EmployeesPage(QWidget):
         fl.addWidget(btn_clear)
 
         fl.addStretch()
-        body.addWidget(form_card, stretch=0)
+
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setFrameShape(QFrame.Shape.NoFrame)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        scroll_area.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        scroll_area.setFixedWidth(290)
+        scroll_area.setWidget(form_card)
+
+        body.addWidget(scroll_area, stretch=0)
 
     # ── Table ─────────────────────────────────────────────────────────
 

@@ -2,6 +2,7 @@ import logging
 
 import pandas as pd
 
+from translation_manager import TranslationManager
 from models.attendance_record import AttendanceRecord
 from models.employee import Employee
 from services.attendance_cleanup_service import cleanup_old_attendance_months
@@ -15,6 +16,9 @@ from utils.time_utils import (
     is_late,
     minutes_between,
 )
+
+logger = logging.getLogger(__name__)
+translator = TranslationManager.instance()
 
 logger = logging.getLogger(__name__)
 MIN_STAY_MINUTES = 15  # minimum minutes between entry and exit
@@ -45,7 +49,7 @@ def process_scan(uid: str) -> dict:
         logger.warning("Empty or whitespace-only UID received: %r", uid)
         return {
             "success": False,
-            "message": "Invalid UID scanned.",
+            "message": translator.t("attendance.validation.invalid_uid"),
             "action": "invalid_uid",
             "uid": uid,
         }
@@ -55,7 +59,7 @@ def process_scan(uid: str) -> dict:
         logger.warning("Unregistered UID scanned: %s", uid)
         return {
             "success": False,
-            "message": f"UID '{uid}' is not registered. Please register this employee first.",
+            "message": translator.t("attendance.validation.uid_not_registered", uid=uid),
             "action": "unknown",
             "uid": uid,
         }
@@ -103,7 +107,10 @@ def process_scan(uid: str) -> dict:
                 "action": "already_done",
                 "employee": employee.full_name,
                 "uid": uid,
-                "message": f"{employee.full_name} already checked in & out today.",
+                "message": translator.t(
+                    "attendance.validation.already_checked_in_out",
+                    employee=employee.full_name,
+                ),
             }
 
         # ── EXIT — enforce 15-minute minimum ───────────────────
@@ -120,9 +127,11 @@ def process_scan(uid: str) -> dict:
                 "action": "too_soon",
                 "employee": employee.full_name,
                 "uid": uid,
-                "message": (
-                    f"{employee.full_name} checked in only {mins_stayed} min ago. "
-                    f"Please wait {remaining} more minute(s) before checking out."
+                "message": translator.t(
+                    "attendance.validation.too_soon",
+                    employee=employee.full_name,
+                    mins=mins_stayed,
+                    remaining=remaining,
                 ),
             }
 
@@ -142,7 +151,12 @@ def process_scan(uid: str) -> dict:
             "time": current_time,
             "worked_hours": worked,
             "salary": salary,
-            "message": f"Exit recorded for {employee.full_name} — {worked}h, ${salary:.2f}",
+            "message": translator.t(
+                "attendance.success.exit_recorded",
+                employee=employee.full_name,
+                worked=worked,
+                salary=f"{salary:.2f}",
+            ),
         }
 
 

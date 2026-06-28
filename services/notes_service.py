@@ -86,9 +86,11 @@ from datetime import date
  
 import pandas as pd
  
+from translation_manager import TranslationManager
 from utils.file_utils import load_xlsx, save_xlsx
  
 logger = logging.getLogger(__name__)
+translator = TranslationManager.instance()
  
 ADVANCES_FILE = "advances.xlsx"
  
@@ -134,8 +136,8 @@ def get_total_advances(uid: str, month: int, year: int) -> float:
 def add_advance(uid: str, employee_name: str, amount: float, note: str = "") -> tuple[bool, str]:
     """Record a new advance for an employee."""
     if amount <= 0:
-        return False, "Amount must be greater than 0."
- 
+        return False, translator.t("notes.validation.amount_positive")
+
     today = date.today()
     new_row = {
         "UID":           str(uid),
@@ -151,15 +153,15 @@ def add_advance(uid: str, employee_name: str, amount: float, note: str = "") -> 
     df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
     _save_df(df)
     logger.info("Advance recorded: %s DH for %s (%s)", amount, employee_name, uid)
-    return True, f"Advance of {amount:.2f} DH recorded for {employee_name}."
- 
- 
+    return True, translator.t("notes.success.advance_recorded", amount=f"{amount:.2f}", employee_name=employee_name)
+
+
 def delete_advance(index: int) -> tuple[bool, str]:
     """Delete an advance by its DataFrame index."""
     df = _load_df()
     if index < 0 or index >= len(df):
-        return False, "Invalid index."
+        return False, translator.t("notes.validation.invalid_index")
     df = df.drop(index=index).reset_index(drop=True)
     _save_df(df)
     logger.info("Advance deleted at index %d", index)
-    return True, "Advance deleted."
+    return True, translator.t("notes.success.deleted")

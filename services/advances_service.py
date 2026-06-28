@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+from translation_manager import TranslationManager
 import pandas as pd
 
 from utils.file_utils import load_xlsx, save_xlsx
@@ -8,6 +9,7 @@ from utils.storage import ADVANCES_FILE
 from utils.time_utils import now_date_str
 
 logger = logging.getLogger(__name__)
+translator = TranslationManager.instance()
 
 # Define columns for advances data
 COLUMNS = ["UID", "Employee Name", "Amount", "Date", "Note", "Month", "Year"]
@@ -44,6 +46,9 @@ def add_advance(uid: str, employee_name: str, amount: float, note: str = "") -> 
         Tuple of (success, message)
     """
     try:
+        if amount <= 0:
+            return False, translator.t("advances.validation.amount_positive")
+
         df = _load_df()
         
         # Get current date and extract month/year
@@ -66,11 +71,15 @@ def add_advance(uid: str, employee_name: str, amount: float, note: str = "") -> 
         _save_df(df)
         
         logger.info("Advance added for %s (%s): %s", employee_name, uid_clean, amount)
-        return True, f"Advance of {amount} added for {employee_name}."
+        return True, translator.t(
+            "advances.success.recorded",
+            amount=f"{amount:.2f}",
+            employee_name=employee_name,
+        )
         
     except Exception as e:
         logger.error("Error adding advance: %s", str(e))
-        return False, f"Error adding advance: {str(e)}"
+        return False, translator.t("common.error_occurred", error=str(e))
 
 
 def delete_advance(index: int) -> tuple[bool, str]:
@@ -87,7 +96,7 @@ def delete_advance(index: int) -> tuple[bool, str]:
         df = _load_df()
         
         if index < 0 or index >= len(df):
-            return False, "Invalid record index."
+            return False, translator.t("advances.validation.invalid_index")
         
         employee_name = df.iloc[index]["Employee Name"]
         amount = df.iloc[index]["Amount"]
@@ -100,8 +109,8 @@ def delete_advance(index: int) -> tuple[bool, str]:
         _save_df(df)
         
         logger.info("Advance deleted for %s: %s", employee_name, amount)
-        return True, f"Advance record deleted."
+        return True, translator.t("advances.success.deleted")
         
     except Exception as e:
         logger.error("Error deleting advance: %s", str(e))
-        return False, f"Error deleting advance: {str(e)}"
+        return False, translator.t("common.error_occurred", error=str(e))

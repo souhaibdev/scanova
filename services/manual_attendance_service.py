@@ -11,12 +11,14 @@ from datetime import date
 
 import pandas as pd
 
+from translation_manager import TranslationManager
 from models.attendance_record import AttendanceRecord
 from services.employee_service import get_all_employees, get_employee_by_uid
 from utils.file_utils import load_xlsx, save_xlsx
 from utils.time_utils import calc_worked_hours, is_late
 
 logger = logging.getLogger(__name__)
+translator = TranslationManager.instance()
 
 from utils.storage import ATTENDANCE_FILE
 
@@ -45,13 +47,13 @@ def add_manual_record(
     # ── Validate employee ─────────────────────────────────────────────
     employee = get_employee_by_uid(uid)
     if employee is None:
-        return False, f"UID '{uid}' is not registered."
+        return False, translator.t("manual.validation.uid_not_registered", uid=uid)
 
     # ── Validate entry time ───────────────────────────────────────────
     try:
         h_entry, m_entry = map(int, entry_time.split(":"))
     except Exception:
-        return False, "Entry time must be in HH:MM format."
+        return False, translator.t("manual.validation.entry_format")
 
     entry_minutes = h_entry * 60 + m_entry
 
@@ -61,15 +63,15 @@ def add_manual_record(
         try:
             h_exit, m_exit = map(int, exit_time.split(":"))
         except Exception:
-            return False, "Exit time must be in HH:MM format."
+            return False, translator.t("manual.validation.exit_format")
 
         exit_minutes = h_exit * 60 + m_exit
 
         if exit_minutes <= entry_minutes:
-            return False, "Exit time must be after entry time."
+            return False, translator.t("manual.validation.exit_after_entry")
 
         if (exit_minutes - entry_minutes) < 15:
-            return False, "Minimum stay is 15 minutes."
+            return False, translator.t("manual.validation.minimum_stay", minutes=15)
 
     # ── Load attendance ───────────────────────────────────────────────
     df   = _load_df()
@@ -85,10 +87,14 @@ def add_manual_record(
         exit_val = str(df.at[last_idx, "Exit Time"]).strip()
 
         if exit_val and exit_val not in ("", "nan", "None"):
-            return False, f"{employee.full_name} already has a complete record on {date_str}."
+            return False, translator.t(
+                "manual.validation.complete_record_exists",
+                employee=employee.full_name,
+                date=date_str,
+            )
 
         if not exit_time or not exit_time.strip():
-            return False, "This employee already has an entry. Please provide an exit time."
+            return False, translator.t("manual.validation.provide_exit_time")
 
         existing_entry = str(df.at[last_idx, "Entry Time"]).strip()
         worked         = calc_worked_hours(existing_entry, exit_time)
@@ -103,9 +109,14 @@ def add_manual_record(
             "Manual exit added: %s (%s) on %s — %s→%s | %.2fh | DH%.2f",
             employee.full_name, uid, date_str, existing_entry, exit_time, worked, total_salary,
         )
-        return True, (
-            f"Exit recorded for {employee.full_name} on {date_str} — "
-            f"{existing_entry}→{exit_time} | {worked}h | DH{total_salary:.2f}"
+        return True, translator.t(
+            "manual.success.exit_recorded",
+            employee=employee.full_name,
+            date=date_str,
+            entry=existing_entry,
+            exit=exit_time,
+            worked=worked,
+            salary=f"{total_salary:.2f}",
         )
 
     # ── Case 2: no record — create new row ────────────────────────────
@@ -146,18 +157,25 @@ def add_manual_record(
             "Manual record added: %s (%s) on %s — %s→%s | %.2fh | DH%.2f",
             employee.full_name, uid, date_str, entry_time, exit_time, worked, total_salary,
         )
-        return True, (
-            f"Record added for {employee.full_name} on {date_str} — "
-            f"{entry_time}→{exit_time} | {worked}h | DH{total_salary:.2f}"
+        return True, translator.t(
+            "manual.success.record_added",
+            employee=employee.full_name,
+            date=date_str,
+            entry=entry_time,
+            exit=exit_time,
+            worked=worked,
+            salary=f"{total_salary:.2f}",
         )
     else:
         logger.info(
             "Manual entry recorded (no exit): %s (%s) on %s — %s",
             employee.full_name, uid, date_str, entry_time,
         )
-        return True, (
-            f"Entry recorded for {employee.full_name} on {date_str} "
-            f"at {entry_time} (no exit time set)"
+        return True, translator.t(
+            "manual.success.entry_recorded",
+            employee=employee.full_name,
+            date=date_str,
+            entry=entry_time,
         )
 
 

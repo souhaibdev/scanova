@@ -10,7 +10,7 @@ import re
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QLineEdit, QPushButton, QTableWidget, QTableWidgetItem,
-    QHeaderView, QFrame, QMessageBox, QSizePolicy, QDateEdit,
+    QHeaderView, QFrame, QScrollArea, QMessageBox, QSizePolicy, QDateEdit,
 )
 from PyQt6.QtCore import Qt, QDate
 from PyQt6.QtGui import QFont
@@ -179,52 +179,53 @@ class ManualAttendancePage(QWidget):
         form_card.setFixedWidth(300)
 
         fl = QVBoxLayout(form_card)
-        fl.setContentsMargins(20, 20, 20, 20)
-        fl.setSpacing(0)
+        fl.setContentsMargins(18, 18, 18, 18)
+        fl.setSpacing(10)
 
         form_title = QLabel(self._translator.t("manual.form.title"))
         self._translator.bind_text(form_title, "manual.form.title")
         form_title.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
         form_title.setStyleSheet(f"color: {TEXT_MAIN}; background: transparent;")
         fl.addWidget(form_title)
-        fl.addSpacing(16)
+        fl.addSpacing(10)
 
         def add_field(label_key, widget):
             fl.addWidget(self._muted_label(label_key))
             fl.addWidget(widget)
+            fl.addSpacing(10)
 
         self._inp_uid = QLineEdit()
-        self._inp_uid.setFixedHeight(36)
+        self._inp_uid.setFixedHeight(38)
         self._translator.bind_placeholder(self._inp_uid, "manual.placeholder.uid")
         add_field("manual.field.uid", self._inp_uid)
 
         self._inp_name = QLineEdit()
-        self._inp_name.setFixedHeight(36)
+        self._inp_name.setFixedHeight(38)
         self._inp_name.setReadOnly(True)
         self._inp_name.setStyleSheet(f"background: #F5F8FF; color: {TEXT_MUTED};")
         add_field("employee.field.full_name", self._inp_name)
 
         self._inp_cin = QLineEdit()
-        self._inp_cin.setFixedHeight(36)
+        self._inp_cin.setFixedHeight(38)
         self._inp_cin.setReadOnly(True)
         self._inp_cin.setStyleSheet(f"background: #F5F8FF; color: {TEXT_MUTED};")
         add_field("employee.field.cin", self._inp_cin)
 
         self._inp_date = QDateEdit()
-        self._inp_date.setFixedHeight(36)
+        self._inp_date.setFixedHeight(38)
         self._inp_date.setCalendarPopup(True)
         self._inp_date.setDate(QDate.currentDate())
         self._inp_date.setDisplayFormat("yyyy-MM-dd")
         add_field("manual.field.date", self._inp_date)
 
         self._inp_entry = QLineEdit()
-        self._inp_entry.setFixedHeight(36)
+        self._inp_entry.setFixedHeight(38)
         self._inp_entry.setInputMask("00:00")
         self._translator.bind_placeholder(self._inp_entry, "manual.placeholder.entry")
         add_field("manual.field.entry_time", self._inp_entry)
 
         self._inp_exit = QLineEdit()
-        self._inp_exit.setFixedHeight(36)
+        self._inp_exit.setFixedHeight(38)
         self._inp_exit.setInputMask("00:00")
         self._translator.bind_placeholder(self._inp_exit, "manual.placeholder.exit")
         self._translator.bind_tooltip(self._inp_exit, "manual.tooltip.exit_optional")
@@ -233,7 +234,7 @@ class ManualAttendancePage(QWidget):
         fl.addSpacing(4)
 
         btn_row = QHBoxLayout()
-        btn_row.setSpacing(8)
+        btn_row.setSpacing(10)
 
         btn_clear = QPushButton(self._translator.t("manual.button.clear"))
         self._translator.bind_text(btn_clear, "manual.button.clear")
@@ -251,14 +252,21 @@ class ManualAttendancePage(QWidget):
 
         fl.addLayout(btn_row)
         fl.addStretch()
-        body.addWidget(form_card, stretch=0)
+
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setFrameShape(QFrame.Shape.NoFrame)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        scroll_area.setWidget(form_card)
+        scroll_area.setFixedWidth(300)
+        body.addWidget(scroll_area, stretch=0)
 
     def _muted_label(self, text_key: str) -> QLabel:
         lbl = QLabel(self._translator.t(text_key))
         self._translator.bind_text(lbl, text_key)
         lbl.setStyleSheet(
-            f"color: {TEXT_MUTED}; font-size: 11px; font-weight: 600; "
-            f"letter-spacing: 0.4px; background: transparent;"
+            f"color: {TEXT_MUTED}; font-size: 13px; background: transparent;"
         )
         return lbl
 
