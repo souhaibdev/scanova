@@ -1,8 +1,10 @@
 import logging
 
+from translation_manager import TranslationManager
 from utils.file_utils import load_json, save_json
 
 logger = logging.getLogger(__name__)
+translator = TranslationManager.instance()
 
 ACTIVATION_CODE = "$scanova=20052006"
 ACTIVATION_FILE = "activation.json"
@@ -29,7 +31,7 @@ def activate(code: str) -> tuple[bool, str]:
     if code == ACTIVATION_CODE:
         save_activation(True)
         logger.info("Application activated successfully")
-        return True, "Activation successful"
+        return True, translator.t("activation.success")
 
     logger.warning("Invalid activation attempt")
-    return False, "Invalid activation code."
+    return False, translator.t("activation.invalid")

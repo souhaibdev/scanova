@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+from translation_manager import TranslationManager
 import pandas as pd
 
 from translation_manager import TranslationManager
@@ -46,6 +47,9 @@ def add_advance(uid: str, employee_name: str, amount: float, note: str = "") -> 
         Tuple of (success, message)
     """
     try:
+        if amount <= 0:
+            return False, _translator.t("advances.validation.amount_positive")
+
         df = _load_df()
         
         # Get current date and extract month/year

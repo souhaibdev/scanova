@@ -11,6 +11,7 @@ from datetime import date
 
 import pandas as pd
 
+from translation_manager import TranslationManager
 from models.attendance_record import AttendanceRecord
 from services.employee_service import get_all_employees, get_employee_by_uid
 from translation_manager import TranslationManager
@@ -18,6 +19,7 @@ from utils.file_utils import load_xlsx, save_xlsx
 from utils.time_utils import calc_worked_hours, is_late
 
 logger = logging.getLogger(__name__)
+translator = TranslationManager.instance()
 
 from utils.storage import ATTENDANCE_FILE
 

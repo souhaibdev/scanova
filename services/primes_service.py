@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+from translation_manager import TranslationManager
 import pandas as pd
 
 from translation_manager import TranslationManager

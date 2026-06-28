@@ -2,6 +2,7 @@ import logging
 
 import pandas as pd
 
+from translation_manager import TranslationManager
 from models.attendance_record import AttendanceRecord
 from models.employee import Employee
 from services.attendance_cleanup_service import cleanup_old_attendance_months
@@ -16,6 +17,9 @@ from utils.time_utils import (
     is_late,
     minutes_between,
 )
+
+logger = logging.getLogger(__name__)
+translator = TranslationManager.instance()
 
 logger = logging.getLogger(__name__)
 MIN_STAY_MINUTES = 15  # minimum minutes between entry and exit

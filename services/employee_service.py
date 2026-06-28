@@ -1,6 +1,7 @@
 import logging
 from typing import Optional
 
+from translation_manager import TranslationManager
 from models.employee import Employee
 from translation_manager import TranslationManager
 from utils.file_utils import load_json, save_json

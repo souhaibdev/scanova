@@ -167,12 +167,19 @@ class DashboardPage(QWidget):
         late_list = stats["late_employees"]
         self._table.setRowCount(0)
 
+        is_rtl = self._translator.current_language == "ar"
+        alignment = (
+            Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight
+            if is_rtl else
+            Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft
+        )
+
         for emp in late_list:
             row = self._table.rowCount()
             self._table.insertRow(row)
             for col, value in enumerate([emp["name"], emp["uid"], emp["entry"]]):
                 item = QTableWidgetItem(value)
-                item.setTextAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
+                item.setTextAlignment(alignment)
                 self._table.setItem(row, col, item)
 
         self._table.viewport().update()

@@ -21,13 +21,11 @@ from ui.employees_page import EmployeesPage
 from ui.notes_page import NotesPage
 from ui.monthly_report_page import MonthlyReportPage
 from ui.employee_report_page import EmployeeReportPage
-from ui.primes_page import PrimesPage     
-from ui.manual_attendance_page import ManualAttendancePage                   # ← زيد
+from ui.primes_page import PrimesPage
+from ui.manual_attendance_page import ManualAttendancePage
 
 logger = logging.getLogger(__name__)
 
-
-# ── Colors ────────────────────────────────────────────────────────────────────
 ACCENT      = "#2B79FF"
 BG_PAGE     = "#F0F2F5"
 BG_CARD     = "#FFFFFF"
@@ -42,7 +40,6 @@ FG_SUCCESS  = "#4ADE80"
 FG_WARNING  = "#FACC15"
 FG_DANGER   = "#F87171"
 BORDER      = "#E4EAFF"
-
 
 STYLESHEET = f"""
 QWidget {{ font-family: 'Segoe UI'; }}
@@ -90,20 +87,62 @@ QLabel#statusYellow {{ color: {FG_WARNING};   font-size: 11px; background: trans
 QLabel#statusRed    {{ color: {FG_DANGER};    font-size: 11px; background: transparent; }}
 """
 
+LANG_COMBO_STYLE = """
+QComboBox {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    color: #E0E0E0;
+    font-size: 12px;
+    font-family: 'Segoe UI';
+    padding: 0px 10px;
+}
+QComboBox:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+QComboBox::drop-down {
+    border: none;
+    width: 20px;
+}
+QComboBox::down-arrow {
+    image: none;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid #A0A0C0;
+    width: 0;
+    height: 0;
+    margin-right: 6px;
+}
+QComboBox QAbstractItemView {
+    background: #2D2D4E;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: #E0E0E0;
+    font-size: 12px;
+    selection-background-color: #2B79FF;
+    selection-color: #FFFFFF;
+    padding: 4px;
+    outline: none;
+}
+QComboBox QAbstractItemView::item {
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 4px;
+}
+QComboBox QAbstractItemView::item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+"""
 
-# ── NFC Signal Bridge ─────────────────────────────────────────────────────────
-# Runs process_scan in the NFC thread, then emits a signal to the main thread.
-# This is the ONLY safe way to update Qt UI from a background thread.
 
 class NFCBridge(QObject):
     scan_done = pyqtSignal(dict)
 
     def on_scan(self, uid: str):
         result = process_scan(uid)
-        self.scan_done.emit(result)   # crosses the thread boundary safely
+        self.scan_done.emit(result)
 
-
-# ── Change Password Dialog ─────────────────────────────────────────────────────
 
 class ChangePasswordDialog(QDialog):
     def __init__(self, username: str, parent=None):
@@ -120,14 +159,20 @@ class ChangePasswordDialog(QDialog):
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(8)
 
-        for label_key, attr in [("change_password.old_password", "_old_input"), ("change_password.new_password", "_new_input")]:
+        for label_key, attr in [
+            ("change_password.old_password", "_old_input"),
+            ("change_password.new_password", "_new_input"),
+        ]:
             lbl = QLabel(self._translator.t(label_key))
             self._translator.bind_text(lbl, label_key)
             lbl.setStyleSheet("color: #555; font-size: 12px;")
             layout.addWidget(lbl)
             inp = QLineEdit()
             inp.setEchoMode(QLineEdit.EchoMode.Password)
-            inp.setStyleSheet("border: 1.5px solid #E4EAFF; border-radius: 7px; padding: 6px 10px; font-size: 13px;")
+            inp.setStyleSheet(
+                "border: 1.5px solid #E4EAFF; border-radius: 7px;"
+                "padding: 6px 10px; font-size: 13px;"
+            )
             layout.addWidget(inp)
             setattr(self, attr, inp)
 
@@ -137,12 +182,17 @@ class ChangePasswordDialog(QDialog):
 
         btn = QPushButton(self._translator.t("menu.change_password"))
         self._translator.bind_text(btn, "menu.change_password")
-        btn.setStyleSheet(f"background: {ACCENT}; color: white; border: none; border-radius: 7px; padding: 8px; font-weight: 600;")
+        btn.setStyleSheet(
+            f"background: {ACCENT}; color: white; border: none;"
+            "border-radius: 7px; padding: 8px; font-weight: 600;"
+        )
         btn.clicked.connect(self._submit)
         layout.addWidget(btn)
 
     def _submit(self):
-        ok, msg = auth_service.change_password(self._username, self._old_input.text(), self._new_input.text())
+        ok, msg = auth_service.change_password(
+            self._username, self._old_input.text(), self._new_input.text()
+        )
         if ok:
             QMessageBox.information(self, self._translator.t("common.success"), msg)
             self.accept()
@@ -150,20 +200,18 @@ class ChangePasswordDialog(QDialog):
             self._status_lbl.setText(msg)
 
 
-# ── Main Window ───────────────────────────────────────────────────────────────
-
 class MainWindow(QWidget):
     """Main application shell: header, sidebar, content area, status bar."""
 
     _NAV_PAGES = [
-        ("Dashboard", "nav.dashboard"),
-        ("Attendance", "nav.attendance"),
-        ("Manual Entry", "nav.manual_entry"),
-        ("Employees", "nav.employees"),
-        ("Monthly Report", "nav.monthly_report"),
-        ("Advances", "nav.advances"),
+        ("Dashboard",        "nav.dashboard"),
+        ("Attendance",       "nav.attendance"),
+        ("Manual Entry",     "nav.manual_entry"),
+        ("Employees",        "nav.employees"),
+        ("Monthly Report",   "nav.monthly_report"),
+        ("Advances",         "nav.advances"),
         ("Employee Reports", "nav.employee_reports"),
-        ("Primes", "nav.primes"),
+        ("Primes",           "nav.primes"),
     ]
 
     def __init__(self, parent, username: str, on_logout=None):
@@ -186,7 +234,7 @@ class MainWindow(QWidget):
         self._show_page("Dashboard")
         self._start_status_timer()
 
-    # ── Shell Layout ──────────────────────────────────────────────────
+    # ── Shell ─────────────────────────────────────────────────────────
 
     def _build_shell(self):
         root = QVBoxLayout(self)
@@ -200,6 +248,7 @@ class MainWindow(QWidget):
         h_layout = QHBoxLayout(self._header)
         self._header_layout = h_layout
         h_layout.setContentsMargins(20, 0, 20, 0)
+        h_layout.setSpacing(10)
 
         self._title_layout = QHBoxLayout()
         self._title_layout.setSpacing(0)
@@ -209,12 +258,13 @@ class MainWindow(QWidget):
         image_path = os.path.join(os.path.dirname(__file__), "scanova-removebg-preview.png")
         pixmap = QPixmap(image_path)
         if not pixmap.isNull():
-            self._logo.setPixmap(pixmap.scaled(64, 64,
+            self._logo.setPixmap(pixmap.scaled(
+                64, 64,
                 Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.SmoothTransformation))
+                Qt.TransformationMode.SmoothTransformation,
+            ))
         else:
             logger.warning("Unable to load logo image from %s", image_path)
-
         self._title_layout.addWidget(self._logo)
 
         self._app_title = QLabel(self._translator.t("app.title"))
@@ -226,12 +276,14 @@ class MainWindow(QWidget):
         title_widget = QWidget()
         title_widget.setLayout(self._title_layout)
         self._title_widget = title_widget
-
         h_layout.addWidget(title_widget)
         h_layout.addStretch()
 
+        # Language combo — styled
         self._lang_combo = QComboBox()
-        self._lang_combo.setFixedWidth(140)
+        self._lang_combo.setFixedWidth(110)
+        self._lang_combo.setFixedHeight(30)
+        self._lang_combo.setStyleSheet(LANG_COMBO_STYLE)
         self._translator.bind_combo_items(self._lang_combo, [
             ("lang.en", "en"),
             ("lang.ar", "ar"),
@@ -291,8 +343,10 @@ class MainWindow(QWidget):
         self._last_name_lbl   = self._status_label("status.employee_none")
         self._last_action_lbl = self._status_label("")
 
-        for lbl in (self._nfc_status_lbl, self._scan_status_lbl,
-                    self._last_uid_lbl, self._last_name_lbl, self._last_action_lbl):
+        for lbl in (
+            self._nfc_status_lbl, self._scan_status_lbl,
+            self._last_uid_lbl, self._last_name_lbl, self._last_action_lbl,
+        ):
             sb_layout.addWidget(lbl)
 
         sb_layout.addStretch()
@@ -307,8 +361,12 @@ class MainWindow(QWidget):
 
     def _translate_dynamic_texts(self):
         self.setWindowTitle(self._translator.t("app.title"))
-        self._admin_lbl.setText(self._translator.t("app.admin_label", username=self._username))
-        self._lang_combo.setCurrentIndex(self._lang_combo.findData(self._translator.current_language))
+        self._admin_lbl.setText(
+            self._translator.t("app.admin_label", username=self._username)
+        )
+        self._lang_combo.setCurrentIndex(
+            self._lang_combo.findData(self._translator.current_language)
+        )
         self._render_scan_status(self._last_scan_result)
 
     def _arrange_sidebar(self):
@@ -316,19 +374,13 @@ class MainWindow(QWidget):
         self._middle_layout.removeWidget(self._stack)
 
         is_rtl = self._translator.current_language == "ar"
+        self._middle_layout.setDirection(
+            QBoxLayout.Direction.RightToLeft if is_rtl
+            else QBoxLayout.Direction.LeftToRight
+        )
 
-        # Pin the middle layout to a fixed physical order so the window's
-        # RTL text direction can't mirror it again. With LeftToRight forced,
-        # index 0 is always the physical left and index 1 the physical right.
-        self._middle_layout.setDirection(QBoxLayout.Direction.LeftToRight)
-
-        # English → sidebar on the left, Arabic → sidebar on the right.
-        if is_rtl:
-            self._middle_layout.insertWidget(0, self._stack, stretch=1)
-            self._middle_layout.insertWidget(1, self._sidebar)
-        else:
-            self._middle_layout.insertWidget(0, self._sidebar)
-            self._middle_layout.insertWidget(1, self._stack, stretch=1)
+        self._middle_layout.insertWidget(0, self._sidebar)
+        self._middle_layout.insertWidget(1, self._stack, stretch=1)
 
     def _rebuild_sidebar(self):
         if hasattr(self, "_sidebar_layout"):
@@ -342,7 +394,9 @@ class MainWindow(QWidget):
         for name, key in self._NAV_PAGES:
             btn = QPushButton()
             self._translator.bind_text(btn, key)
-            btn.setObjectName("navBtnActive" if name == self._current_page_name else "navBtn")
+            btn.setObjectName(
+                "navBtnActive" if name == self._current_page_name else "navBtn"
+            )
             btn.clicked.connect(lambda checked, n=name: self._show_page(n))
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
             self._sidebar_layout.addWidget(btn)
@@ -372,9 +426,8 @@ class MainWindow(QWidget):
         is_rtl = self._translator.current_language == "ar"
         text_align = "right" if is_rtl else "left"
         horizontal_direction = (
-            QBoxLayout.Direction.RightToLeft
-            if is_rtl else
-            QBoxLayout.Direction.LeftToRight
+            QBoxLayout.Direction.RightToLeft if is_rtl
+            else QBoxLayout.Direction.LeftToRight
         )
         label_align = (
             Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
@@ -391,13 +444,9 @@ class MainWindow(QWidget):
             btn.setLayoutDirection(self._translator.qt_layout_direction)
 
         for label in (
-            self._app_title,
-            self._admin_lbl,
-            self._nfc_status_lbl,
-            self._scan_status_lbl,
-            self._last_uid_lbl,
-            self._last_name_lbl,
-            self._last_action_lbl,
+            self._app_title, self._admin_lbl,
+            self._nfc_status_lbl, self._scan_status_lbl,
+            self._last_uid_lbl, self._last_name_lbl, self._last_action_lbl,
         ):
             label.setAlignment(label_align)
 
@@ -412,11 +461,15 @@ class MainWindow(QWidget):
             self._last_action_lbl.setText("")
             return
 
-        self._last_uid_lbl.setText(self._translator.t("status.last_uid", uid=result.get("uid", "")))
+        self._last_uid_lbl.setText(
+            self._translator.t("status.last_uid", uid=result.get("uid", ""))
+        )
         if result.get("success"):
             self._scan_status_lbl.setText(self._translator.t("status.scan_success"))
             self._scan_status_lbl.setObjectName("statusGreen")
-            self._last_name_lbl.setText(self._translator.t("status.employee", employee=result.get("employee", "")))
+            self._last_name_lbl.setText(
+                self._translator.t("status.employee", employee=result.get("employee", ""))
+            )
             action = result.get("action", "")
             if action == "entry":
                 late_tag = " [LATE]" if result.get("late") else ""
@@ -451,8 +504,9 @@ class MainWindow(QWidget):
         self._apply_language_direction(language)
         self._refresh_all_pages()
 
+    # ── NFC ───────────────────────────────────────────────────────────
+
     def _init_nfc_reader(self):
-        # Bridge lives in main thread — signal is thread-safe
         self._nfc_bridge = NFCBridge()
         self._nfc_bridge.scan_done.connect(self._update_after_scan)
         self._nfc_reader = NFCReader(on_scan_callback=self._nfc_bridge.on_scan)
@@ -464,8 +518,6 @@ class MainWindow(QWidget):
         action = result.get("action", "")
 
         if not result.get("success") and action == "unknown":
-            # If user is on the Employees page, populate the UID input
-            # so they can register the card without an interrupting popup.
             if self._current_page_name == "Employees" and "Employees" in self._pages:
                 try:
                     page = self._pages["Employees"]
@@ -488,17 +540,20 @@ class MainWindow(QWidget):
         for lbl in (self._scan_status_lbl, self._last_action_lbl):
             lbl.setStyle(lbl.style())
 
-        # File I/O already done in NFC thread before signal was emitted
         QTimer.singleShot(50, self._refresh_all_pages)
 
     def _play_sound(self):
         try:
             if platform.system() == "Darwin":
-                subprocess.Popen(["afplay", "/System/Library/Sounds/Glass.aiff"],
-                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.Popen(
+                    ["afplay", "/System/Library/Sounds/Glass.aiff"],
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                )
             elif platform.system() == "Linux":
-                subprocess.Popen(["paplay", "/usr/share/sounds/freedesktop/stereo/bell.oga"],
-                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.Popen(
+                    ["paplay", "/usr/share/sounds/freedesktop/stereo/bell.oga"],
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                )
             else:
                 import winsound
                 winsound.MessageBeep(winsound.MB_OK)
@@ -525,12 +580,10 @@ class MainWindow(QWidget):
     # ── Navigation ────────────────────────────────────────────────────
 
     def _show_page(self, name: str):
-        # Update sidebar highlight
         for btn_name, btn in self._nav_buttons.items():
             btn.setObjectName("navBtnActive" if btn_name == name else "navBtn")
             btn.setStyle(btn.style())
 
-        # Create page if not yet cached
         if name not in self._pages:
             page_cls = {
                 "Dashboard":        DashboardPage,
@@ -547,7 +600,6 @@ class MainWindow(QWidget):
             self._stack.addWidget(page)
             self._pages[name] = page
 
-        # ✅ Always refresh when switching — fixes stale data after scan
         page = self._pages[name]
         if hasattr(page, "refresh"):
             page.refresh()
@@ -556,11 +608,6 @@ class MainWindow(QWidget):
         self._current_page_name = name
 
     def _refresh_all_pages(self):
-        """
-        Called after every NFC scan.
-        Refreshes ALL cached pages + forces Qt to repaint immediately,
-        even if the page is hidden inside the QStackedWidget.
-        """
         from PyQt6.QtWidgets import QApplication
         for page_name, page in self._pages.items():
             if hasattr(page, "refresh"):
@@ -568,10 +615,9 @@ class MainWindow(QWidget):
                 page.refresh()
                 page.update()
                 page.repaint()
-        # Force Qt to flush all pending paint events right now
         QApplication.processEvents()
 
-    # ── Auth Actions ──────────────────────────────────────────────────
+    # ── Auth ──────────────────────────────────────────────────────────
 
     def _change_password(self):
         dlg = ChangePasswordDialog(self._username, self)
@@ -582,7 +628,7 @@ class MainWindow(QWidget):
             self,
             self._translator.t("common.confirm"),
             self._translator.t("logout.confirm"),
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         )
         if reply != QMessageBox.StandardButton.Yes:
             return
