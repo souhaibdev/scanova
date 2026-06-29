@@ -18,7 +18,8 @@
   <a target="code" href="///C:/Users/HP/Desktop/imran/nfc_attendance_system/main.py" type="text/plain"><tt>main.py</tt></a>
 <span class="moduletype">Script</span>  <div class="import">
 imports:
-    <a href="#PyQt6.QtWidgets">PyQt6.QtWidgets</a>
+    <a href="#PyQt6.QtGui">PyQt6.QtGui</a>
+ &#8226;   <a href="#PyQt6.QtWidgets">PyQt6.QtWidgets</a>
  &#8226;   <a href="#_collections_abc">_collections_abc</a>
  &#8226;   <a href="#_weakrefset">_weakrefset</a>
  &#8226;   <a href="#abc">abc</a>
@@ -173,13 +174,18 @@ imports:
  &#8226;   <a href="#re._constants">re._constants</a>
  &#8226;   <a href="#re._parser">re._parser</a>
  &#8226;   <a href="#reprlib">reprlib</a>
+ &#8226;   <a href="#services">services</a>
+ &#8226;   <a href="#services.attendance_cleanup_service">services.attendance_cleanup_service</a>
+ &#8226;   <a href="#services.license_service">services.license_service</a>
  &#8226;   <a href="#sre_compile">sre_compile</a>
  &#8226;   <a href="#sre_constants">sre_constants</a>
  &#8226;   <a href="#sre_parse">sre_parse</a>
  &#8226;   <a href="#stat">stat</a>
  &#8226;   <a href="#sys">sys</a>
  &#8226;   <a href="#traceback">traceback</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#types">types</a>
+ &#8226;   <a href="#ui.activation_page">ui.activation_page</a>
  &#8226;   <a href="#ui.login_page">ui.login_page</a>
  &#8226;   <a href="#ui.main_window">ui.main_window</a>
  &#8226;   <a href="#utils.file_utils">utils.file_utils</a>
@@ -779,6 +785,17 @@ imported by:
 <span class="moduletype">MissingModule</span>  <div class="import">
 imported by:
     <a href="#pandas.io.sql">pandas.io.sql</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="'tests.test_platypus_tables'"></a>
+  <a target="code" href="" type="text/plain"><tt>'tests.test_platypus_tables'</tt></a>
+<span class="moduletype">MissingModule</span>  <div class="import">
+imported by:
+    <a href="#reportlab.platypus.tables">reportlab.platypus.tables</a>
 
   </div>
 
@@ -3162,7 +3179,6 @@ imported by:
 <span class="moduletype">Package</span>  <div class="import">
 imports:
     <a href="#PyQt6.QtCore">PyQt6.QtCore</a>
- &#8226;   <a href="#PyQt6.QtGui">PyQt6.QtGui</a>
  &#8226;   <a href="#PyQt6.sip">PyQt6.sip</a>
  &#8226;   <a href="#os">os</a>
  &#8226;   <a href="#pkgutil">pkgutil</a>
@@ -3199,6 +3215,8 @@ imported by:
     <a href="#PyQt6">PyQt6</a>
  &#8226;   <a href="#PyQt6.QtGui">PyQt6.QtGui</a>
  &#8226;   <a href="#PyQt6.QtWidgets">PyQt6.QtWidgets</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
+ &#8226;   <a href="#ui.activation_page">ui.activation_page</a>
  &#8226;   <a href="#ui.attendance_page">ui.attendance_page</a>
  &#8226;   <a href="#ui.dashboard_page">ui.dashboard_page</a>
  &#8226;   <a href="#ui.employee_report_page">ui.employee_report_page</a>
@@ -3231,8 +3249,9 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#PyQt6">PyQt6</a>
- &#8226;   <a href="#PyQt6.QtWidgets">PyQt6.QtWidgets</a>
+    <a href="#PyQt6.QtWidgets">PyQt6.QtWidgets</a>
+ &#8226;   <a href="#main.py">main.py</a>
+ &#8226;   <a href="#ui.activation_page">ui.activation_page</a>
  &#8226;   <a href="#ui.attendance_page">ui.attendance_page</a>
  &#8226;   <a href="#ui.dashboard_page">ui.dashboard_page</a>
  &#8226;   <a href="#ui.employee_report_page">ui.employee_report_page</a>
@@ -3267,6 +3286,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#main.py">main.py</a>
+ &#8226;   <a href="#ui.activation_page">ui.activation_page</a>
  &#8226;   <a href="#ui.attendance_page">ui.attendance_page</a>
  &#8226;   <a href="#ui.dashboard_page">ui.dashboard_page</a>
  &#8226;   <a href="#ui.employee_report_page">ui.employee_report_page</a>
@@ -6056,7 +6076,6 @@ imported by:
  &#8226;   <a href="#services.monthly_report_service">services.monthly_report_service</a>
  &#8226;   <a href="#ssl">ssl</a>
  &#8226;   <a href="#ui.employee_report_page">ui.employee_report_page</a>
- &#8226;   <a href="#ui.monthly_report_page">ui.monthly_report_page</a>
  &#8226;   <a href="#zoneinfo._zoneinfo">zoneinfo._zoneinfo</a>
 
   </div>
@@ -7481,12 +7500,12 @@ imported by:
  &#8226;   <a href="#reportlab.lib.normalDate">reportlab.lib.normalDate</a>
  &#8226;   <a href="#reportlab.lib.utils">reportlab.lib.utils</a>
  &#8226;   <a href="#services.advances_service">services.advances_service</a>
+ &#8226;   <a href="#services.attendance_cleanup_service">services.attendance_cleanup_service</a>
  &#8226;   <a href="#services.manual_attendance_service">services.manual_attendance_service</a>
  &#8226;   <a href="#services.monthly_report_service">services.monthly_report_service</a>
  &#8226;   <a href="#services.primes_service">services.primes_service</a>
  &#8226;   <a href="#sqlite3.dbapi2">sqlite3.dbapi2</a>
  &#8226;   <a href="#ui.employee_report_page">ui.employee_report_page</a>
- &#8226;   <a href="#ui.monthly_report_page">ui.monthly_report_page</a>
  &#8226;   <a href="#utils.time_utils">utils.time_utils</a>
  &#8226;   <a href="#xmlrpc.client">xmlrpc.client</a>
  &#8226;   <a href="#zoneinfo._zoneinfo">zoneinfo._zoneinfo</a>
@@ -12727,6 +12746,7 @@ imported by:
  &#8226;   <a href="#pandas.io.excel._xlsxwriter">pandas.io.excel._xlsxwriter</a>
  &#8226;   <a href="#pandas.io.parquet">pandas.io.parquet</a>
  &#8226;   <a href="#pandas.util._print_versions">pandas.util._print_versions</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#utils.file_utils">utils.file_utils</a>
 
   </div>
@@ -12910,9 +12930,12 @@ imported by:
  &#8226;   <a href="#reportlab.platypus.doctemplate">reportlab.platypus.doctemplate</a>
  &#8226;   <a href="#reportlab.platypus.frames">reportlab.platypus.frames</a>
  &#8226;   <a href="#services.advances_service">services.advances_service</a>
+ &#8226;   <a href="#services.attendance_cleanup_service">services.attendance_cleanup_service</a>
  &#8226;   <a href="#services.attendance_service">services.attendance_service</a>
  &#8226;   <a href="#services.auth_service">services.auth_service</a>
+ &#8226;   <a href="#services.bulletin_service">services.bulletin_service</a>
  &#8226;   <a href="#services.employee_service">services.employee_service</a>
+ &#8226;   <a href="#services.license_service">services.license_service</a>
  &#8226;   <a href="#services.manual_attendance_service">services.manual_attendance_service</a>
  &#8226;   <a href="#services.monthly_report_service">services.monthly_report_service</a>
  &#8226;   <a href="#services.nfc_reader">services.nfc_reader</a>
@@ -12921,6 +12944,7 @@ imported by:
  &#8226;   <a href="#ui.main_window">ui.main_window</a>
  &#8226;   <a href="#unittest._log">unittest._log</a>
  &#8226;   <a href="#utils.file_utils">utils.file_utils</a>
+ &#8226;   <a href="#utils.pdf_generator">utils.pdf_generator</a>
 
   </div>
 
@@ -13149,6 +13173,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#main.py">main.py</a>
+ &#8226;   <a href="#services.attendance_cleanup_service">services.attendance_cleanup_service</a>
  &#8226;   <a href="#services.attendance_service">services.attendance_service</a>
  &#8226;   <a href="#services.manual_attendance_service">services.manual_attendance_service</a>
  &#8226;   <a href="#ui.attendance_page">ui.attendance_page</a>
@@ -26072,6 +26097,8 @@ imported by:
  &#8226;   <a href="#tarfile">tarfile</a>
  &#8226;   <a href="#tempfile">tempfile</a>
  &#8226;   <a href="#threading">threading</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
+ &#8226;   <a href="#ui.activation_page">ui.activation_page</a>
  &#8226;   <a href="#ui.main_window">ui.main_window</a>
  &#8226;   <a href="#unittest.loader">unittest.loader</a>
  &#8226;   <a href="#unittest.main">unittest.main</a>
@@ -26334,6 +26361,7 @@ imported by:
  &#8226;   <a href="#pandas.util">pandas.util</a>
  &#8226;   <a href="#pandas.util._exceptions">pandas.util._exceptions</a>
  &#8226;   <a href="#services.advances_service">services.advances_service</a>
+ &#8226;   <a href="#services.attendance_cleanup_service">services.attendance_cleanup_service</a>
  &#8226;   <a href="#services.attendance_service">services.attendance_service</a>
  &#8226;   <a href="#services.bulletin_service">services.bulletin_service</a>
  &#8226;   <a href="#services.manual_attendance_service">services.manual_attendance_service</a>
@@ -42516,7 +42544,8 @@ imported by:
   <a target="code" href="///C:/Users/HP/AppData/Local/Programs/Python/Python311/Lib/site-packages/reportlab/platypus/tables.py" type="text/plain"><tt>reportlab.platypus.tables</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
-    <a href="#collections">collections</a>
+    <a href="#'tests.test_platypus_tables'">'tests.test_platypus_tables'</a>
+ &#8226;   <a href="#collections">collections</a>
  &#8226;   <a href="#pprint">pprint</a>
  &#8226;   <a href="#reportlab">reportlab</a>
  &#8226;   <a href="#reportlab.lib">reportlab.lib</a>
@@ -42532,7 +42561,6 @@ imports:
  &#8226;   <a href="#reportlab.platypus.flowables">reportlab.platypus.flowables</a>
  &#8226;   <a href="#reportlab.rl_config">reportlab.rl_config</a>
  &#8226;   <a href="#sys">sys</a>
- &#8226;   <a href="#tests">tests</a>
 
   </div>
   <div class="import">
@@ -42816,19 +42844,24 @@ imported by:
 <span class="moduletype">Package</span>  <div class="import">
 imports:
     <a href="#services.auth_service">services.auth_service</a>
+ &#8226;   <a href="#services.license_service">services.license_service</a>
 
   </div>
   <div class="import">
 imported by:
-    <a href="#services.advances_service">services.advances_service</a>
+    <a href="#main.py">main.py</a>
+ &#8226;   <a href="#services.advances_service">services.advances_service</a>
+ &#8226;   <a href="#services.attendance_cleanup_service">services.attendance_cleanup_service</a>
  &#8226;   <a href="#services.attendance_service">services.attendance_service</a>
  &#8226;   <a href="#services.auth_service">services.auth_service</a>
  &#8226;   <a href="#services.bulletin_service">services.bulletin_service</a>
  &#8226;   <a href="#services.employee_service">services.employee_service</a>
+ &#8226;   <a href="#services.license_service">services.license_service</a>
  &#8226;   <a href="#services.manual_attendance_service">services.manual_attendance_service</a>
  &#8226;   <a href="#services.monthly_report_service">services.monthly_report_service</a>
  &#8226;   <a href="#services.nfc_reader">services.nfc_reader</a>
  &#8226;   <a href="#services.primes_service">services.primes_service</a>
+ &#8226;   <a href="#ui.activation_page">ui.activation_page</a>
  &#8226;   <a href="#ui.employees_page">ui.employees_page</a>
  &#8226;   <a href="#ui.login_page">ui.login_page</a>
  &#8226;   <a href="#ui.main_window">ui.main_window</a>
@@ -42848,6 +42881,7 @@ imports:
  &#8226;   <a href="#logging">logging</a>
  &#8226;   <a href="#pandas">pandas</a>
  &#8226;   <a href="#services">services</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#utils.file_utils">utils.file_utils</a>
  &#8226;   <a href="#utils.storage">utils.storage</a>
  &#8226;   <a href="#utils.time_utils">utils.time_utils</a>
@@ -42863,6 +42897,30 @@ imported by:
 </div>
 
 <div class="node">
+  <a name="services.attendance_cleanup_service"></a>
+  <a target="code" href="///C:/Users/HP/Desktop/imran/nfc_attendance_system/services/attendance_cleanup_service.py" type="text/plain"><tt>services.attendance_cleanup_service</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#datetime">datetime</a>
+ &#8226;   <a href="#logging">logging</a>
+ &#8226;   <a href="#models.attendance_record">models.attendance_record</a>
+ &#8226;   <a href="#pandas">pandas</a>
+ &#8226;   <a href="#services">services</a>
+ &#8226;   <a href="#typing">typing</a>
+ &#8226;   <a href="#utils.file_utils">utils.file_utils</a>
+ &#8226;   <a href="#utils.storage">utils.storage</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#main.py">main.py</a>
+ &#8226;   <a href="#services.attendance_service">services.attendance_service</a>
+
+  </div>
+
+</div>
+
+<div class="node">
   <a name="services.attendance_service"></a>
   <a target="code" href="///C:/Users/HP/Desktop/imran/nfc_attendance_system/services/attendance_service.py" type="text/plain"><tt>services.attendance_service</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
@@ -42872,7 +42930,9 @@ imports:
  &#8226;   <a href="#models.employee">models.employee</a>
  &#8226;   <a href="#pandas">pandas</a>
  &#8226;   <a href="#services">services</a>
+ &#8226;   <a href="#services.attendance_cleanup_service">services.attendance_cleanup_service</a>
  &#8226;   <a href="#services.employee_service">services.employee_service</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#utils.file_utils">utils.file_utils</a>
  &#8226;   <a href="#utils.storage">utils.storage</a>
  &#8226;   <a href="#utils.time_utils">utils.time_utils</a>
@@ -42897,6 +42957,7 @@ imports:
     <a href="#hashlib">hashlib</a>
  &#8226;   <a href="#logging">logging</a>
  &#8226;   <a href="#services">services</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#utils.file_utils">utils.file_utils</a>
  &#8226;   <a href="#utils.storage">utils.storage</a>
 
@@ -42918,6 +42979,7 @@ imported by:
 imports:
     <a href="#__future__">__future__</a>
  &#8226;   <a href="#calendar">calendar</a>
+ &#8226;   <a href="#logging">logging</a>
  &#8226;   <a href="#pandas">pandas</a>
  &#8226;   <a href="#services">services</a>
  &#8226;   <a href="#services.employee_service">services.employee_service</a>
@@ -42941,6 +43003,7 @@ imports:
     <a href="#logging">logging</a>
  &#8226;   <a href="#models.employee">models.employee</a>
  &#8226;   <a href="#services">services</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#typing">typing</a>
  &#8226;   <a href="#utils.file_utils">utils.file_utils</a>
  &#8226;   <a href="#utils.storage">utils.storage</a>
@@ -42960,6 +43023,27 @@ imported by:
 </div>
 
 <div class="node">
+  <a name="services.license_service"></a>
+  <a target="code" href="///C:/Users/HP/Desktop/imran/nfc_attendance_system/services/license_service.py" type="text/plain"><tt>services.license_service</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#logging">logging</a>
+ &#8226;   <a href="#services">services</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
+ &#8226;   <a href="#utils.file_utils">utils.file_utils</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#main.py">main.py</a>
+ &#8226;   <a href="#services">services</a>
+ &#8226;   <a href="#ui.activation_page">ui.activation_page</a>
+
+  </div>
+
+</div>
+
+<div class="node">
   <a name="services.manual_attendance_service"></a>
   <a target="code" href="///C:/Users/HP/Desktop/imran/nfc_attendance_system/services/manual_attendance_service.py" type="text/plain"><tt>services.manual_attendance_service</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
@@ -42971,6 +43055,7 @@ imports:
  &#8226;   <a href="#pandas">pandas</a>
  &#8226;   <a href="#services">services</a>
  &#8226;   <a href="#services.employee_service">services.employee_service</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#utils.file_utils">utils.file_utils</a>
  &#8226;   <a href="#utils.storage">utils.storage</a>
  &#8226;   <a href="#utils.time_utils">utils.time_utils</a>
@@ -43041,6 +43126,7 @@ imports:
  &#8226;   <a href="#logging">logging</a>
  &#8226;   <a href="#pandas">pandas</a>
  &#8226;   <a href="#services">services</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#utils.file_utils">utils.file_utils</a>
  &#8226;   <a href="#utils.storage">utils.storage</a>
  &#8226;   <a href="#utils.time_utils">utils.time_utils</a>
@@ -43970,6 +44056,7 @@ imported by:
  &#8226;   <a href="#threading">threading</a>
  &#8226;   <a href="#tokenize">tokenize</a>
  &#8226;   <a href="#traceback">traceback</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#types">types</a>
  &#8226;   <a href="#typing">typing</a>
  &#8226;   <a href="#unittest.case">unittest.case</a>
@@ -44128,17 +44215,6 @@ imported by:
 imported by:
     <a href="#getpass">getpass</a>
  &#8226;   <a href="#tty">tty</a>
-
-  </div>
-
-</div>
-
-<div class="node">
-  <a name="tests"></a>
-  <a target="code" href="" type="text/plain"><tt>tests</tt></a>
-<span class="moduletype">MissingModule</span>  <div class="import">
-imported by:
-    <a href="#reportlab.platypus.tables">reportlab.platypus.tables</a>
 
   </div>
 
@@ -44317,6 +44393,7 @@ imported by:
  &#8226;   <a href="#unittest.runner">unittest.runner</a>
  &#8226;   <a href="#urllib.request">urllib.request</a>
  &#8226;   <a href="#utils.file_utils">utils.file_utils</a>
+ &#8226;   <a href="#utils.pdf_generator">utils.pdf_generator</a>
  &#8226;   <a href="#uuid">uuid</a>
  &#8226;   <a href="#xmlrpc.client">xmlrpc.client</a>
  &#8226;   <a href="#zipfile">zipfile</a>
@@ -44450,6 +44527,46 @@ imported by:
 <span class="moduletype">MissingModule</span>  <div class="import">
 imported by:
     <a href="#pandas.io.formats.printing">pandas.io.formats.printing</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="translation_manager"></a>
+  <a target="code" href="///C:/Users/HP/Desktop/imran/nfc_attendance_system/translation_manager.py" type="text/plain"><tt>translation_manager</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#PyQt6.QtCore">PyQt6.QtCore</a>
+ &#8226;   <a href="#json">json</a>
+ &#8226;   <a href="#os">os</a>
+ &#8226;   <a href="#sys">sys</a>
+ &#8226;   <a href="#utils.file_utils">utils.file_utils</a>
+ &#8226;   <a href="#utils.storage">utils.storage</a>
+ &#8226;   <a href="#weakref">weakref</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#main.py">main.py</a>
+ &#8226;   <a href="#services.advances_service">services.advances_service</a>
+ &#8226;   <a href="#services.attendance_service">services.attendance_service</a>
+ &#8226;   <a href="#services.auth_service">services.auth_service</a>
+ &#8226;   <a href="#services.employee_service">services.employee_service</a>
+ &#8226;   <a href="#services.license_service">services.license_service</a>
+ &#8226;   <a href="#services.manual_attendance_service">services.manual_attendance_service</a>
+ &#8226;   <a href="#services.primes_service">services.primes_service</a>
+ &#8226;   <a href="#ui.activation_page">ui.activation_page</a>
+ &#8226;   <a href="#ui.attendance_page">ui.attendance_page</a>
+ &#8226;   <a href="#ui.dashboard_page">ui.dashboard_page</a>
+ &#8226;   <a href="#ui.employee_report_page">ui.employee_report_page</a>
+ &#8226;   <a href="#ui.employees_page">ui.employees_page</a>
+ &#8226;   <a href="#ui.login_page">ui.login_page</a>
+ &#8226;   <a href="#ui.main_window">ui.main_window</a>
+ &#8226;   <a href="#ui.manual_attendance_page">ui.manual_attendance_page</a>
+ &#8226;   <a href="#ui.monthly_report_page">ui.monthly_report_page</a>
+ &#8226;   <a href="#ui.notes_page">ui.notes_page</a>
+ &#8226;   <a href="#ui.primes_page">ui.primes_page</a>
 
   </div>
 
@@ -44907,6 +45024,7 @@ imported by:
  &#8226;   <a href="#pandas.util._validators">pandas.util._validators</a>
  &#8226;   <a href="#pandas.util.version">pandas.util.version</a>
  &#8226;   <a href="#pdb">pdb</a>
+ &#8226;   <a href="#services.attendance_cleanup_service">services.attendance_cleanup_service</a>
  &#8226;   <a href="#services.employee_service">services.employee_service</a>
  &#8226;   <a href="#services.nfc_reader">services.nfc_reader</a>
 
@@ -45337,7 +45455,8 @@ imported by:
   <a target="code" href="///C:/Users/HP/Desktop/imran/nfc_attendance_system/ui/__init__.py" type="text/plain"><tt>ui</tt></a>
 <span class="moduletype">Package</span>  <div class="import">
 imported by:
-    <a href="#ui.attendance_page">ui.attendance_page</a>
+    <a href="#ui.activation_page">ui.activation_page</a>
+ &#8226;   <a href="#ui.attendance_page">ui.attendance_page</a>
  &#8226;   <a href="#ui.dashboard_page">ui.dashboard_page</a>
  &#8226;   <a href="#ui.employee_report_page">ui.employee_report_page</a>
  &#8226;   <a href="#ui.employees_page">ui.employees_page</a>
@@ -45347,6 +45466,29 @@ imported by:
  &#8226;   <a href="#ui.monthly_report_page">ui.monthly_report_page</a>
  &#8226;   <a href="#ui.notes_page">ui.notes_page</a>
  &#8226;   <a href="#ui.primes_page">ui.primes_page</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="ui.activation_page"></a>
+  <a target="code" href="///C:/Users/HP/Desktop/imran/nfc_attendance_system/ui/activation_page.py" type="text/plain"><tt>ui.activation_page</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#PyQt6.QtCore">PyQt6.QtCore</a>
+ &#8226;   <a href="#PyQt6.QtGui">PyQt6.QtGui</a>
+ &#8226;   <a href="#PyQt6.QtWidgets">PyQt6.QtWidgets</a>
+ &#8226;   <a href="#os">os</a>
+ &#8226;   <a href="#services">services</a>
+ &#8226;   <a href="#services.license_service">services.license_service</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
+ &#8226;   <a href="#ui">ui</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#main.py">main.py</a>
 
   </div>
 
@@ -45364,6 +45506,7 @@ imports:
  &#8226;   <a href="#models.attendance_record">models.attendance_record</a>
  &#8226;   <a href="#pandas">pandas</a>
  &#8226;   <a href="#services.attendance_service">services.attendance_service</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#ui">ui</a>
 
   </div>
@@ -45384,6 +45527,7 @@ imports:
  &#8226;   <a href="#PyQt6.QtGui">PyQt6.QtGui</a>
  &#8226;   <a href="#PyQt6.QtWidgets">PyQt6.QtWidgets</a>
  &#8226;   <a href="#services.attendance_service">services.attendance_service</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#ui">ui</a>
 
   </div>
@@ -45410,6 +45554,7 @@ imports:
  &#8226;   <a href="#services.bulletin_service">services.bulletin_service</a>
  &#8226;   <a href="#services.monthly_report_service">services.monthly_report_service</a>
  &#8226;   <a href="#subprocess">subprocess</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#ui">ui</a>
 
   </div>
@@ -45433,6 +45578,7 @@ imports:
  &#8226;   <a href="#re">re</a>
  &#8226;   <a href="#services">services</a>
  &#8226;   <a href="#services.employee_service">services.employee_service</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#ui">ui</a>
 
   </div>
@@ -45454,6 +45600,7 @@ imports:
  &#8226;   <a href="#PyQt6.QtWidgets">PyQt6.QtWidgets</a>
  &#8226;   <a href="#services">services</a>
  &#8226;   <a href="#services.auth_service">services.auth_service</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#ui">ui</a>
 
   </div>
@@ -45481,6 +45628,7 @@ imports:
  &#8226;   <a href="#services.auth_service">services.auth_service</a>
  &#8226;   <a href="#services.nfc_reader">services.nfc_reader</a>
  &#8226;   <a href="#subprocess">subprocess</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#ui">ui</a>
  &#8226;   <a href="#ui.attendance_page">ui.attendance_page</a>
  &#8226;   <a href="#ui.dashboard_page">ui.dashboard_page</a>
@@ -45512,6 +45660,7 @@ imports:
  &#8226;   <a href="#__future__">__future__</a>
  &#8226;   <a href="#re">re</a>
  &#8226;   <a href="#services.manual_attendance_service">services.manual_attendance_service</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#ui">ui</a>
 
   </div>
@@ -45532,9 +45681,8 @@ imports:
  &#8226;   <a href="#PyQt6.QtGui">PyQt6.QtGui</a>
  &#8226;   <a href="#PyQt6.QtWidgets">PyQt6.QtWidgets</a>
  &#8226;   <a href="#__future__">__future__</a>
- &#8226;   <a href="#calendar">calendar</a>
- &#8226;   <a href="#datetime">datetime</a>
  &#8226;   <a href="#services.monthly_report_service">services.monthly_report_service</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#ui">ui</a>
 
   </div>
@@ -45558,6 +45706,7 @@ imports:
  &#8226;   <a href="#services">services</a>
  &#8226;   <a href="#services.advances_service">services.advances_service</a>
  &#8226;   <a href="#services.employee_service">services.employee_service</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#ui">ui</a>
 
   </div>
@@ -45581,6 +45730,7 @@ imports:
  &#8226;   <a href="#services">services</a>
  &#8226;   <a href="#services.employee_service">services.employee_service</a>
  &#8226;   <a href="#services.primes_service">services.primes_service</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#ui">ui</a>
 
   </div>
@@ -46059,11 +46209,14 @@ imports:
 imported by:
     <a href="#main.py">main.py</a>
  &#8226;   <a href="#services.advances_service">services.advances_service</a>
+ &#8226;   <a href="#services.attendance_cleanup_service">services.attendance_cleanup_service</a>
  &#8226;   <a href="#services.attendance_service">services.attendance_service</a>
  &#8226;   <a href="#services.auth_service">services.auth_service</a>
  &#8226;   <a href="#services.employee_service">services.employee_service</a>
+ &#8226;   <a href="#services.license_service">services.license_service</a>
  &#8226;   <a href="#services.manual_attendance_service">services.manual_attendance_service</a>
  &#8226;   <a href="#services.primes_service">services.primes_service</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
 
   </div>
 
@@ -46076,6 +46229,7 @@ imported by:
 imports:
     <a href="#__future__">__future__</a>
  &#8226;   <a href="#dataclasses">dataclasses</a>
+ &#8226;   <a href="#logging">logging</a>
  &#8226;   <a href="#os">os</a>
  &#8226;   <a href="#reportlab.lib">reportlab.lib</a>
  &#8226;   <a href="#reportlab.lib.colors">reportlab.lib.colors</a>
@@ -46085,7 +46239,9 @@ imports:
  &#8226;   <a href="#reportlab.lib.units">reportlab.lib.units</a>
  &#8226;   <a href="#reportlab.platypus">reportlab.platypus</a>
  &#8226;   <a href="#tempfile">tempfile</a>
+ &#8226;   <a href="#time">time</a>
  &#8226;   <a href="#utils">utils</a>
+ &#8226;   <a href="#uuid">uuid</a>
 
   </div>
   <div class="import">
@@ -46109,11 +46265,13 @@ imports:
 imported by:
     <a href="#main.py">main.py</a>
  &#8226;   <a href="#services.advances_service">services.advances_service</a>
+ &#8226;   <a href="#services.attendance_cleanup_service">services.attendance_cleanup_service</a>
  &#8226;   <a href="#services.attendance_service">services.attendance_service</a>
  &#8226;   <a href="#services.auth_service">services.auth_service</a>
  &#8226;   <a href="#services.employee_service">services.employee_service</a>
  &#8226;   <a href="#services.manual_attendance_service">services.manual_attendance_service</a>
  &#8226;   <a href="#services.primes_service">services.primes_service</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#utils.file_utils">utils.file_utils</a>
 
   </div>
@@ -46164,6 +46322,7 @@ imports:
 imported by:
     <a href="#pandas.core.reshape.merge">pandas.core.reshape.merge</a>
  &#8226;   <a href="#pandas.io.formats.style_render">pandas.io.formats.style_render</a>
+ &#8226;   <a href="#utils.pdf_generator">utils.pdf_generator</a>
 
   </div>
 
@@ -46451,6 +46610,7 @@ imported by:
  &#8226;   <a href="#reportlab.pdfbase.ttfonts">reportlab.pdfbase.ttfonts</a>
  &#8226;   <a href="#reportlab.rl_config">reportlab.rl_config</a>
  &#8226;   <a href="#tempfile">tempfile</a>
+ &#8226;   <a href="#translation_manager">translation_manager</a>
  &#8226;   <a href="#unittest.signals">unittest.signals</a>
  &#8226;   <a href="#xml.sax.expatreader">xml.sax.expatreader</a>
  &#8226;   <a href="#zoneinfo._zoneinfo">zoneinfo._zoneinfo</a>

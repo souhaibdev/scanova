@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import weakref
 
 from PyQt6.QtCore import Qt, QObject, pyqtSignal
@@ -7,7 +8,13 @@ from PyQt6.QtCore import Qt, QObject, pyqtSignal
 from utils.file_utils import load_json, save_json
 from utils.storage import BASE_DIR
 
-TRANSLATIONS_DIR = os.path.join(os.path.dirname(__file__), "translations")
+
+def _resource_dir(*paths):
+    base_dir = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_dir, *paths)
+
+
+TRANSLATIONS_DIR = _resource_dir("translations")
 SETTINGS_FILE = os.path.join(BASE_DIR, "settings.json")
 
 

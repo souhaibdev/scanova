@@ -1,11 +1,15 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import glob
+import os
+
+translation_datas = [(path, 'translations') for path in glob.glob(os.path.join('translations', '*'))]
 
 a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('ui/scanova-removebg-preview.png', 'ui')],
+    datas=[('ui/scanova-removebg-preview.png', 'ui'), ('logo.ico', '.')] + translation_datas,
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -35,5 +39,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['logo.ico'],
+    icon='logo.ico',
 )

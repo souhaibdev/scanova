@@ -26,7 +26,11 @@ from utils.storage import (
 # INIT FILES
 # ─────────────────────────────────────────────
 def _ensure_data_files():
-    import pandas as pd
+    try:
+        import pandas as pd
+    except Exception:
+        print("Missing required package 'pandas'. Install with: pip install -r requirements.txt")
+        raise
 
     # employees.json
     if not os.path.exists(EMPLOYEES_FILE):
@@ -54,6 +58,7 @@ def _ensure_data_files():
 # ─────────────────────────────────────────────
 # PYQT APP
 # ─────────────────────────────────────────────
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget
 
 from utils.file_utils import setup_logging, ensure_directories
@@ -145,6 +150,25 @@ class AppWindow(QMainWindow):
         event.accept()
 
 
+def _get_app_icon_path() -> str | None:
+    candidates = []
+    if getattr(sys, "frozen", False):
+        base_dir = getattr(sys, "_MEIPASS", None) or os.path.dirname(sys.executable)
+        candidates.extend([
+            os.path.join(base_dir, "logo.ico"),
+            os.path.join(os.path.dirname(sys.executable), "logo.ico"),
+        ])
+    candidates.extend([
+        os.path.join(os.path.dirname(__file__), "logo.ico"),
+        os.path.join(os.getcwd(), "logo.ico"),
+    ])
+
+    for path in candidates:
+        if path and os.path.exists(path):
+            return path
+    return None
+
+
 # ─────────────────────────────────────────────
 # MAIN ENTRY
 # ─────────────────────────────────────────────
@@ -159,6 +183,10 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
 
+    icon_path = _get_app_icon_path()
+    if icon_path:
+        app.setWindowIcon(QIcon(icon_path))
+
     translator = TranslationManager.instance()
     app.setLayoutDirection(translator.qt_layout_direction)
     translator.language_changed.connect(
@@ -166,6 +194,8 @@ def main():
     )
 
     window = AppWindow()
+    if icon_path:
+        window.setWindowIcon(QIcon(icon_path))
     window.show()
 
     sys.exit(app.exec())

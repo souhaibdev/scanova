@@ -121,6 +121,7 @@ class ActivationPage(QWidget):
         else:
             logo_label.setText("SCANOVA")
             logo_label.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
+        logo_label.setStyleSheet("border-radius: 10px;")
         logo_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(logo_label)
 
