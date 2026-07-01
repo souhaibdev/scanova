@@ -2,6 +2,21 @@
 ui/manual_attendance_page.py
 ─────────────────────────────
 Manual attendance entry — styled to match monthly_report_page.py
+
+FIX (see _save method below):
+- The Exit Time (and Entry Time) QLineEdit widgets use
+  setInputMask("00:00"). When the field is left untouched, Qt's
+  input-mask machinery does NOT return an empty string from .text() —
+  it returns the mask's blank placeholder characters plus the literal
+  separator, e.g. "  :  ". After .strip(), that collapses to just ":",
+  which is a non-empty, truthy string.
+  This made the code think the user had entered something in Exit
+  Time, so it ran the "^\\d{2}:\\d{2}$" regex check on ":", which of
+  course failed, and popped the "Exit Time must be HH:MM" warning even
+  when the user never touched the exit field and only wanted to submit
+  an entry-only record.
+  Fix: after stripping, treat any value with no actual digits as
+  genuinely empty before running the format checks.
 """
 
 from __future__ import annotations
@@ -336,6 +351,18 @@ class ManualAttendancePage(QWidget):
         date_str   = self._inp_date.date().toString("yyyy-MM-dd")
         entry_time = self._inp_entry.text().strip()
         exit_time  = self._inp_exit.text().strip()
+
+        # QLineEdit with setInputMask("00:00") never returns a truly empty
+        # string when the field is untouched — it returns the mask's blank
+        # placeholders plus the literal ":" separator (e.g. "  :  "), which
+        # after strip() collapses to just ":". That is a non-empty, truthy
+        # string, so it was being treated as "the user typed something" and
+        # failing the HH:MM format check below even when nothing was
+        # actually entered. Treat any value with no digits as empty.
+        if not re.search(r"\d", entry_time):
+            entry_time = ""
+        if not re.search(r"\d", exit_time):
+            exit_time = ""
 
         if not uid:
             QMessageBox.warning(

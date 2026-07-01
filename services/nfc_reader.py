@@ -25,6 +25,14 @@ class NFCReader:
         self._running = False
         self.last_activity_time: float = 0
 
+        # --- الإصلاح: كنقيسو الوقت بين كل حرف وحرف ---
+        self._last_keypress_time: float = 0
+        # السكانر كيكتب الحروف بسرعة جداً (أقل من 80 جزء من الألف ديال الثانية).
+        # بني آدم كيكتب بشوية (أكثر من 80ms عادة).
+        # إلا الفجوة بين حرفين كبرات على 80ms، معناها هادشي ماشي سكان
+        # متواصل، ونمسحو كل شي كان مجمع قبل.
+        self._max_inter_char_gap: float = 0.08  # 80 ميلي ثانية
+
     def start(self):
         """Start the global keyboard listener in a daemon thread."""
         if self._running:
@@ -48,11 +56,36 @@ class NFCReader:
     def _on_key_press(self, key):
         """Handle each key press event."""
         try:
+            now = time.time()
+
             if key == keyboard.Key.enter:
                 self._process_buffer()
-            elif hasattr(key, "char") and key.char is not None:
+                return
+
+            if hasattr(key, "char") and key.char is not None:
                 with self._lock:
+                    # --- الإصلاح 1: تحقق ديال السرعة ---
+                    # إلا كان عندنا شي حاجة مجمعة من قبل، وطالت الفجوة
+                    # الزمنية، معناها هادشي بدا شي حاجة جديدة (سكان جديد
+                    # ولا كتابة يدوية فشي حقل آخر). نمسحو القديم.
+                    if self._buffer and (now - self._last_keypress_time) > self._max_inter_char_gap:
+                        logger.debug(
+                            "Gap ديال %.3fs بين الحروف — كنمسحو buffer قديم: %s",
+                            now - self._last_keypress_time,
+                            "".join(self._buffer),
+                        )
+                        self._buffer.clear()
+
+                    # --- الإصلاح 2: غير أرقام (إلا كانت الـ UIDs ديالك رقمية) ---
+                    # إلا دخل حرف (letter) بحال 'a' فـ "anas"، معناها هادشي
+                    # كتابة يدوية ماشي سكان. نرفضوه ونمسحو كل شي.
+                    if not key.char.isdigit():
+                        self._buffer.clear()
+                        self._last_keypress_time = now
+                        return
+
                     self._buffer.append(key.char)
+                    self._last_keypress_time = now
         except Exception:
             logger.exception("Error in NFC key handler")
 
@@ -67,18 +100,15 @@ class NFCReader:
             logger.debug("Empty UID scanned, ignoring")
             return
 
-        # Check for obviously invalid UIDs (too long, contains invalid chars, etc.)
-        if len(uid) > 50:  # Reasonable max length for UID
-            logger.warning("Invalid UID scanned (too long): %s", uid[:100])  # Truncate for logging
+        if len(uid) > 50:
+            logger.warning("Invalid UID scanned (too long): %s", uid[:100])
             return
 
-        # Check for non-alphanumeric characters (UIDs should typically be alphanumeric)
         if not uid.replace('-', '').replace('_', '').isalnum():
             logger.warning("Invalid UID scanned (contains invalid characters): %s", uid)
             return
 
-        # Check for obviously fake/invalid UIDs
-        invalid_patterns = ['test', 'fake', 'invalid', 'null', 'none', 'walakinmateafichaliwalo']
+        invalid_patterns = ['test', 'fake', 'invalid', 'null', 'none']
         uid_lower = uid.lower()
         for pattern in invalid_patterns:
             if pattern in uid_lower:
@@ -86,7 +116,6 @@ class NFCReader:
                 return
 
         now = time.time()
-        # Debounce: ignore duplicate scans within threshold
         if (now - self._last_scan_time) < self._debounce_seconds:
             logger.debug("Debounce: ignoring duplicate scan of %s", uid)
             return
@@ -95,7 +124,6 @@ class NFCReader:
         self.last_activity_time = now
         logger.info("Valid NFC UID captured: %s", uid)
 
-        # Fire callback in a separate thread to avoid blocking the listener
         threading.Thread(target=self._callback, args=(uid,), daemon=True).start()
 
     def is_connected_hint(self) -> bool:
